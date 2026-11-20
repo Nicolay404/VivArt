@@ -1,0 +1,477 @@
+openapi: 3.1.0
+info:
+  title: VIVART - Servicio de programación y consulta pública
+  version: 1.0.0
+  description: >
+    Spec 002. Desde el navegador se llama con el prefijo /api/programacion (entrada común).
+    Las rutas /panel/* usan la cookie de sesión del servicio de identidad (vivart_sid) y verifican el permiso en el servidor.
+    Las operaciones que cambian estado exigen Content-Type application/json y un Origin permitido.
+    Los errores tienen la forma Error. Un 403 indica el rol que falta y nunca muestra contenido ajeno.
+    Fechas y horas de funciones y franjas en hora local de Loja (AAAA-MM-DD y HH:MM).
+servers:
+  - url: /api/programacion
+tags:
+  - name: Público
+  - name: Panel editorial
+  - name: Cambios con aviso
+  - name: Catálogos
+  - name: Carga
+  - name: Interno
+paths:
+  /health:
+    get:
+      tags: [Público]
+      responses:
+        '200': { description: Servicio y base de datos disponibles }
+        '503': { description: La base de datos no responde }
+  /agenda:
+    get:
+      tags: [Público]
+      summary: Agenda de actividades publicadas (FR-001, FR-002)
+      parameters:
+        - { name: q, in: query, schema: { type: string }, description: Texto en título, artistas u organización (sin distinguir tildes) }
+        - { name: date, in: query, schema: { type: string, format: date }, description: Día con función o franja }
+        - { name: categoryId, in: query, schema: { type: string } }
+        - { name: venueId, in: query, schema: { type: string } }
+        - { name: access, in: query, schema: { type: string, enum: [free, paid, unconfirmed] } }
+        - { name: editionId, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Actividades ordenadas por la próxima fecha
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reference: { $ref: '#/components/schemas/Reference' }
+                  items: { type: array, items: { $ref: '#/components/schemas/AgendaItem' } }
+  /now:
+    get:
+      tags: [Público]
+      summary: «¿Qué hay ahora?» (FR-005, FR-006, FR-007)
+      responses:
+        '200':
+          description: Franjas abiertas ahora y funciones de hoy desde ahora; las canceladas no aparecen
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reference: { $ref: '#/components/schemas/Reference' }
+                  openSlots: { type: array, items: { $ref: '#/components/schemas/NowSlot' } }
+                  upcoming: { type: array, items: { $ref: '#/components/schemas/NowFunction' } }
+                  inProgress: { type: array, items: { $ref: '#/components/schemas/NowFunction' }, description: Solo funciones con hora de fin o duración conocida }
+                  startPassed: { type: array, items: { $ref: '#/components/schemas/NowFunction' }, description: «Hora de inicio pasada»; nunca en curso ni terminada }
+  /activities/{id}:
+    get:
+      tags: [Público]
+      summary: Ficha pública con enlace compartible (FR-003, FR-004)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Ficha, content: { application/json: { schema: { $ref: '#/components/schemas/PublicActivity' } } } }
+        '404': { description: No existe, no está publicada o está archivada }
+  /categories:
+    get: { tags: [Público], responses: { '200': { description: Lista de categorías } } }
+  /venues:
+    get: { tags: [Público], responses: { '200': { description: Lista de sedes } } }
+  /editions:
+    get: { tags: [Público], responses: { '200': { description: Lista de ediciones } } }
+
+  /panel/activities:
+    get:
+      tags: [Panel editorial]
+      summary: Bandeja. El editor ve las suyas; publicador y administrador ven todas (FR-012)
+      parameters:
+        - { name: state, in: query, schema: { type: string, enum: [draft, in_review, returned, published, archived] } }
+        - { name: mine, in: query, schema: { type: boolean } }
+      responses:
+        '200': { description: Resumen de actividades, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/PanelSummary' } } } } } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+    post:
+      tags: [Panel editorial]
+      summary: Crear borrador (editor, publicador o administrador). Puede estar incompleto (FR-030)
+      requestBody: { content: { application/json: { schema: { type: object, properties: { content: { $ref: '#/components/schemas/Content' }, editionId: { type: string } } } } } }
+      responses:
+        '201': { description: Creada, content: { application/json: { schema: { $ref: '#/components/schemas/PanelActivity' } } } }
+  /panel/activities/{id}:
+    get:
+      tags: [Panel editorial]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Detalle con borrador, versión publicada, observaciones, avisos y versión, content: { application/json: { schema: { $ref: '#/components/schemas/PanelActivity' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [Panel editorial]
+      summary: Borrar definitivamente. Solo si nunca se publicó (FR-029)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '204': { description: Borrada }
+        '409': { description: Ya fue publicada; se puede archivar }
+  /panel/activities/{id}/draft:
+    put:
+      tags: [Panel editorial]
+      summary: Guardar el borrador. Si estaba publicada, crea una versión pendiente y lo publicado sigue visible (FR-011)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [version, content], properties: { version: { type: integer }, content: { $ref: '#/components/schemas/Content' } } } } } }
+      responses:
+        '200': { description: Guardado, content: { application/json: { schema: { $ref: '#/components/schemas/PanelActivity' } } } }
+        '409': { description: 'not_editable (en revisión) o version_conflict (otra persona guardó antes)' }
+        '422': { $ref: '#/components/responses/Error' }
+  /panel/activities/{id}/preview:
+    get:
+      tags: [Panel editorial]
+      summary: Vista previa de la ficha con el contenido del borrador (FR-008)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Igual que la ficha pública, content: { application/json: { schema: { $ref: '#/components/schemas/PublicActivity' } } } }
+  /panel/activities/{id}/submit:
+    post:
+      tags: [Panel editorial]
+      summary: Enviar a revisión (FR-009, FR-030)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { $ref: '#/components/requestBodies/Version' }
+      responses:
+        '200': { description: En revisión }
+        '422': { description: Faltan campos; `fields` lista cada uno con su mensaje, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /panel/activities/{id}/return:
+    post:
+      tags: [Panel editorial]
+      summary: Devolver con observaciones (publicador o administrador). No envía correos (FR-032)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [version, notes], properties: { version: { type: integer }, notes: { type: string, minLength: 1 } } } } } }
+      responses: { '200': { description: Devuelta } }
+  /panel/activities/{id}/publish:
+    post:
+      tags: [Panel editorial]
+      summary: >
+        Aprobar y publicar (publicador o administrador, también lo propio). No activa ventas.
+        Si la revisión cambia fecha, hora o sede de funciones ya publicadas, quita alguna o cambia franjas publicadas, exige reason y notice.
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [version], properties: { version: { type: integer }, reason: { type: string }, notice: { type: string } } } } } }
+      responses:
+        '200': { description: Publicada }
+        '422': { description: 'notice_required: hay cambios de asistencia sin aviso público' }
+  /panel/activities/{id}/discard-revision:
+    post:
+      tags: [Panel editorial]
+      summary: Descartar la versión pendiente de una ficha publicada (publicador o administrador)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { $ref: '#/components/requestBodies/Version' }
+      responses: { '200': { description: Descartada; queda lo publicado } }
+  /panel/activities/{id}/reassign:
+    post:
+      tags: [Panel editorial]
+      summary: Reasignar a otra persona (administrador; FR-010)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [ownerId], properties: { ownerId: { type: string } } } } } }
+      responses: { '200': { description: Reasignada } }
+  /panel/activities/{id}/archive:
+    post:
+      tags: [Panel editorial]
+      summary: Archivar (administrador). Exige cancelar antes las funciones futuras (FR-027, FR-028)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Archivada }
+        '409': { description: 'has_scheduled_functions: cancela antes las funciones vigentes' }
+  /panel/activities/{id}/history:
+    get:
+      tags: [Panel editorial]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses: { '200': { description: Historial de la actividad, más reciente primero } }
+
+  /panel/functions/{id}/impact:
+    get:
+      tags: [Cambios con aviso]
+      summary: Entradas vendidas y pedidos pendientes antes de confirmar (FR-017)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Si participación no está disponible, available es false y no se dan cifras
+          content: { application/json: { schema: { $ref: '#/components/schemas/Impact' } } }
+  /panel/functions/{id}/reschedule:
+    post:
+      tags: [Cambios con aviso]
+      summary: Reprogramar fecha, hora o sede con motivo y aviso (publicador o administrador; FR-015, FR-016)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason, notice]
+              properties:
+                date: { type: string, format: date }
+                startTime: { type: string, pattern: '^\d{2}:\d{2}$' }
+                endTime: { type: [string, 'null'] }
+                venueId: { type: string }
+                reason: { type: string, minLength: 1 }
+                notice: { type: string, minLength: 1 }
+      responses:
+        '200': { description: Reprogramada; incluye el impacto consultado }
+  /panel/functions/{id}/cancel:
+    post:
+      tags: [Cambios con aviso]
+      summary: Cancelar con motivo y aviso (publicador o administrador)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [reason, notice], properties: { reason: { type: string }, notice: { type: string } } } } } }
+      responses: { '200': { description: Cancelada; sale de «¿Qué hay ahora?» } }
+
+  /panel/categories:
+    post: { tags: [Catálogos], summary: Crear (administrador), responses: { '201': { description: Creada } } }
+  /panel/categories/{id}:
+    put: { tags: [Catálogos], summary: Corregir (administrador), parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Corregida } } }
+  /panel/venues:
+    post: { tags: [Catálogos], summary: Crear sede o recorrido (administrador), responses: { '201': { description: Creada } } }
+  /panel/venues/{id}:
+    put: { tags: [Catálogos], summary: Corregir dirección o marcador sin aviso público (FR-025), parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Corregida } } }
+  /panel/editions:
+    post: { tags: [Catálogos], summary: Crear edición (administrador), responses: { '201': { description: Creada } } }
+  /panel/editions/{id}:
+    put: { tags: [Catálogos], parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Corregida } } }
+
+  /panel/imports:
+    post:
+      tags: [Carga]
+      summary: Subir el archivo estructurado y obtener la vista previa (administrador; FR-020). Ver formato-carga.md
+      requestBody: { content: { application/json: { schema: { type: object, required: [file], properties: { filename: { type: string }, file: { type: object, description: 'Contenido vivart-programacion/1' } } } } } }
+      responses:
+        '201': { description: Vista previa, content: { application/json: { schema: { $ref: '#/components/schemas/ImportPreview' } } } }
+        '422': { description: El archivo no tiene el formato esperado }
+  /panel/imports/{id}:
+    get: { tags: [Carga], parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Vista previa o resultado } } }
+  /panel/imports/{id}/accept:
+    post:
+      tags: [Carga]
+      summary: Crear borradores con las posiciones aceptadas; no publica (FR-021, FR-033)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [positions], properties: { positions: { type: array, items: { type: integer } } } } } } }
+      responses: { '200': { description: Resultado por registro (loaded, skipped_existing, skipped_error) } }
+  /panel/publish-batch:
+    post:
+      tags: [Carga]
+      summary: Publicar las actividades que el administrador confirma explícitamente
+      requestBody: { content: { application/json: { schema: { type: object, required: [activityIds], properties: { activityIds: { type: array, items: { type: string } } } } } } }
+      responses: { '200': { description: Resultado por actividad } }
+
+  /internal/functions/{id}:
+    get:
+      tags: [Interno]
+      summary: Estado publicado de una función, para el servicio de participación (X-Service-Key)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: X-Service-Key, in: header, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Función publicada, content: { application/json: { schema: { $ref: '#/components/schemas/InternalFunction' } } } }
+        '401': { description: Credencial de servicio inválida }
+        '404': { description: No existe o la actividad no está publicada }
+
+components:
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+  requestBodies:
+    Version: { content: { application/json: { schema: { type: object, required: [version], properties: { version: { type: integer } } } } } }
+  responses:
+    Error: { description: Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error: { type: string, description: 'Código: validation, forbidden, unauthenticated, not_found, version_conflict, not_editable, notice_required, has_scheduled_functions, already_published, identity_unavailable…' }
+        message: { type: string, description: Mensaje en español para mostrar }
+        fields: { type: object, additionalProperties: { type: string }, description: Mensaje por campo (envío a revisión) }
+        missingRole: { type: string }
+        acceptedRoles: { type: array, items: { type: string } }
+    Reference:
+      type: object
+      properties:
+        now: { type: string, description: Instante de referencia (ISO) }
+        date: { type: string, format: date, description: Fecha en Loja }
+        time: { type: string, description: Hora en Loja }
+        timeZone: { const: America/Guayaquil }
+        fixed: { type: boolean, description: true si el reloj está fijado (pruebas o demo) }
+    Access:
+      type: object
+      properties:
+        mode: { type: string, enum: [free, paid, unconfirmed] }
+        priceUsd: { type: [number, 'null'] }
+        label: { type: string, description: 'Texto listo: «Gratuita», «De pago: USD 5,00», «De pago: precio por confirmar», «Acceso por confirmar»' }
+    Content:
+      type: object
+      description: Contenido editable; todos los campos son opcionales al guardar
+      properties:
+        title: { type: [string, 'null'] }
+        artists: { type: array, items: { type: string } }
+        organization: { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+        categoryId: { type: [string, 'null'] }
+        durationMinutes: { type: [integer, 'null'] }
+        access: { type: object, properties: { mode: { type: string, enum: [free, paid, unconfirmed] }, priceUsd: { type: [number, 'null'] } } }
+        functions:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, description: Se genera si falta; es estable }
+              date: { type: [string, 'null'], format: date }
+              startTime: { type: [string, 'null'] }
+              endTime: { type: [string, 'null'] }
+              durationMinutes: { type: [integer, 'null'] }
+              venueId: { type: [string, 'null'] }
+        slots:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string }
+              venueId: { type: [string, 'null'] }
+              dates: { type: [array, 'null'], items: { type: string, format: date } }
+              from: { type: [string, 'null'], format: date }
+              to: { type: [string, 'null'], format: date }
+              weekdays: { type: [array, 'null'], items: { type: integer, minimum: 1, maximum: 7 } }
+              opens: { type: [string, 'null'] }
+              closes: { type: [string, 'null'] }
+    Venue:
+      type: object
+      properties:
+        id: { type: string }
+        name: { type: string }
+        kind: { type: string, enum: [place, route] }
+        address: { type: [string, 'null'] }
+        routeDescription: { type: [string, 'null'] }
+    PublicFunction:
+      type: object
+      properties:
+        id: { type: string }
+        date: { type: string, format: date }
+        startTime: { type: string }
+        endTime: { type: [string, 'null'], description: null = no confirmada }
+        durationMinutes: { type: [integer, 'null'], description: null = no confirmada }
+        venue: { $ref: '#/components/schemas/Venue' }
+        status: { type: string, enum: [scheduled, cancelled] }
+        timeStatus: { type: string, enum: [upcoming, in_progress, start_passed, finished, cancelled] }
+    PublicSlot:
+      type: object
+      properties:
+        id: { type: string }
+        venue: { $ref: '#/components/schemas/Venue' }
+        dates: { type: [array, 'null'], items: { type: string } }
+        from: { type: [string, 'null'] }
+        to: { type: [string, 'null'] }
+        weekdays: { type: [array, 'null'], items: { type: integer } }
+        opens: { type: string }
+        closes: { type: string }
+    Notice:
+      type: object
+      properties:
+        kind: { type: string, enum: [rescheduled, cancelled, changed] }
+        text: { type: string }
+        at: { type: string }
+        functionId: { type: [string, 'null'] }
+    PublicActivity:
+      type: object
+      description: Los datos no confirmados llegan como null y en `pending` se listan sus nombres para mostrarlos como pendientes (FR-004)
+      properties:
+        id: { type: string }
+        shareUrl: { type: string, description: Ruta pública de la ficha, p. ej. /actividad/{id} }
+        title: { type: string }
+        artists: { type: array, items: { type: string } }
+        organization: { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+        category: { type: [object, 'null'], properties: { id: { type: string }, name: { type: string } } }
+        durationMinutes: { type: [integer, 'null'] }
+        access: { $ref: '#/components/schemas/Access' }
+        functions: { type: array, items: { $ref: '#/components/schemas/PublicFunction' } }
+        slots: { type: array, items: { $ref: '#/components/schemas/PublicSlot' } }
+        notices: { type: array, items: { $ref: '#/components/schemas/Notice' } }
+        pending: { type: array, items: { type: string, enum: [description, organization, duration, price, access, category] } }
+        subjectToChange: { const: true, description: «Programación sujeta a cambios» }
+    AgendaItem:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: string }
+        artists: { type: array, items: { type: string } }
+        category: { type: [object, 'null'] }
+        access: { $ref: '#/components/schemas/Access' }
+        nextDate: { type: [string, 'null'], format: date }
+        venues: { type: array, items: { $ref: '#/components/schemas/Venue' } }
+        isPermanent: { type: boolean, description: Tiene franjas de apertura }
+        hasNotices: { type: boolean }
+    NowFunction:
+      type: object
+      properties:
+        activityId: { type: string }
+        title: { type: string }
+        function: { $ref: '#/components/schemas/PublicFunction' }
+    NowSlot:
+      type: object
+      properties:
+        activityId: { type: string }
+        title: { type: string }
+        slot: { $ref: '#/components/schemas/PublicSlot' }
+    PanelSummary:
+      type: object
+      properties:
+        id: { type: string }
+        title: { type: [string, 'null'] }
+        ownerId: { type: string }
+        editorialState: { type: string, enum: [none, draft, in_review, returned] }
+        status: { type: string, enum: [active, archived] }
+        published: { type: boolean }
+        hasPendingRevision: { type: boolean }
+        updatedAt: { type: string }
+    PanelActivity:
+      type: object
+      properties:
+        id: { type: string }
+        ownerId: { type: string }
+        version: { type: integer }
+        editorialState: { type: string, enum: [none, draft, in_review, returned] }
+        status: { type: string, enum: [active, archived] }
+        published: { type: boolean }
+        reviewNotes: { type: [string, 'null'] }
+        working: { $ref: '#/components/schemas/Content' }
+        publishedContent: { $ref: '#/components/schemas/Content' }
+        functions: { type: array, items: { $ref: '#/components/schemas/PublicFunction' }, description: Funciones publicadas con su estado }
+        notices: { type: array, items: { type: object, properties: { kind: { type: string }, text: { type: string }, reason: { type: string }, actorId: { type: string }, at: { type: string } } } }
+        source: { type: [object, 'null'] }
+        missingForSubmit: { type: object, additionalProperties: { type: string }, description: Qué falta para poder enviar }
+    Impact:
+      type: object
+      properties:
+        available: { type: boolean }
+        soldTickets: { type: [integer, 'null'] }
+        pendingOrders: { type: [integer, 'null'] }
+        message: { type: string }
+    ImportPreview:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [preview, accepted] }
+        records:
+          type: array
+          items:
+            type: object
+            properties:
+              position: { type: integer }
+              key: { type: string }
+              source: { type: object }
+              content: { $ref: '#/components/schemas/Content' }
+              errors: { type: array, items: { type: string } }
+              duplicateOf: { type: [string, 'null'] }
+              outcome: { type: string, enum: [pending, loaded, skipped_existing, skipped_error] }
+              activityId: { type: [string, 'null'] }
+    InternalFunction:
+      type: object
+      properties:
+        id: { type: string }
+        activityId: { type: string }
+        title: { type: string }
+        date: { type: string }
+        startTime: { type: string }
+        endTime: { type: [string, 'null'] }
+        venueId: { type: string }
+        status: { type: string, enum: [scheduled, cancelled] }
+        activityStatus: { type: string, enum: [active, archived] }
