@@ -1,7 +1,7 @@
 import { newShortId, iso, expiresAt } from './tokens.js';
 import { validation } from '../http/errors.js';
 
-const TIPOS = ['compra', 'canje'];
+const TIPOS = new Set(['compra', 'canje']);
 const REF_RE = /^[A-Za-z0-9_-]{1,64}$/;
 
 // Contrato de retorno a la acción original (FR-031 a FR-035).
@@ -15,7 +15,7 @@ export function createPending({ repos, config, clock }) {
 
   return {
     create({ type, ref }) {
-      if (!TIPOS.includes(type)) throw validation('type', 'La acción debe ser una compra o un canje.');
+      if (!TIPOS.has(type)) throw validation('type', 'La acción debe ser una compra o un canje.');
       if (ref !== undefined && ref !== null && !REF_RE.test(String(ref))) {
         throw validation('ref', 'La referencia solo admite letras, números, guiones y guiones bajos (hasta 64).');
       }

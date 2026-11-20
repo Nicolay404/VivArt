@@ -69,7 +69,7 @@ button.secundario, .boton.secundario { background: transparent; color: var(--ace
 button.peligro { border-color: var(--error); background: transparent; color: var(--error); }
 button[disabled] { opacity: .6; cursor: not-allowed; }
 
-.avisos { max-width: 40rem; margin: 0 auto; padding: 0 1rem; }
+.avisos { display: block; max-width: 40rem; margin: 0 auto; padding: 0 1rem; }
 .aviso { border-left: 4px solid var(--acento); background: color-mix(in srgb, var(--acento) 10%, transparent); padding: .6rem .9rem; margin: .75rem 0; }
 .aviso.error-caja { border-color: var(--error); }
 .aviso.ok-caja { border-color: var(--ok); }

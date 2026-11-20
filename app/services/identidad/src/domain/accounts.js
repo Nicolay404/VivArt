@@ -2,7 +2,7 @@ import { hashPassword, verifyPassword, dummyVerify, validatePassword } from './p
 import { newToken, hashToken, newId, iso, expiresAt } from './tokens.js';
 import { validation, invalidToken, invalidCredentials, AppError } from '../http/errors.js';
 
-const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]+\.[^\s@]+$/;
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@.]+(?:\.[^\s@.]+)+$/;
 export const NEUTRAL_MESSAGE = 'Si el correo es válido, recibirás un mensaje con las instrucciones.';
 
 export function normalizeEmail(email) {

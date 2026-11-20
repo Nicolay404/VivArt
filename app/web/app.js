@@ -40,7 +40,8 @@ async function api(metodo, ruta, cuerpo) {
 function aviso(texto, tipo = 'info') {
   zonaAvisos.replaceChildren();
   if (!texto) return;
-  const clase = tipo === 'error' ? 'aviso error-caja' : tipo === 'ok' ? 'aviso ok-caja' : 'aviso';
+  const clases = { error: 'aviso error-caja', ok: 'aviso ok-caja' };
+  const clase = clases[tipo] ?? 'aviso';
   zonaAvisos.append(h('p', { class: clase }, texto));
 }
 
@@ -418,10 +419,14 @@ async function pintar() {
   raiz.focus();
 }
 
-async function navegar(ruta, historia = true, recargarPersona = true) {
+async function irA(ruta, historia, recargarPersona) {
   if (historia) history.pushState({}, '', ruta);
   if (recargarPersona) await cargarPersona();
   await pintar();
+}
+
+function navegar(ruta, historia = true, recargarPersona = true) {
+  irA(ruta, historia, recargarPersona).catch(() => aviso('No se pudo cargar la página. Inténtalo de nuevo.', 'error'));
 }
 
 document.addEventListener('click', (evento) => {
