@@ -1,0 +1,18 @@
+{
+  "name": "vivart-identidad",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Servicio de identidad de VIVART: cuentas, sesiones, roles y permisos",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "@fastify/cookie": "^11.0.0",
+    "fastify": "^5.0.0"
+  }
+}

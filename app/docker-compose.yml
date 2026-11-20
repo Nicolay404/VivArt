@@ -1,0 +1,38 @@
+# Demo local de VIVART: servicio de identidad + entrada común con la web.
+#   docker compose up --build        (desde la carpeta app/)
+#   docker compose down -v           (para borrar contenedores y datos de la demo)
+# Abre http://localhost:8080. El buzón de pruebas está en /demo/buzon: no se envía ningún correo real.
+# Las claves de servicio no se versionan: defínelas en el entorno o en app/.env (ignorado por Git).
+name: vivart
+
+services:
+  identidad:
+    build: ./services/identidad
+    environment:
+      MAIL_TRANSPORT: test
+      PUBLIC_BASE_URL: http://localhost:8080
+      ALLOWED_ORIGINS: http://localhost:8080
+      TRUST_PROXY: "1"
+      SERVICE_KEYS: ${SERVICE_KEYS:-}
+    volumes:
+      - identidad-datos:/data
+    # Solo la entrada común es visible desde fuera: el servicio no publica puertos.
+    expose:
+      - "3001"
+    restart: unless-stopped
+
+  entrada:
+    build:
+      context: .
+      dockerfile: edge/Dockerfile
+    environment:
+      IDENTIDAD_URL: http://identidad:3001
+    ports:
+      - "127.0.0.1:8080:8080"
+    depends_on:
+      identidad:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  identidad-datos:
