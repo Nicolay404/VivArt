@@ -1,0 +1,3 @@
+# Fuente de programación: se conserva en una carpeta compartida, no en Git.
+# Ver context/assets/README.md. Se ignora solo este archivo; los mockups y el afiche sí se versionan.
+/context/assets/PROGRAMACION 2026 digital.pdf
