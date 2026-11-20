@@ -23,6 +23,7 @@
 - Q: ¿Quién entrega la ilustración y cuándo? → A: Pendiente del equipo (P-13), preferible en SVG. Mientras tanto, la demo usa una ilustración provisional marcada como tal.
 - Q: ¿La tarjeta de sede lleva foto, iconos por tipo y botón «ubicarme»? → A: Foto opcional por sede, subida por el administrador, con texto alternativo y fuente o autoría, solo propia o con licencia que permita reutilizarla; sin foto la tarjeta no cambia (M-09). Marcador neutro, porque las sedes no tienen tipo artístico. Sin botón «ubicarme» (RNF-05, M-08).
 - Q: ¿Cómo se combinan los filtros? → A: Con «y»: una sede aparece solo si cumple todos los filtros activos.
+- Q: ¿Confirma el equipo los cambios de modelo de datos de la foto de sede y del destino de «Cómo llegar» antes de implementar? → A: Sí. María Paula y Rafa confirmaron el 2026-11-20 la foto opcional con texto alternativo y fuente o autoría, y el destino con latitud, longitud, fuente y fecha, abierto con un enlace de Google Maps (véase `data-model.md`).
 
 ## Alcance y límites
 

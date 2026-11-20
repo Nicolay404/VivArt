@@ -28,6 +28,7 @@ Abre http://localhost:8080 y activa el administrador con el enlace que imprime e
 
 - Pruebas: `docker compose up -d db db-preparar` y luego `npm test` (en `app/`).
 - API de programación: `http://localhost:8080/api/programacion/agenda` (contrato en `specs/002-programacion-y-publicacion/contracts/`).
+- Mapa de sedes: http://localhost:8080/mapa. `cargar-ejemplo.js` coloca marcadores de ejemplo en una ilustración **provisional**; el destino de «Cómo llegar», la accesibilidad y la foto se registran desde el panel (Catálogos → Sedes → «Mapa y datos»). Detalles en `specs/003-mapa-de-sedes/quickstart.md`.
 - Apagar sin perder datos: `docker compose stop`. Borrar todo: `docker compose down -v`.
 
 Detalles en `specs/001-identidad-y-permisos/quickstart.md` y `specs/002-programacion-y-publicacion/quickstart.md`.

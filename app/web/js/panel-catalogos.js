@@ -1,8 +1,10 @@
 // Gestión de catálogos del administrador (FR-025): ediciones, categorías y sedes (lugar o recorrido).
+// «Mapa y datos» abre la ficha de sede del spec 003: marcador, destino, accesibilidad, foto e historial.
 import { h, aviso, campo, campoTextarea, campoSelect, formulario, abrirDialogo } from './dom.js';
 import { apiProgramacion } from './api.js';
 import { requiereSesion } from './cuenta.js';
 import { barraPanel } from './panel-bandeja.js';
+import { abrirFichaSede } from './panel-sedes.js';
 
 export async function pantallaCatalogos({ persona }) {
   if (!persona) return requiereSesion();
@@ -32,7 +34,8 @@ export async function pantallaCatalogos({ persona }) {
       { id: 'editions', label: 'Ediciones' },
     ];
     zonaTabs.replaceChildren(
-      defs.map((d) =>
+      // Spread: replaceChildren no acepta un array (antes las pestañas salían como texto).
+      ...defs.map((d) =>
         h(
           'button',
           {
@@ -264,7 +267,12 @@ export async function pantallaCatalogos({ persona }) {
                       h(
                         'td',
                         { 'data-etiqueta': 'Acción' },
-                        h('button', { type: 'button', class: 'secundario boton-sm', onclick: () => abrirModalSede(s) }, 'Editar'),
+                        h(
+                          'div',
+                          { class: 'acciones-fila' },
+                          h('button', { type: 'button', class: 'secundario boton-sm', onclick: () => abrirModalSede(s) }, 'Editar'),
+                          h('button', { type: 'button', class: 'secundario boton-sm', onclick: () => void abrirFichaSede(s.id, { alCambiar: pintarContenido }) }, 'Mapa y datos'),
+                        ),
                       ),
                     ),
                   ),

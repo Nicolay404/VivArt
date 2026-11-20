@@ -57,7 +57,12 @@ El último comando crea sedes y actividades **ficticias** y coloca sus marcadore
 
 | Fecha | Comprobación | Resultado |
 |---|---|---|
-| — | Pendiente de implementación (`/speckit-tasks` y `/speckit-implement`) | — |
+| 2026-11-20 | `npm test` en `app/` | 244 pruebas: 113 de identidad, 77 de programación (18 nuevas del mapa: 5 unitarias, 6 de la API pública y 7 del panel de sedes), 40 de participación y 14 de la entrada común (2 nuevas de punta a punta del mapa). Todas pasan, también en tres ejecuciones seguidas |
+| 2026-11-20 | Pools de conexiones en las pruebas | Con las pruebas nuevas, PostgreSQL rechazaba conexiones (`53300`): cada prueba abre su aplicación. Las pruebas usan ahora pools de 3 conexiones que se cierran al quedar inactivas (`DB_POOL_MAX`, `DB_POOL_IDLE_MS`); en la demo y en producción el valor por defecto no cambia |
+| 2026-11-20 | Demo con contenedores | Esquema ampliado sin perder datos; `cargar-ejemplo.js` colocó 5 marcadores de ejemplo en la ilustración provisional y no dio destino ni accesibilidad; prueba de humo correcta, con las dos comprobaciones nuevas del mapa |
+| 2026-11-20 | Navegador (Chrome sin ventana, protocolo de depuración) a 360 px | Ancho de página 360 px (sin desbordamiento), 0 peticiones de ubicación, 0 errores de JavaScript; zoom con botones y teclado; lista recorrida solo con teclado (Enter abre la sede y el foco pasa a su título); «Funciones del día» con selector de días; búsqueda sin tildes |
+| 2026-11-20 | Navegador a 1440 px, panel del administrador | «Mapa y datos»: errores por campo (fuente del destino y de la accesibilidad), destino, accesibilidad, marcador con un clic y foto generada en el navegador; el historial registra cada cambio y el mapa público lo refleja. Los datos de prueba se quitaron después de la demo local |
+| 2026-11-20 | Corrección en el panel de catálogos (spec 002) | Las pestañas del panel se pintaban como texto («[object HTMLButtonElement]») y no se podía abrir la de sedes; corregido |
 
 ## Qué NO hace este spec
 

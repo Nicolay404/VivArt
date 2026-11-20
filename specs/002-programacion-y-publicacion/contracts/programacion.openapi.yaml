@@ -224,7 +224,7 @@ paths:
   /panel/venues:
     post: { tags: [Catálogos], summary: Crear sede o recorrido (administrador), responses: { '201': { description: Creada } } }
   /panel/venues/{id}:
-    put: { tags: [Catálogos], summary: Corregir dirección o marcador sin aviso público (FR-025), parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Corregida } } }
+    put: { tags: [Catálogos], summary: Corregir dirección o marcador sin aviso público (FR-025), description: 'Desde el spec 003 el marcador tiene formato fijo { illustrationId, x, y } (ver specs/003-mapa-de-sedes/contracts/mapa.openapi.yaml).', parameters: [{ $ref: '#/components/parameters/Id' }], responses: { '200': { description: Corregida } } }
   /panel/editions:
     post: { tags: [Catálogos], summary: Crear edición (administrador), responses: { '201': { description: Creada } } }
   /panel/editions/{id}:

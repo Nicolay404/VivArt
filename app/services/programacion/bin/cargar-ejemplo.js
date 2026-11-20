@@ -8,6 +8,17 @@ import { readFileSync } from 'node:fs';
 import { loadConfig } from '../src/config.js';
 import { createServices } from '../src/services.js';
 import { normalizar } from '../src/domain/text.js';
+import { ILUSTRACION, marcadorVigente } from '../src/domain/mapa.js';
+
+// Posiciones de ejemplo sobre la ilustración PROVISIONAL del mapa (spec 003). No son coordenadas reales.
+const POSICIONES_EJEMPLO = [
+  [0.39, 0.47],
+  [0.66, 0.6],
+  [0.5, 0.3],
+  [0.31, 0.66],
+  [0.73, 0.4],
+  [0.55, 0.78],
+];
 
 const config = loadConfig();
 if (config.production) {
@@ -35,6 +46,16 @@ try {
     'venues',
     nombres('sede').map((name) => (/recorrido/i.test(name) ? { name, kind: 'route', routeDescription: 'Tramo de calle ficticio' } : { name, kind: 'place' })),
   );
+
+  // Marcadores de ejemplo solo para las sedes ficticias que aún no tienen uno en la ilustración vigente.
+  // No se les da destino ni accesibilidad: quedan «por confirmar» (no se inventan esos datos, RNF-08).
+  const sedesEjemplo = new Set(nombres('sede').map(normalizar));
+  const sinMarcador = (await servicios.catalogs.list('venues')).filter((v) => sedesEjemplo.has(normalizar(v.name)) && !marcadorVigente(v.marker));
+  for (const [i, v] of sinMarcador.entries()) {
+    const [x, y] = POSICIONES_EJEMPLO[i % POSICIONES_EJEMPLO.length];
+    await servicios.catalogs.update(sesion.userId, 'venues', v.id, { marker: { illustrationId: ILUSTRACION.id, x, y } });
+  }
+  if (sinMarcador.length) console.log(`Marcadores de ejemplo colocados en la ilustración provisional: ${sinMarcador.length}.`);
 
   const previa = await servicios.imports.vistaPrevia(sesion, { file: lote, filename: 'lote-ejemplo.json' });
   const conErrores = previa.records.filter((r) => r.errors.length);

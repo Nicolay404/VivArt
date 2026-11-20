@@ -35,6 +35,14 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/interna
 [ "$codigo" = "401" ]
 echo "ok: la API interna de programación exige credencial de servicio"
 
+curl -fsS "$BASE/api/programacion/map" | grep -q '"illustration"'
+curl -fsS "$BASE/img/mapa-provisional.svg" | grep -q '<svg'
+echo "ok: el mapa de sedes responde sin sesión y la ilustración se sirve (spec 003)"
+
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/panel/venues/x/history")"
+[ "$codigo" = "401" ]
+echo "ok: el panel de sedes pide identificarse"
+
 curl -fsS "$BASE/api/participacion/health" | grep -q '"participacion"'
 echo "ok: la entrada enruta al servicio de participación y su base responde"
 

@@ -68,7 +68,15 @@ export const nuevoEsquema = () => `pruebas_${randomBytes(6).toString('hex')}`;
 
 export function configPrueba(variables = {}, overrides = {}) {
   return loadConfig(
-    { DATABASE_URL: urlPruebas(), DB_SCHEMA: nuevoEsquema(), SERVICE_KEYS: 'participacion:clave-de-prueba-solo-para-tests', ...variables },
+    {
+      DATABASE_URL: urlPruebas(),
+      DB_SCHEMA: nuevoEsquema(),
+      SERVICE_KEYS: 'participacion:clave-de-prueba-solo-para-tests',
+      // Cada prueba abre su propia aplicación: pools pequeños que sueltan pronto las conexiones (si no, PostgreSQL da 53300).
+      DB_POOL_MAX: '3',
+      DB_POOL_IDLE_MS: '1000',
+      ...variables,
+    },
     overrides,
   );
 }

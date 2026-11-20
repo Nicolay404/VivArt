@@ -1956,3 +1956,434 @@ h1, h2, h3,
   align-items: center;
 }
 .venta-acordeon[open] summary { margin-bottom: 0.65rem; }
+
+/* ==========================================================================
+   Mapa de sedes (spec 003): vista ilustrada, lista equivalente y tarjeta de sede.
+   Solo tokens existentes; los estados nunca dependen solo del color (FR-016).
+   ========================================================================== */
+
+.hero-mapa { padding-bottom: 3rem; }
+
+.mapa-controles {
+  display: grid;
+  gap: 0.6rem;
+  min-width: 0;
+}
+
+.ayuda-buscador {
+  margin: -0.15rem 0 0;
+  font-size: 0.85rem;
+  color: var(--suave);
+}
+
+.filtro-dia {
+  display: grid;
+  gap: 0.25rem;
+  max-width: 18rem;
+}
+
+.filtro-dia label { font-size: 0.85rem; font-weight: 600; }
+
+.selector-vista {
+  display: inline-flex;
+  justify-self: start;
+  padding: 0.2rem;
+  gap: 0.2rem;
+  border-radius: var(--radio-pill);
+  background: var(--superficie-suave);
+  border: 1px solid var(--borde);
+}
+
+.selector-vista .segmento {
+  min-height: 2.4rem;
+  padding: 0.35rem 1rem;
+  border: 0;
+  background: transparent;
+  color: var(--texto);
+}
+
+.selector-vista .segmento:hover:not([disabled]) { background: var(--acento-suave); color: var(--acento); border: 0; }
+.selector-vista .segmento.activo { background: var(--superficie); color: var(--acento); box-shadow: var(--sombra-sm); }
+
+.mapa-estado {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--suave);
+}
+
+.aviso-dia { color: var(--alerta); font-weight: 600; }
+
+.mapa-cuerpo {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+  padding-bottom: 2rem;
+}
+
+.mapa-vista { min-width: 0; }
+
+.mapa-contenedor { position: relative; }
+
+.mapa-marco {
+  position: relative;
+  height: clamp(20rem, 62vh, 36rem);
+  overflow: hidden;
+  border-radius: var(--radio-lg);
+  border: 1px solid var(--borde);
+  background: var(--superficie-suave);
+  box-shadow: var(--sombra-sm);
+  touch-action: none;
+  cursor: grab;
+  user-select: none;
+}
+
+.mapa-marco:active { cursor: grabbing; }
+.mapa-marco:focus-visible { outline: 3px solid var(--foco); outline-offset: 2px; }
+
+.mapa-lienzo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.mapa-imagen {
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.mapa-marcadores {
+  position: absolute;
+  inset: 0;
+}
+
+.marcador-sede {
+  position: absolute;
+  min-height: 0;
+  padding: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50% 50% 50% 0.3rem;
+  border: 3px solid var(--superficie);
+  background: var(--acento);
+  color: var(--acento-texto);
+  box-shadow: var(--sombra);
+  transform: translate(-50%, -100%) scale(calc(1 / var(--zoom, 1))) rotate(-45deg);
+  transform-origin: 50% 100%;
+  transition: background-color 0.15s ease;
+}
+
+.marcador-sede .icono-sm { transform: rotate(45deg); }
+
+.marcador-sede:hover:not([disabled]),
+.marcador-sede.activo {
+  background: var(--marca-calido);
+  border-color: var(--superficie);
+}
+
+.marcador-sede.activo { z-index: 2; }
+
+.marcador-nombre {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: rotate(45deg) translate(1.6rem, -50%);
+  transform-origin: 0 0;
+  white-space: nowrap;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radio-pill);
+  background: var(--superficie);
+  color: var(--texto);
+  font-size: 0.8rem;
+  box-shadow: var(--sombra-sm);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.marcador-sede:hover .marcador-nombre,
+.marcador-sede:focus-visible .marcador-nombre,
+.marcador-sede.activo .marcador-nombre { opacity: 1; }
+
+.mapa-botones {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  display: grid;
+  gap: 0.4rem;
+}
+
+.mapa-boton {
+  width: var(--toque);
+  height: var(--toque);
+  padding: 0;
+  border-radius: 50%;
+  background: var(--superficie);
+  color: var(--acento);
+  border: 1px solid var(--borde-fuerte);
+  box-shadow: var(--sombra-sm);
+}
+
+.mapa-boton:hover:not([disabled]) { background: var(--acento-suave); color: var(--acento); border-color: var(--acento); }
+.mapa-boton[disabled] { opacity: 0.45; cursor: default; }
+
+.mapa-provisional {
+  position: absolute;
+  left: 0.75rem;
+  bottom: 0.75rem;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: var(--radio-pill);
+  background: var(--alerta-fondo);
+  border: 1px solid var(--alerta-borde);
+  color: var(--alerta);
+  font-size: 0.8rem;
+  font-weight: 700;
+  max-width: calc(100% - 1.5rem);
+}
+
+.mapa-sin-marcador {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  color: var(--suave);
+}
+
+.enlace-boton {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--acento);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  font-weight: 600;
+}
+
+.enlace-boton:hover:not([disabled]) { background: none; color: var(--acento-hover); border: 0; }
+
+/* ---------- Lista equivalente ---------- */
+
+.lista-sedes {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+.fila-sede {
+  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto);
+  font-weight: 400;
+  box-shadow: var(--sombra-sm);
+}
+
+.fila-sede:hover:not([disabled]) { background: var(--superficie); border-color: var(--acento); color: var(--texto); }
+.fila-sede.activa { border-color: var(--acento); box-shadow: 0 0 0 2px var(--acento-suave); }
+
+.fila-sede-icono {
+  flex: 0 0 auto;
+  display: inline-grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+
+.fila-sede-texto { display: grid; gap: 0.2rem; min-width: 0; }
+.fila-sede-nombre { font-family: var(--fuente-titulos); font-weight: 700; font-size: 1.05rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+.fila-sede-direccion { font-size: 0.88rem; color: var(--suave); }
+.fila-sede-funciones { font-size: 0.85rem; font-weight: 600; color: var(--acento); }
+
+/* ---------- Accesibilidad: icono + texto ---------- */
+
+.lista-accesibilidad {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.lista-accesibilidad.compacta { display: flex; flex-wrap: wrap; gap: 0.3rem 0.8rem; font-size: 0.82rem; }
+
+.item-accesibilidad {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.acc-confirmada strong { color: var(--ok); }
+.acc-no-disponible strong { color: var(--error); }
+.acc-por-confirmar strong { color: var(--alerta); }
+.nota-accesibilidad { flex-basis: 100%; font-size: 0.85rem; color: var(--suave); padding-left: 1.45rem; }
+
+/* ---------- Tarjeta de sede ---------- */
+
+.panel-sede { min-width: 0; }
+
+.tarjeta-sede {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-lg);
+  box-shadow: var(--sombra);
+  overflow: hidden;
+}
+
+.foto-sede { margin: 0; }
+.foto-sede img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--superficie-suave); }
+.foto-sede figcaption { padding: 0.35rem 1rem 0; font-size: 0.78rem; color: var(--suave); }
+
+.tarjeta-sede-cuerpo { display: grid; gap: 0.65rem; padding: 1rem 1.1rem 1.25rem; }
+
+.tarjeta-sede-cabecera { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; }
+
+.panel-sede-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.4rem;
+  line-height: 1.2;
+}
+
+.panel-sede-titulo:focus { outline: none; }
+
+.boton-cerrar-sede {
+  flex: 0 0 auto;
+  width: var(--toque);
+  padding: 0;
+  border-radius: 50%;
+  background: var(--superficie-suave);
+  border-color: var(--borde);
+  color: var(--texto);
+}
+
+.boton-cerrar-sede:hover:not([disabled]) { background: var(--acento-suave); border-color: var(--acento); color: var(--acento); }
+
+.direccion-sede { font-size: 0.95rem; }
+
+.subtitulo-sede {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--texto);
+}
+
+.boton-como-llegar { justify-self: start; }
+
+.funciones-sede {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.funcion-sede {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+  padding: 0.7rem 0.85rem;
+  border-radius: var(--radio);
+  border: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+  text-decoration: none;
+}
+
+.funcion-sede:hover { border-color: var(--acento); color: var(--texto); }
+.funcion-sede.cancelada .funcion-sede-titulo { text-decoration: line-through; color: var(--suave); }
+.funcion-sede-titulo { font-weight: 700; }
+.funcion-sede-hora { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.88rem; color: var(--suave); }
+
+.sin-funciones { margin: 0; color: var(--suave); }
+
+@media (min-width: 56rem) {
+  .mapa-cuerpo { grid-template-columns: minmax(0, 1.65fr) minmax(19rem, 1fr); align-items: start; }
+  .panel-sede { position: sticky; top: 5.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marcador-sede { transition: none; }
+}
+
+/* ---------- Ficha de sede del administrador (spec 003, panel de catálogos) ---------- */
+
+.acciones-fila { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+.ficha-sede-panel { display: grid; gap: 1.1rem; }
+
+.ficha-sede-nombre {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+}
+
+.ficha-sede-seccion {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.ficha-sede-seccion h4 { margin: 0; font-size: 1.05rem; }
+.ficha-sede-seccion > .boton-sm { justify-self: start; }
+
+.plano-marcador {
+  position: relative;
+  cursor: crosshair;
+  border-radius: var(--radio-sm);
+  overflow: hidden;
+  border: 1px solid var(--borde-fuerte);
+  background: var(--superficie-suave);
+}
+
+.plano-marcador img { display: block; width: 100%; height: auto; pointer-events: none; }
+
+.marcador-previa {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  --zoom: 1;
+}
+
+.rejilla-accesibilidad { display: grid; gap: 0.75rem; }
+
+.tarjeta-accesibilidad {
+  padding: 0.85rem;
+  border-radius: var(--radio-sm);
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+}
+
+.tarjeta-accesibilidad h5 { margin: 0 0 0.4rem; font-size: 0.98rem; }
+
+.foto-sede-panel { max-width: 26rem; border-radius: var(--radio-sm); overflow: hidden; border: 1px solid var(--borde); }
+
+.historial-sede { margin: 0; padding-left: 1.2rem; display: grid; gap: 0.3rem; font-size: 0.92rem; }
+
+@media (min-width: 44rem) {
+  .rejilla-accesibilidad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

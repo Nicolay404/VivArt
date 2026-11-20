@@ -104,7 +104,8 @@ app/
 └── web/
     ├── img/mapa-provisional.svg       # NUEVO: ilustración provisional propia (sin geografía de Loja)
     ├── js/mapa.js                     # NUEVO: pestaña Mapa (vista, tarjeta, lista, búsqueda y filtros); se importa al abrirla
-    ├── js/panel-catalogos.js          # ficha de sede del administrador: marcador, destino, accesibilidad, foto, historial
+    ├── js/panel-sedes.js              # NUEVO: ficha de sede del administrador (marcador, destino, accesibilidad, foto, historial)
+    ├── js/panel-catalogos.js          # botón «Mapa y datos» en la tabla de sedes
     ├── app.js                         # la ruta /mapa importa js/mapa.js de forma dinámica
     └── styles.css                     # estilos del mapa con los tokens existentes
 ```

@@ -3,6 +3,7 @@ import { nuevoId } from './content.js';
 import { validation, conflict, notFound } from '../http/errors.js';
 import { esDuplicado } from '../db.js';
 import { venueDesdeFila, categoriaDesdeFila, edicionDesdeFila } from '../repositories/catalogs.js';
+import { validarMarcador } from './mapa.js';
 
 // Ediciones, categorías y sedes (FR-025). Solo el administrador (acción catalog.manage); sin revisión editorial;
 // cada cambio queda en el historial. Corregir una dirección o un marcador NO crea aviso público (RC-06).
@@ -10,7 +11,7 @@ import { venueDesdeFila, categoriaDesdeFila, edicionDesdeFila } from '../reposit
 const PRESENTAR = { editions: edicionDesdeFila, categories: categoriaDesdeFila, venues: venueDesdeFila };
 const ENTIDAD = { editions: 'edition', categories: 'category', venues: 'venue' };
 
-function filaDesde(tabla, cuerpo) {
+function filaDesde(tabla, cuerpo, { markerActual = null } = {}) {
   const name = textoONulo(cuerpo?.name, 200);
   if (!name) throw validation({ name: 'Escribe un nombre.' });
   const fila = { name, name_key: normalizar(name) };
@@ -26,11 +27,20 @@ function filaDesde(tabla, cuerpo) {
     fila.kind = kind;
     fila.address = textoONulo(cuerpo.address, 500);
     fila.route_description = textoONulo(cuerpo.routeDescription, 2000);
-    const m = cuerpo.marker;
-    const esObjeto = m && typeof m === 'object' && !Array.isArray(m);
-    fila.marker = esObjeto && JSON.stringify(m).length <= 2000 ? JSON.stringify(m) : null;
+    // Marcador sobre la ilustración vigente (spec 003). Si no se envía, se conserva el guardado tal cual.
+    const marcador = Object.hasOwn(cuerpo, 'marker') && cuerpo.marker !== undefined ? validarMarcador(cuerpo.marker) : markerActual;
+    fila.marker = marcador ? JSON.stringify(marcador) : null;
   }
   return fila;
+}
+
+/** Campos que cambiaron, con su valor antes y después (historial, SC-009). */
+function cambios(antes, despues) {
+  const r = {};
+  for (const k of Object.keys(despues)) {
+    if (JSON.stringify(antes[k] ?? null) !== JSON.stringify(despues[k] ?? null)) r[k] = { before: antes[k] ?? null, after: despues[k] ?? null };
+  }
+  return r;
 }
 
 export function createCatalogs({ repos, auditar, clock }) {
@@ -56,15 +66,22 @@ export function createCatalogs({ repos, auditar, clock }) {
     async update(actorId, tabla, id, cuerpo) {
       const actual = await repos.catalogs.find(tabla, id);
       if (!actual) throw notFound();
-      const fila = { ...filaDesde(tabla, { ...PRESENTAR[tabla](actual), ...cuerpo }), updated_at: ahora() };
+      const anterior = PRESENTAR[tabla](actual);
+      const { marker: markerActual, ...resto } = anterior;
+      const fila = { ...filaDesde(tabla, { ...resto, ...cuerpo }, { markerActual }), updated_at: ahora() };
+      // Un recorrido no tiene destino único: antes de cambiar a recorrido hay que quitar el destino (spec 003).
+      if (tabla === 'venues' && fila.kind === 'route' && actual.dest_lat !== null && actual.dest_lat !== undefined) {
+        throw conflict('has_destination', 'Quita primero el destino de «Cómo llegar»: un recorrido no tiene un destino único.');
+      }
       try {
         await repos.catalogs.update(tabla, id, fila);
       } catch (error) {
         if (esDuplicado(error)) throw conflict('duplicate_name', 'Ya existe uno con ese nombre.');
         throw error;
       }
-      await auditar(actorId, `catalog.${ENTIDAD[tabla]}.updated`, ENTIDAD[tabla], id, { name: fila.name });
-      return PRESENTAR[tabla](await repos.catalogs.find(tabla, id));
+      const despues = PRESENTAR[tabla](await repos.catalogs.find(tabla, id));
+      await auditar(actorId, `catalog.${ENTIDAD[tabla]}.updated`, ENTIDAD[tabla], id, { name: fila.name, changes: cambios(anterior, despues) });
+      return despues;
     },
 
     /** Mapas para presentar fichas: id -> objeto público. */

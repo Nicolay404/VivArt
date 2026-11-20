@@ -32,6 +32,9 @@ export function loadConfig(env = process.env, overrides = {}) {
     clock: relojFijo ? () => new Date(relojFijo) : () => new Date(),
     clockFixed: Boolean(relojFijo),
     timeoutMs: Number(env.SERVICE_TIMEOUT_MS ?? 3000),
+    // Tamaño del pool y cierre de conexiones inactivas. Las pruebas usan pools pequeños para no agotar la base.
+    dbPoolMax: Number(env.DB_POOL_MAX ?? 10),
+    dbPoolIdleMs: Number(env.DB_POOL_IDLE_MS ?? 10000),
   };
   return { ...base, ...overrides };
 }
