@@ -128,8 +128,6 @@ Las preguntas rápidas son fijas en el MVP: no hay un panel para editarlas, pero
 
 ### Edge Cases
 
-### Edge Cases
-
 - Una consulta ambigua (por ejemplo, «después de las seis» sin día): asume hoy en hora de Loja y lo indica.
 - Una consulta de un día futuro de la edición o ya pasado.
 - Una función con solo hora de inicio que ya pasó: «Hora de inicio pasada», no se presenta como en curso ni como terminada (RC-03).
