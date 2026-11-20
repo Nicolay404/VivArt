@@ -4,7 +4,7 @@
 
 **Created**: 2026-11-19
 
-**Status**: Draft
+**Status**: Approved (2026-11-20)
 
 **Input**: User description: "Spec 01 de 8 de VIVART: Identidad, perfil y permisos. Redactar la especificación sin plan técnico ni implementación. Fuente de verdad: `context/`. Alcance: RF-01, RF-02, RF-03, RF-04 y RF-04b; reglas RC-01 y RC-06; verificaciones RNF-02, RNF-04, RNF-05 y RNF-09 en lo que toca a identidad y permisos."
 
@@ -257,7 +257,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 **Historial y privacidad**
 
 - **FR-024**: Toda asignación o revocación de roles, asignación de funciones al personal de acceso y reasignación de borradores DEBE conservar quién la hizo, cuándo y sobre qué registro. El historial de roles y funciones pertenece a este spec; el registro de la reasignación de borradores lo hace el spec 02, que la ejecuta.
-- **FR-025**: Un administrador autorizado DEBE poder consultar ese historial, y ningún otro rol PUEDE hacerlo.
+- **FR-025**: Un administrador autorizado DEBE poder consultar ese historial, y ningún otro rol PUEDE hacerlo. Durante el MVP el historial se conserva completo, sin plazo de borrado, y nadie puede modificarlo ni borrarlo (decidido el 2026-11-20; un plazo de retención se decidiría antes de usar datos reales).
 - **FR-026**: El sistema NO DEBE exponer credenciales ni códigos privados en registros operativos.
 
 **Primer administrador, credenciales, verificación y recuperación** (decisiones cerradas el 2026-11-19; véase Clarifications)
@@ -290,7 +290,7 @@ Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garan
 - **FR-040**: Nadie DEBE poder asignarse roles ni funciones del personal de acceso a sí mismo: solo un administrador los asigna, y siempre a otra cuenta (P-10).
 - **FR-041**: El sistema DEBE cerrar una sesión tras 2 horas sin actividad si la cuenta tiene algún rol interno, y tras 7 días sin actividad si no lo tiene; ninguna sesión DEBE durar más de 7 días desde el inicio de sesión (P-10).
 - **FR-042**: La acción pendiente DEBE conservarse 24 horas y revalidarse siempre al retomarla. Activar la cuenta del primer administrador con el enlace recibido DEBE contar como verificación de su correo (P-11).
-- **FR-038**: Los flujos de identidad (registro, verificación, inicio y cierre de sesión, recuperación, activación del primer administrador, retorno a la acción, gestión de roles e historial) DEBEN poder completarse solo con teclado y en una pantalla de celular sin desbordamiento horizontal, con foco visible, etiquetas comprensibles y estados que no se comuniquen solo con color (RNF-01, RNF-03).
+- **FR-038**: Los flujos de identidad (registro, verificación, inicio y cierre de sesión, recuperación, activación del primer administrador, retorno a la acción, gestión de roles e historial) DEBEN poder completarse solo con teclado y en una pantalla de celular sin desbordamiento horizontal, con foco visible, etiquetas comprensibles y estados que no se comuniquen solo con color (RNF-01, RNF-03). Los avisos y errores DEBEN anunciarse a los lectores de pantalla; al cambiar de pantalla el foco DEBE ir al contenido principal y, tras un error en un formulario, al campo con el error. Las pantallas a las que llevan los enlaces de correo (verificar, restablecer y activar) forman parte de estos flujos.
 
 ### Key Entities
 
