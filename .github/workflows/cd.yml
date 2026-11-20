@@ -31,6 +31,12 @@ jobs:
           - nombre: identidad
             contexto: app/services/identidad
             dockerfile: app/services/identidad/Dockerfile
+          - nombre: programacion
+            contexto: app/services/programacion
+            dockerfile: app/services/programacion/Dockerfile
+          - nombre: participacion
+            contexto: app/services/participacion
+            dockerfile: app/services/participacion/Dockerfile
           - nombre: entrada
             contexto: app
             dockerfile: app/edge/Dockerfile

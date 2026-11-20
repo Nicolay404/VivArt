@@ -1555,3 +1555,84 @@ h1, h2, h3,
   .tarjeta-agenda:hover,
   .tarjeta-ahora:hover { transform: none; }
 }
+
+/* ---------- Compra y entradas (spec 005) ---------- */
+
+.horario-venta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.4rem;
+}
+.venta-disponible { background: var(--ok-fondo); color: var(--ok); border-color: var(--ok-borde); }
+.venta-agotada { background: var(--error-fondo); color: var(--error); border-color: var(--error-borde); }
+.venta-cerrada { background: var(--superficie-suave); color: var(--suave); }
+
+.lista-carrito {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+.carrito-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+}
+.carrito-item-inactivo { opacity: 0.75; }
+.carrito-item-datos { display: grid; gap: 0.15rem; min-width: 0; flex: 1 1 14rem; }
+.aviso-linea { color: var(--alerta); font-weight: 600; font-size: 0.9rem; }
+.carrito-cantidad { display: inline-flex; align-items: center; gap: 0.5rem; }
+.carrito-numero { min-width: 1.5rem; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+.carrito-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.85rem 1rem;
+  border-top: 2px solid var(--borde-fuerte);
+}
+.carrito-total-valor { font-family: var(--fuente-titulos); font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.cuenta-regresiva { font-variant-numeric: tabular-nums; }
+
+.rejilla-entradas { display: grid; gap: 1rem; }
+@media (min-width: 40rem) { .rejilla-entradas { grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); } }
+.entrada { display: grid; gap: 0.6rem; }
+.entrada-cabecera { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; }
+.entrada-titulo { margin: 0; font-size: 1.15rem; }
+.entrada-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem; margin: 0; color: var(--suave); font-size: 0.92rem; }
+.entrada-codigos { display: grid; justify-items: center; gap: 0.5rem; padding: 0.75rem; background: #ffffff; border-radius: var(--radio-sm); }
+.entrada-qr { width: min(15rem, 100%); height: auto; }
+.entrada-codigo { display: grid; justify-items: center; margin: 0; }
+.entrada-codigo strong { font-family: var(--fuente-mono); font-size: 1.35rem; letter-spacing: 0.12em; }
+.entrada-valida .insignia-estado { background: var(--ok-fondo); color: var(--ok); }
+.entrada-usada, .entrada-invalida { opacity: 0.85; }
+.entrada-invalida .insignia-estado { background: var(--error-fondo); color: var(--error); }
+.entrada-sin-confirmar .insignia-estado { background: var(--alerta-fondo); color: var(--alerta); }
+
+.acceso-video { width: 100%; max-height: 18rem; border-radius: var(--radio); background: var(--texto); object-fit: cover; }
+.acceso-resultado:empty { display: none; }
+.acceso-resultado {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding: 1.25rem;
+  border-radius: var(--radio);
+  text-align: center;
+  font-size: 1.05rem;
+}
+.acceso-resultado strong { font-family: var(--fuente-titulos); font-size: 1.8rem; }
+.acceso-admitida { background: var(--ok-fondo); color: var(--ok); border: 2px solid var(--ok-borde); }
+.acceso-rechazada { background: var(--error-fondo); color: var(--error); border: 2px solid var(--error-borde); }
+.acceso-abierto { background: var(--ok-fondo); color: var(--ok); }
+
+.rejilla-panel { display: grid; gap: 1rem; margin-bottom: 1rem; }
+@media (min-width: 56rem) { .rejilla-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; } }
+.casilla { display: inline-flex; align-items: center; gap: 0.5rem; min-height: var(--toque); }

@@ -1,0 +1,19 @@
+{
+  "name": "vivart-participacion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Servicio de participación de VIVART: venta de entradas con pagos de prueba, retención de cupos, QR y control de acceso",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --env-file-if-exists=../../.env --test --test-concurrency=1 \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "pg": "^8.23.1",
+    "qrcode": "^1.5.4"
+  }
+}

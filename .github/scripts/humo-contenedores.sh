@@ -35,4 +35,18 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/interna
 [ "$codigo" = "401" ]
 echo "ok: la API interna de programación exige credencial de servicio"
 
+curl -fsS "$BASE/api/participacion/health" | grep -q '"participacion"'
+echo "ok: la entrada enruta al servicio de participación y su base responde"
+
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/tickets")"
+[ "$codigo" = "401" ]
+echo "ok: Mis entradas pide identificarse"
+
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/internal/functions/x/impact")"
+[ "$codigo" = "401" ]
+echo "ok: la API interna de participación exige credencial de servicio"
+
+curl -fsSI "$BASE/" | grep -i -q "camera=(self)"
+echo "ok: la cámara solo se permite al propio sitio"
+
 echo "Humo de contenedores: todo correcto."

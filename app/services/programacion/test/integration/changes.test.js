@@ -1,11 +1,12 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { crearApp, pedir, catalogos, publicada } from '../helpers.js';
+import { createParticipacionClient } from '../../src/clients/participacion.js';
 
 // Historia 5: reprogramar o cancelar con aviso (FR-015 a FR-019; SC-007).
 
 test('FR-015, FR-016, SC-007: reprogramar (también mover de sede) publica un aviso y registra quién y cuándo', async () => {
-  const ctx = await crearApp();
+  const ctx = await crearApp({ participacion: createParticipacionClient({ url: '' }) });
   const c = await catalogos(ctx);
   const a = await publicada(ctx, c);
   const fid = a.publishedContent.functions[0].id;
@@ -79,4 +80,36 @@ test('solo publicador y administrador reprograman o cancelan; el editor no, ni p
     assert.equal(r.status, 403, quien);
   }
   assert.equal((await pedir(ctx, 'publicador', 'POST', '/panel/functions/no-existe/cancel', { reason: 'x', notice: 'y' })).status, 404);
+});
+
+test('spec 005, FR-030: con entradas vendidas solo cancela el administrador; reprogramar sigue siendo del publicador', async () => {
+  const conVentas = { impact: async () => ({ available: true, soldTickets: 0, pendingOrders: 0, issuedTickets: 3, message: 'ok' }) };
+  const ctx = await crearApp({ participacion: conVentas });
+  const c = await catalogos(ctx);
+  const a = await publicada(ctx, c);
+  const fid = a.publishedContent.functions[0].id;
+
+  const r = await pedir(ctx, 'publicador', 'POST', `/panel/functions/${fid}/cancel`, { reason: 'x', notice: 'Cancelada.' });
+  assert.equal(r.status, 403);
+  assert.equal(r.json.missingRole, 'administrador');
+  const re = await pedir(ctx, 'publicador', 'POST', `/panel/functions/${fid}/reschedule`, { startTime: '21:00', reason: 'x', notice: 'Pasa a las 21:00.' });
+  assert.equal(re.status, 200, 'reprogramar con ventas lo puede hacer el publicador (las entradas siguen válidas)');
+  assert.equal((await pedir(ctx, 'admin', 'POST', `/panel/functions/${fid}/cancel`, { reason: 'x', notice: 'Cancelada.' })).status, 200);
+});
+
+test('spec 005, FR-030: si no se puede saber si hay ventas, el publicador no cancela (fallo cerrado)', async () => {
+  const ctx = await crearApp({ participacion: createParticipacionClient({ url: '' }) });
+  const c = await catalogos(ctx);
+  const a = await publicada(ctx, c);
+  const fid = a.publishedContent.functions[0].id;
+  assert.equal((await pedir(ctx, 'publicador', 'POST', `/panel/functions/${fid}/cancel`, { reason: 'x', notice: 'y' })).status, 403);
+  assert.equal((await pedir(ctx, 'admin', 'POST', `/panel/functions/${fid}/cancel`, { reason: 'x', notice: 'y' })).status, 200);
+});
+
+test('spec 005, FR-030: sin ventas el publicador sí cancela', async () => {
+  const ctx = await crearApp();
+  const c = await catalogos(ctx);
+  const a = await publicada(ctx, c);
+  const fid = a.publishedContent.functions[0].id;
+  assert.equal((await pedir(ctx, 'publicador', 'POST', `/panel/functions/${fid}/cancel`, { reason: 'x', notice: 'y' })).status, 200);
 });

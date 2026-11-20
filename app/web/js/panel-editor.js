@@ -122,14 +122,16 @@ function bloqueImpacto(impacto) {
       'div',
       { class: 'aviso alerta-caja' },
       h('strong', {}, 'Impacto en entradas: '),
-      'No se pudo consultar el servicio de entradas. Verifica manualmente antes de confirmar.',
+      'No se pudo consultar el servicio de entradas. Mientras no se sepa si hay ventas, solo el administrador puede cancelar.',
     );
   }
+  const conVentas = impacto.issuedTickets > 0 || impacto.soldTickets > 0;
   return h(
     'div',
-    { class: 'aviso' },
+    { class: conVentas ? 'aviso alerta-caja' : 'aviso' },
     h('strong', {}, 'Impacto actual de la función: '),
-    `${impacto.soldTickets} entradas vendidas · ${impacto.pendingOrders} pedidos pendientes.`,
+    `${impacto.soldTickets} entradas vendidas sin usar · ${impacto.pendingOrders} pedidos pendientes.`,
+    conVentas ? h('p', {}, 'Tiene entradas vendidas: solo el administrador puede cancelarla. Reprogramarla conserva las entradas.') : null,
   );
 }
 

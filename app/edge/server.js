@@ -16,11 +16,12 @@ const TIPOS = {
 };
 
 // Cabeceras seguras. `geolocation=()` deja explícito que VIVART no pide la ubicación (RNF-05).
+// La cámara solo se permite al propio sitio, para escanear entradas en el control de acceso (spec 005).
 const CABECERAS_SEGURAS = {
   'content-security-policy': "default-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
   'x-content-type-options': 'nosniff',
   'referrer-policy': 'no-referrer',
-  'permissions-policy': 'geolocation=(), camera=(), microphone=()',
+  'permissions-policy': 'geolocation=(), camera=(self), microphone=()',
 };
 
 const DIRECTORIO_WEB = fileURLToPath(new URL('../web/', import.meta.url));
@@ -30,6 +31,7 @@ export function createEdge({
   routes = [
     { prefix: '/api/identidad', target: process.env.IDENTIDAD_URL ?? 'http://127.0.0.1:3001' },
     { prefix: '/api/programacion', target: process.env.PROGRAMACION_URL ?? 'http://127.0.0.1:3002' },
+    { prefix: '/api/participacion', target: process.env.PARTICIPACION_URL ?? 'http://127.0.0.1:3003' },
   ],
 } = {}) {
   const base = resolve(webDir);

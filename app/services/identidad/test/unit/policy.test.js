@@ -93,3 +93,13 @@ test('spec 002: reprogramar lo hacen publicador y administrador; catálogos y ar
     for (const r of ['editor', 'publicador', 'personal_acceso']) assert.equal(puede(persona([r]), accion), false);
   }
 });
+
+test('spec 005: cancelar con entradas vendidas, configurar la venta y validar el acceso', () => {
+  for (const accion of ['schedule.cancel_with_sales', 'sales.configure']) {
+    assert.equal(puede(persona(['administrador']), accion), true);
+    for (const r of ['editor', 'publicador', 'personal_acceso']) assert.equal(puede(persona([r]), accion), false);
+  }
+  const acceso = { ...persona(['personal_acceso']), functionIds: ['f1'] };
+  assert.equal(authorize(acceso, 'access.validate', { functionId: 'f1' }).allowed, true);
+  assert.equal(authorize(acceso, 'access.validate', { functionId: 'f2' }).reason, 'function_not_assigned');
+});

@@ -52,7 +52,7 @@ flowchart TB
 
 - Las tres bases lógicas pueden vivir en **una misma instancia** en la demo, pero cada servicio usa **credenciales propias** y **no escribe** en la base de otro.
 - Un servicio se puede publicar sin volver a desplegar los demás, siempre que respete los contratos de las APIs.
-- En la demo la instancia es un contenedor **PostgreSQL** (`app/docker-compose.yml`). Al crearse, un script (`app/db/init/`) crea **una base y un usuario por servicio**; cada usuario solo puede conectarse a su base y nadie más que el superusuario entra a las bases administrativas. Hoy existen las de identidad y programación; la de participación se añade con el spec 005. El script es idempotente y lo ejecuta el contenedor `db-preparar` en cada arranque, así una base nueva aparece sin borrar los datos existentes.
+- En la demo la instancia es un contenedor **PostgreSQL** (`app/docker-compose.yml`). Al crearse, un script (`app/db/init/`) crea **una base y un usuario por servicio**; cada usuario solo puede conectarse a su base y nadie más que el superusuario entra a las bases administrativas. Hoy existen las de identidad, programación y participación. El script es idempotente y lo ejecuta el contenedor `db-preparar` en cada arranque, así una base nueva aparece sin borrar los datos existentes.
 - La base solo publica su puerto en `127.0.0.1` (para las pruebas locales y un cliente de base de datos); los servicios no publican puertos y solo la entrada común es visible desde fuera.
 - Las contraseñas de la base y las claves de servicio no se versionan: cada persona las genera con `node preparar-entorno.mjs` en `app/.env`.
 - No hay gateway dedicado, broker de eventos ni malla de servicios.

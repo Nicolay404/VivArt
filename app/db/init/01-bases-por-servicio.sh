@@ -43,3 +43,4 @@ SQL
 
 preparar_servicio identidad "${IDENTIDAD_DB_PASSWORD:-}"      # spec 001
 preparar_servicio programacion "${PROGRAMACION_DB_PASSWORD:-}" # spec 002
+preparar_servicio participacion "${PARTICIPACION_DB_PASSWORD:-}" # spec 005

@@ -1,0 +1,296 @@
+openapi: 3.1.0
+info:
+  title: Servicio de participación de VIVART (spec 005)
+  version: 0.1.0
+  description: >
+    Venta de entradas con pagos de prueba, retención de cupos, entradas con QR y control de acceso.
+    Detrás de la entrada común, todas las rutas llevan el prefijo /api/participacion.
+    Las rutas de la persona y del panel usan la cookie de sesión del servicio de identidad; las acciones que cambian
+    estado exigen el encabezado Origin de la propia web. Las rutas internas usan X-Service-Key.
+    Errores: { error, message, fields?, missingRole?, acceptedRoles? } con mensajes en español.
+
+tags:
+  - { name: Público, description: Sin sesión }
+  - { name: Persona, description: Sesión con correo verificado }
+  - { name: Panel, description: Administrador (sales.configure) o personal de acceso (access.validate) }
+  - { name: Interno, description: Servicio de programación }
+
+paths:
+  /cart/quote:
+    post:
+      tags: [Público]
+      summary: Cotiza un carrito con precios y cupos vigentes, cruces de horario y límite de seis (FR-001 a FR-006, FR-038, FR-039)
+      requestBody:
+        content: { application/json: { schema: { $ref: '#/components/schemas/CartRequest' } } }
+      responses:
+        '200': { description: Cotización, content: { application/json: { schema: { $ref: '#/components/schemas/Quote' } } } }
+        '503': { description: No se pudo verificar la programación (no_verificable) }
+
+  /sale-status:
+    get:
+      tags: [Público]
+      summary: Estado de venta de varias funciones, sin número de cupos (FR-041)
+      parameters:
+        - { name: functionIds, in: query, required: true, schema: { type: string }, description: Ids separados por comas (máximo 100) }
+      responses:
+        '200':
+          description: Solo aparecen las funciones con venta interna configurada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items: { type: object, properties: { functionId: { type: string }, state: { type: string, enum: [available, sold_out, closed] } } }
+
+  /orders:
+    post:
+      tags: [Persona]
+      summary: Crea un pedido pendiente y retiene los cupos (FR-007 a FR-010, FR-029, FR-038, FR-039)
+      description: >
+        Exige sesión con correo verificado. Se cotiza de nuevo en el servidor: si el total aceptado por la persona no
+        coincide con el vigente, responde 409 cart_changed con la cotización nueva para que la revise.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              allOf:
+                - { $ref: '#/components/schemas/CartRequest' }
+                - { type: object, required: [acceptedTotalCents], properties: { acceptedTotalCents: { type: integer } } }
+      responses:
+        '201': { description: Pedido pendiente, content: { application/json: { schema: { $ref: '#/components/schemas/Order' } } } }
+        '401': { description: Sin sesión (unauthenticated) }
+        '403': { description: Correo sin verificar (email_not_verified) }
+        '409': { description: 'cart_changed, sold_out, sale_closed, function_cancelled o limit_exceeded, con la cotización vigente' }
+        '503': { description: No se pudo verificar (not_verifiable o identity_unavailable) }
+    get:
+      tags: [Persona]
+      summary: Mis pedidos (solo los propios, FR-017)
+      responses:
+        '200': { description: Pedidos, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Order' } } } } } } }
+
+  /orders/{id}:
+    get:
+      tags: [Persona]
+      summary: Un pedido propio; si es de otra cuenta responde 404
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Pedido, content: { application/json: { schema: { $ref: '#/components/schemas/Order' } } } }
+        '404': { description: No existe o no es tuyo }
+
+  /orders/{id}/simulate-payment:
+    post:
+      tags: [Persona]
+      summary: Simulador de pago de prueba (solo con PAYMENT_SIMULATOR=on fuera de producción, FR-036)
+      description: No pide ni acepta datos de tarjeta. Fuera de demo o pruebas la ruta no existe (404).
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [result]
+              properties:
+                result: { type: string, enum: [confirmed, failed, confirmed_late] }
+                reference: { type: string, description: Referencia del pago; repetirla devuelve el mismo resultado (FR-015) }
+      responses:
+        '200': { description: Pedido actualizado (confirmed con entradas, failed o in_review), content: { application/json: { schema: { $ref: '#/components/schemas/Order' } } } }
+        '409': { description: 'not_pending o function_cancelled' }
+        '404': { description: Simulador no disponible o pedido ajeno }
+
+  /tickets:
+    get:
+      tags: [Persona]
+      summary: Mis entradas con QR, código alternativo y estado vigente (FR-017, FR-032, FR-035, FR-040)
+      responses:
+        '200': { description: Entradas propias, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Ticket' } } } } } } }
+
+  /panel/settings:
+    get:
+      tags: [Panel]
+      summary: Plazos de retención y de cierre de venta
+      responses:
+        '200': { description: Ajustes, content: { application/json: { schema: { $ref: '#/components/schemas/Settings' } } } }
+    put:
+      tags: [Panel]
+      summary: Cambia los plazos (solo administrador, FR-012, FR-039). Aplica a pedidos nuevos
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/Settings' } } } }
+      responses:
+        '200': { description: Ajustes guardados }
+        '403': { description: Sin rol de administrador }
+
+  /panel/functions/{id}/sale:
+    get:
+      tags: [Panel]
+      summary: Venta de una función, con vendidas, retenidas, usadas, pedidos e incidencias (FR-020, FR-033)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Resumen de venta, content: { application/json: { schema: { $ref: '#/components/schemas/SaleSummary' } } } }
+    put:
+      tags: [Panel]
+      summary: Configura cupo y habilitación (solo administrador, FR-019, FR-021)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        content: { application/json: { schema: { type: object, required: [capacity, enabled], properties: { capacity: { type: integer, minimum: 0 }, enabled: { type: boolean } } } } }
+      responses:
+        '200': { description: Venta guardada }
+        '409': { description: 'capacity_below_committed (cupo menor que vendidas + retenidas) o not_sellable (la actividad no es de pago con precio)' }
+        '403': { description: Sin rol de administrador }
+
+  /panel/tickets/{id}/invalidate:
+    post:
+      tags: [Panel]
+      summary: Invalida una entrada válida y no usada con motivo (solo administrador, FR-037)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [reason], properties: { reason: { type: string } } } } } }
+      responses:
+        '200': { description: Entrada invalidada }
+        '409': { description: 'already_used o already_invalidated' }
+
+  /panel/incidents:
+    get:
+      tags: [Panel]
+      summary: Incidencias de pago tardío (FR-020, FR-022)
+      responses:
+        '200': { description: Incidencias }
+
+  /panel/incidents/{id}/resolve:
+    post:
+      tags: [Panel]
+      summary: Registra la resolución; no emite entradas, no recupera cupos ni reembolsa (FR-022)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [resolution], properties: { resolution: { type: string } } } } } }
+      responses:
+        '200': { description: Incidencia resuelta }
+
+  /access/functions:
+    get:
+      tags: [Panel]
+      summary: Funciones asignadas a la persona de acceso, con su control abierto o cerrado
+      responses:
+        '200': { description: Funciones asignadas (vacío si no tiene ninguna) }
+
+  /access/functions/{id}/open:
+    post:
+      tags: [Panel]
+      summary: Abre el control de acceso de una función asignada (FR-023)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Abierto }
+        '403': { description: Función no asignada }
+
+  /access/functions/{id}/close:
+    post:
+      tags: [Panel]
+      summary: Cierra el control de acceso; nunca se cierra solo (FR-023)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Cerrado }
+
+  /access/functions/{id}/validate:
+    post:
+      tags: [Panel]
+      summary: Valida un QR o un código alternativo (FR-024 a FR-028)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody: { content: { application/json: { schema: { type: object, required: [code], properties: { code: { type: string, description: Contenido del QR o código alternativo } } } } } }
+      responses:
+        '200':
+          description: Resultado de la validación (admitida o rechazada con motivo)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  admitted: { type: boolean }
+                  reason: { type: [string, 'null'], enum: [wrong_code_type, not_found, already_used, wrong_function, function_cancelled, not_valid, access_closed, not_verifiable, null] }
+                  message: { type: string }
+                  ticket: { type: object, properties: { functionTitle: { type: string }, usedAt: { type: [string, 'null'] } } }
+        '403': { description: Función no asignada a esta persona }
+
+  /internal/functions/{id}/impact:
+    get:
+      tags: [Interno]
+      summary: Entradas válidas no usadas y pedidos pendientes de una función (FR-042)
+      parameters:
+        - { $ref: '#/components/parameters/Id' }
+        - { name: X-Service-Key, in: header, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Impacto, content: { application/json: { schema: { type: object, properties: { soldTickets: { type: integer }, pendingOrders: { type: integer } } } } } }
+        '401': { description: Credencial de servicio inválida }
+
+components:
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+  schemas:
+    CartRequest:
+      type: object
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 6
+          items: { type: object, required: [functionId, quantity], properties: { functionId: { type: string }, quantity: { type: integer, minimum: 1, maximum: 6 } } }
+    Quote:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              functionId: { type: string }
+              title: { type: string }
+              date: { type: string, format: date }
+              startTime: { type: string }
+              venueName: { type: [string, 'null'] }
+              quantity: { type: integer, description: Cantidad ajustada al cupo disponible y al límite }
+              unitPriceCents: { type: [integer, 'null'] }
+              sellable: { type: boolean }
+              reason: { type: [string, 'null'], enum: [free, no_price, not_enabled, sold_out, sale_closed, function_cancelled, not_found, null] }
+        totalCents: { type: integer }
+        totalUnits: { type: integer }
+        limit: { const: 6 }
+        overlaps: { type: array, items: { type: array, items: { type: string }, minItems: 2, maxItems: 2 }, description: Pares de funciones que se cruzan (RC-02) }
+        changed: { type: boolean, description: true si la cantidad pedida se ajustó }
+    Order:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [pending, confirmed, failed, expired, in_review] }
+        totalCents: { type: integer }
+        expiresAt: { type: string }
+        items: { type: array, items: { type: object, properties: { functionId: { type: string }, title: { type: string }, quantity: { type: integer }, unitPriceCents: { type: integer } } } }
+        simulatorAvailable: { type: boolean }
+    Ticket:
+      type: object
+      properties:
+        id: { type: string }
+        functionId: { type: string }
+        title: { type: string }
+        date: { type: string }
+        startTime: { type: string }
+        venueName: { type: [string, 'null'] }
+        state: { type: string, enum: [valid, used, invalidated, function_cancelled, unverified] }
+        notice: { type: [string, 'null'], description: Aviso público de cancelación o reprogramación }
+        qrSvg: { type: string, description: SVG del QR (contenido VIVART-E1:secreto) }
+        code: { type: string, description: Código alternativo de 10 caracteres }
+    Settings:
+      type: object
+      properties:
+        holdMinutes: { type: integer, minimum: 1 }
+        saleCloseMinutes: { type: integer, minimum: 0 }
+    SaleSummary:
+      type: object
+      properties:
+        functionId: { type: string }
+        capacity: { type: [integer, 'null'] }
+        enabled: { type: boolean }
+        sellable: { type: boolean, description: La actividad es de pago con precio }
+        priceUsd: { type: [number, 'null'] }
+        sold: { type: integer }
+        held: { type: integer }
+        used: { type: integer }
+        invalidated: { type: integer }
+        orders: { type: array, items: { $ref: '#/components/schemas/Order' } }
+        incidents: { type: integer }
