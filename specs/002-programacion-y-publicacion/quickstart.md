@@ -62,7 +62,7 @@ El último comando crea categorías, sedes y actividades **ficticias** de ejempl
 | 2026-11-20 | `npm test` en `app/` | 174 pruebas: 108 de identidad, 55 de programación y 11 de la entrada común (incluida la de punta a punta con los dos servicios reales). Todas pasan |
 | 2026-11-20 | Prueba de mutación | Mostrar borradores en la Agenda y presentar como «en curso» una función sin hora de fin hacen fallar 7 pruebas: las pruebas detectan esos errores |
 | 2026-11-20 | Demo con contenedores | Cuatro contenedores sanos (`db`, `identidad`, `programacion`, `entrada`) más `db-preparar`, que creó las bases nuevas **sin borrar** los datos que ya existían; servicios sin root; prueba de humo correcta; `cargar-ejemplo.js` publicó 7 actividades ficticias y una segunda ejecución no duplicó nada |
-| pendiente | Interfaz | Encargada al agente de diseño con [encargo-frontend.md](encargo-frontend.md) |
+| 2026-11-20 | Interfaz web (`app/web/`) | Implementada en JS vanilla (módulos ES, sin frameworks, sin CDN, sin inserción de HTML dinámico ni geolocalización): Agenda con filtros sincronizados en URL, «¿Qué hay ahora?», ficha pública compartible (`/actividad/{id}`), panel editorial completo (bandeja, editor con vista previa reutilizando la ficha, revisión/devolución/publicación con `notice_required`, reprogramar/cancelar con impacto, catálogos, archivo/borrado/reasignación, historial y carga masiva JSON) y pantallas del spec 001 integradas. Comprobación en Chrome headless (escritorio 1440 px y móvil 360 px), `edge.test.js` (8/8 con recorrido recursivo de subcarpetas) y `no-secrets.test.js` (3/3) en verde |
 
 ## Qué NO hace este spec
 

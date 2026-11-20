@@ -53,8 +53,13 @@ test('SC-002: las cabeceras impiden pedir la ubicación y limitan el origen del 
 });
 
 test('SC-002: la web no usa geolocalización ni inserta HTML dinámico', () => {
-  for (const archivo of readdirSync(WEB)) {
-    const texto = readFileSync(join(WEB, archivo), 'utf8');
+  const listarArchivos = (dir) =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entrada) => {
+      const ruta = join(dir, entrada.name);
+      return entrada.isDirectory() ? listarArchivos(ruta) : [ruta];
+    });
+  for (const archivo of listarArchivos(WEB)) {
+    const texto = readFileSync(archivo, 'utf8');
     assert.ok(!/geolocation/i.test(texto), `${archivo} usa geolocalización`);
     assert.ok(!/innerHTML|outerHTML|document\.write|insertAdjacentHTML/.test(texto), `${archivo} inserta HTML dinámico`);
   }

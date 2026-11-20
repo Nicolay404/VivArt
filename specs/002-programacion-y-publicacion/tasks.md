@@ -167,6 +167,17 @@
 
 ---
 
+## Phase 12: Interfaz web del spec 002 (`app/web/`)
+
+- [x] T061 Rediseñar la base visual de VIVART en `app/web/index.html`, `app/web/styles.css` y `app/web/img/loja-silueta.svg`: tokens CSS (modo claro/oscuro y `prefers-reduced-motion`), identidad del festival inspirada en los mockups de Loja, barra inferior móvil (Mapa · Agenda · Pasaporte), cabecera de escritorio, tablas adaptativas a tarjetas y accesibilidad completa por teclado (RNF-01, RNF-03)
+- [x] T062 Crear módulos base en `app/web/js/api.js`, `app/web/js/dom.js` y `app/web/js/format.js`: clientes HTTP `same-origin`, constructor seguro `h()` e iconos SVG compatibles con CSP `default-src 'self'`, diálogos modales accesibles con trampa de foco y Escape, esqueletos de carga y formateadores estrictos en hora de Loja sin inventar datos (RC-03, RNF-08)
+- [x] T063 Implementar el componente reutilizable de ficha en `app/web/js/ficha-componente.js` y las pantallas públicas en `app/web/js/publico.js`: Agenda (`/`, `/agenda`) con búsqueda y filtros combinables sincronizados en la URL, «¿Qué hay ahora?» (`GET /now`), ficha pública compartible (`/actividad/{id}`) con avisos, recorridos, franjas partidas y nota «Programación sujeta a cambios», más estados honestos «Próximamente» para Mapa y Pasaporte
+- [x] T064 Implementar el panel editorial en `app/web/js/panel-bandeja.js`, `app/web/js/panel-editor.js`, `app/web/js/panel-catalogos.js` y `app/web/js/panel-carga.js` (y copiar el ejemplo en `app/web/ejemplos/lote-ejemplo.json`): bandeja filtrable, editor de borradores con control de versión 409, vista previa reutilizando la ficha, validación 422 campo por campo, devolución con observaciones, publicación con diálogo `notice_required`, reprogramar/cancelar consultando impacto (`/impact`), catálogos, reasignar, archivar con control 409, borrar borradores, historial y carga masiva JSON con publicación explícita por lote
+- [x] T065 Integrar las pantallas existentes del spec 001 en `app/web/js/cuenta.js` y `app/web/app.js`, y actualizar `app/edge/test/edge.test.js` para auditar recursivamente todas las subcarpetas de `app/web/` sin relajar las reglas de seguridad
+- [x] T066 Verificar `edge.test.js`, `no-secrets.test.js`, sintaxis de módulos ES y renderizado visual en escritorio y móvil, y registrar los resultados en `specs/002-programacion-y-publicacion/quickstart.md`
+
+---
+
 ## Dependencies & Execution Order
 
 - Fase 1 → Fase 2 → historias.
