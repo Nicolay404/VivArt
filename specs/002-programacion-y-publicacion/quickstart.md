@@ -55,6 +55,15 @@ El último comando crea categorías, sedes y actividades **ficticias** de ejempl
 | Carga | Subir `ejemplos/lote-ejemplo.json` desde `POST /panel/imports`, aceptar y publicar solo algunas | Vista previa con origen, duplicados y errores; borradores; solo se publican las confirmadas |
 | Archivo | Archivar una actividad con funciones futuras | 409 hasta cancelarlas |
 
+## Resultados registrados
+
+| Fecha | Comprobación | Resultado |
+|---|---|---|
+| 2026-11-20 | `npm test` en `app/` | 174 pruebas: 108 de identidad, 55 de programación y 11 de la entrada común (incluida la de punta a punta con los dos servicios reales). Todas pasan |
+| 2026-11-20 | Prueba de mutación | Mostrar borradores en la Agenda y presentar como «en curso» una función sin hora de fin hacen fallar 7 pruebas: las pruebas detectan esos errores |
+| 2026-11-20 | Demo con contenedores | Cuatro contenedores sanos (`db`, `identidad`, `programacion`, `entrada`) más `db-preparar`, que creó las bases nuevas **sin borrar** los datos que ya existían; servicios sin root; prueba de humo correcta; `cargar-ejemplo.js` publicó 7 actividades ficticias y una segunda ejecución no duplicó nada |
+| pendiente | Interfaz | Encargada al agente de diseño con [encargo-frontend.md](encargo-frontend.md) |
+
 ## Qué NO hace este spec
 
 No vende entradas ni activa ventas (spec 05), no dibuja el mapa (spec 03) y no implementa la interfaz: la Agenda, la ficha y el panel los diseña otro agente con [encargo-frontend.md](encargo-frontend.md).
