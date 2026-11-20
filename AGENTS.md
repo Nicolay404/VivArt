@@ -21,6 +21,27 @@ Reglas de contenido:
 - Una decisión pendiente (`funcionales.md`, «Decisiones pendientes») se pregunta al equipo, no se resuelve en un spec.
 - No uses la ilustración de Alforjita como avatar sin autorización.
 
+## Estructura del repositorio
+
+| Carpeta | Qué contiene | ¿Se versiona? |
+|---|---|---|
+| `app/` | **Todo el código**: `services/<nombre>/` (un servicio por carpeta), `web/` y `edge/` (entrada común) | Sí |
+| `context/` | Requisitos, diseño y referencias del producto | Sí (sin el PDF de programación) |
+| `specs/` | Un spec por carpeta (`NNN-nombre`), con su plan, tareas y contratos | Sí |
+| `docs/` | Arquitectura común y otras decisiones compartidas | Sí |
+| `.specify/` | Base neutra de Spec Kit (plantillas, scripts, constitución) | Sí |
+| `.github/` | Integración y entrega continuas (GitHub Actions) y Dependabot | Sí |
+| `.claude/`, `.agents/` | Skills y ajustes locales de cada agente | No (solo locales) |
+
+El código no se mezcla con la documentación ni con las herramientas de agentes: si es código, va bajo `app/`.
+
+## Integración y entrega continuas
+
+- **CI** (`.github/workflows/ci.yml`): en cada pull request y en cada cambio a `main` comprueba las reglas del equipo (`.github/scripts/verificar-reglas.sh`), ejecuta las pruebas de `app/`, audita dependencias y construye y prueba la demo con contenedores.
+- **CD** (`.github/workflows/cd.yml`): al unir cambios de `app/` a `main` publica las imágenes de cada servicio en `ghcr.io`, etiquetadas con el commit. El despliegue a un entorno concreto aún no está definido por el equipo.
+- Puedes correr las reglas en local: `bash .github/scripts/verificar-reglas.sh`.
+- Un PR no se fusiona con la CI en rojo.
+
 ## Spec Kit
 
 - **Máximo ocho specs.** El estilo arquitectónico no es un noveno spec.
