@@ -1,6 +1,6 @@
 # Implementation Plan: Identidad, perfil y permisos
 
-**Branch**: `001-identidad-implementacion` (parte de `001-identidad-y-permisos`, PR #5 abierto) | **Date**: 2026-11-20 | **Spec**: [spec.md](spec.md)
+**Branch**: `001-identidad-implementacion` (rama derivada de `001-identidad-y-permisos`; el spec se fusionó en los PR #4 y #5) | **Date**: 2026-11-20 | **Spec**: [spec.md](spec.md)
 
 **Input**: Feature specification from `/specs/001-identidad-y-permisos/spec.md`
 
@@ -41,7 +41,7 @@ Es un servicio HTTP independiente y dueño de sus datos, dentro de la arquitectu
 | III. Máximo ocho specs | **Cumple.** Este plan pertenece solo al spec 001; no crea specs |
 | IV. Arquitectura compartida, cuatro vistas, sin monolito modular | **Cumple con reserva.** Respeta la decisión de trabajo del PR #7; está **pendiente de validación del docente** y no se afirma como validada |
 | V. Cada spec es verificable | **Cumple.** Las pruebas se mapean a SC-001 a SC-018 (ver `research.md`) |
-| Flujo: una rama por spec | **Desviación justificada.** El PR #5 del spec sigue abierto y no debe mezclar implementación; se usa `001-identidad-implementacion` parte de esa rama. Se renombra o integra al decidir el equipo |
+| Flujo: una rama por spec | **Cumple.** La rama del spec es `001-identidad-y-permisos`; la implementación va en `001-identidad-implementacion`, una rama derivada del mismo spec (el equipo permite ramas derivadas de un spec cuando hacen falta). No se crean ramas para otros specs |
 | Sin coautoría de IA; secretos y PDF fuera de Git | **Cumple.** Las credenciales de servicio van en variables de entorno y el repositorio no contiene datos reales |
 
 **Re-evaluación tras el diseño (Fase 1):** sin cambios; no se añadió ninguna pieza fuera de lo aprobado (sin broker, sin gateway, sin carrito ni Pasaporte).
@@ -105,5 +105,5 @@ Fuera de `app/` quedan la documentación (`context/`, `specs/`, `docs/`), las he
 
 | Desviación | Por qué hace falta | Alternativa más simple descartada |
 |---|---|---|
-| Rama `001-identidad-implementacion` además de `001-identidad-y-permisos` | Mantener el PR #5 (solo spec) separado de la implementación | Implementar sobre la rama del PR #5: mezclaría spec y código en una revisión |
+| Rama derivada `001-identidad-implementacion` | Revisar la implementación en un PR propio, separado del spec ya fusionado | Implementar sobre `001-identidad-y-permisos`: mezclaría spec y código en una revisión |
 | Entrada HTTP común propia (`app/edge/`) | La arquitectura exige una entrada común con enrutamiento por prefijo | Exponer el servicio directamente: la web y los futuros servicios no compartirían origen ni prefijos |
