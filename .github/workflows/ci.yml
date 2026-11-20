@@ -126,6 +126,20 @@ jobs:
             echo "::notice::SonarCloud omitido: falta SONAR_TOKEN, la variable SONAR_ORGANIZATION o la carpeta app/."
             echo "listo=false" >> "$GITHUB_OUTPUT"
           fi
+      - uses: actions/setup-node@v4
+        if: steps.sonar.outputs.listo == 'true'
+        with:
+          node-version: 24
+      - name: Instalar dependencias y medir la cobertura de las pruebas
+        if: steps.sonar.outputs.listo == 'true'
+        run: |
+          for servicio in app/services/*/; do
+            if [ -f "$servicio/package-lock.json" ]; then
+              (cd "$servicio" && npm ci --ignore-scripts)
+            fi
+          done
+          informes="$(bash .github/scripts/cobertura.sh | tail -n 1)"
+          echo "INFORMES=$informes" >> "$GITHUB_ENV"
       - name: Analizar con SonarCloud
         if: steps.sonar.outputs.listo == 'true'
         uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
@@ -134,3 +148,4 @@ jobs:
         with:
           args: >
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+            -Dsonar.javascript.lcov.reportPaths=${{ env.INFORMES }}
