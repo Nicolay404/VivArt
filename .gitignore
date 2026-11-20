@@ -25,3 +25,7 @@ app/services/*/data/
 # Informes de cobertura generados localmente o en el CI
 cobertura/
 coverage/
+
+# Skills del equipo: se versiona skills-lock.json; los archivos los instala cada persona (ver AGENTS.md).
+.agents/skills/design-taste-frontend/
+.claude/skills/design-taste-frontend/
