@@ -84,3 +84,12 @@ test('panel.access lo concede cualquier rol interno y no el usuario registrado',
 test('una acción desconocida se rechaza', () => {
   assert.equal(authorize(persona(['administrador']), 'borrar.todo').allowed, false);
 });
+
+test('spec 002: reprogramar lo hacen publicador y administrador; catálogos y archivo, solo el administrador', () => {
+  for (const r of ['publicador', 'administrador']) assert.equal(puede(persona([r]), 'schedule.change'), true);
+  assert.equal(puede(persona(['editor']), 'schedule.change'), false);
+  for (const accion of ['catalog.manage', 'activity.archive']) {
+    assert.equal(puede(persona(['administrador']), accion), true);
+    for (const r of ['editor', 'publicador', 'personal_acceso']) assert.equal(puede(persona([r]), accion), false);
+  }
+});

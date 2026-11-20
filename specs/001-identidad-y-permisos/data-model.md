@@ -102,6 +102,9 @@ Tabla en código; cada servicio la consulta con `authorize`. Roles que conceden 
 | `draft.edit_any`, `draft.review`, `publish` | publicador, administrador | — |
 | `draft.reassign`, `event.create_publish`, `catalog.load` | administrador | — |
 | `sales.configure` | administrador | — |
+| `schedule.change` | publicador, administrador | Reprogramar o cancelar funciones con aviso (añadida para el spec 002) |
+| `catalog.manage` | administrador | Ediciones, categorías y sedes (añadida para el spec 002) |
+| `activity.archive` | administrador | Archivar actividades (añadida para el spec 002) |
 | `access.validate` | personal de acceso | `functionId` asignado a la persona |
 | `panel.access` | cualquier rol interno | — |
 
