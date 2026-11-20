@@ -2,7 +2,7 @@
 
 Propuesta del equipo, pendiente de contrastar con la nomenclatura que pida el docente.
 
-Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001; los otros dos **están identificados pero no implementados**.
+Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001 y el tercero del spec 005, todos implementados; el cuarto **está identificado pero no implementado**.
 
 ## 1. Inicio de sesión (spec 001)
 
@@ -48,7 +48,9 @@ sequenceDiagram
     W-->>U: Muestra el resultado, el paso final lo define el spec dueño
 ```
 
-## 3. Retención y venta del último cupo (spec 005, identificado, no implementado)
+## 3. Retención y venta del último cupo (spec 005)
+
+Implementado con un bloqueo de la fila de venta de cada función (`SELECT … FOR UPDATE`) dentro de la transacción que crea el pedido; probado con veinte solicitudes simultáneas.
 
 ```mermaid
 sequenceDiagram

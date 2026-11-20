@@ -10,7 +10,7 @@ El spec 005 necesita tres ajustes fuera de su servicio. Ninguno cambia el compor
 
 Las acciones que ya existían se reutilizan: `sales.configure` (administrador) para configurar la venta, cambiar los plazos, consultar ventas, invalidar entradas y resolver incidencias; `access.validate` (personal de acceso, con la función asignada) para abrir, cerrar y validar.
 
-Participación usa la acción pendiente `checkout` del flujo de retorno (`POST /auth/pending-actions`), que el spec 001 ya admite para compras.
+Participación usa la acción pendiente `compra` del flujo de retorno (`POST /auth/pending-actions`), que el spec 001 ya admite y devuelve a `/carrito`.
 
 ## Programación (spec 002)
 

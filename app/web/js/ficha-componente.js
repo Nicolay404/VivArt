@@ -34,7 +34,27 @@ function renderSede(venue) {
   );
 }
 
-export function renderFicha(actividad, { esVistaPrevia = false } = {}) {
+const ESTADO_VENTA = {
+  available: { texto: 'Entradas disponibles', clase: 'venta-disponible' },
+  sold_out: { texto: 'Agotada', clase: 'venta-agotada' },
+  closed: { texto: 'Venta cerrada', clase: 'venta-cerrada' },
+};
+
+/** Estado de venta de una función (spec 005, FR-041) y botón para agregarla al carrito si hay entradas. */
+function renderVenta(estado, alAgregar) {
+  if (!estado) return null;
+  const e = ESTADO_VENTA[estado];
+  return h(
+    'div',
+    { class: 'horario-venta' },
+    h('span', { class: `insignia-estado ${e.clase}` }, e.texto),
+    estado === 'available' && alAgregar
+      ? h('button', { type: 'button', class: 'boton-sm', onclick: alAgregar }, 'Agregar al carrito')
+      : null,
+  );
+}
+
+export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(), alAgregar = null } = {}) {
   const pendientes = new Set(actividad.pending ?? []);
   const categoriaTexto = actividad.category?.name ?? 'Por confirmar';
   const organizacionTexto = actividad.organization ?? 'Por confirmar';
@@ -200,6 +220,7 @@ export function renderFicha(actividad, { esVistaPrevia = false } = {}) {
                 estado ? h('span', { class: `insignia-estado ${estado.clase}` }, estado.texto) : null,
               ),
               renderSede(fn.venue),
+              esCancelada ? null : renderVenta(venta.get(fn.id), alAgregar ? () => alAgregar(fn) : null),
               avisosFn.length
                 ? h(
                     'div',

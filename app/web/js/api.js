@@ -1,7 +1,7 @@
 // Clientes HTTP para /api/identidad y /api/programacion.
 // Todas las peticiones viajan con cookie de sesión same-origin; las que cambian estado envían JSON.
 
-const BASES_PERMITIDAS = new Set(['/api/identidad', '/api/programacion']);
+const BASES_PERMITIDAS = new Set(['/api/identidad', '/api/programacion', '/api/participacion']);
 
 function construirUrlSegura(base, ruta) {
   if (!BASES_PERMITIDAS.has(base)) throw new Error('Base de API no permitida.');
@@ -54,3 +54,4 @@ async function llamar(base, metodo, ruta, cuerpo) {
 
 export const apiIdentidad = (metodo, ruta, cuerpo) => llamar('/api/identidad', metodo, ruta, cuerpo);
 export const apiProgramacion = (metodo, ruta, cuerpo) => llamar('/api/programacion', metodo, ruta, cuerpo);
+export const apiParticipacion = (metodo, ruta, cuerpo) => llamar('/api/participacion', metodo, ruta, cuerpo);

@@ -2,7 +2,8 @@
 // Agenda (/ y /agenda), «¿Qué hay ahora?» (dentro de Agenda), Ficha pública (/actividad/:id),
 // y estados honestos «Próximamente» para Mapa (/mapa) y Pasaporte (/pasaporte).
 import { h, icono, esqueletoTarjetas } from './dom.js';
-import { apiProgramacion } from './api.js';
+import { apiProgramacion, apiParticipacion } from './api.js';
+import { agregarAlCarrito } from './carrito.js';
 import {
   formatoFechaCorta,
   formatoFecha,
@@ -525,7 +526,14 @@ export async function pantallaFicha(id) {
     ];
   }
 
-  return [volver, renderFicha(r.datos)];
+  // Estado de venta de sus funciones (spec 005). Si no responde, la ficha se muestra igual, sin venta.
+  const ids = (r.datos.functions ?? []).map((f) => f.id);
+  const venta = new Map();
+  if (ids.length) {
+    const rv = await apiParticipacion('GET', `/sale-status?functionIds=${ids.map(encodeURIComponent).join(',')}`);
+    if (rv.ok) for (const it of rv.datos.items) venta.set(it.functionId, it.state);
+  }
+  return [volver, renderFicha(r.datos, { venta, alAgregar: (fn) => agregarAlCarrito(fn.id) })];
 }
 
 export function pantallaProximamente(titulo, descripcion, specTexto) {

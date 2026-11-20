@@ -149,6 +149,13 @@ export function configPrueba(variables = {}, overrides = {}) {
   );
 }
 
+/** Construye la aplicación con su configuración real (servicios reales) y la registra para limpiarla. */
+export async function abrirApp(config) {
+  const resultado = await buildApp({ config });
+  abiertas.push({ app: resultado.app, esquema: config.dbSchema });
+  return resultado;
+}
+
 /** Aplicación de pruebas con base propia, identidad y programación simuladas y reloj movible. */
 export async function crearApp({ variables = {} } = {}) {
   const reloj = relojMovible();

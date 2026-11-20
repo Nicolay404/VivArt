@@ -27,6 +27,7 @@ export function barraPanel(persona, rutaActual) {
     'nav',
     { class: 'panel-subnav', 'aria-label': 'Secciones del panel interno' },
     enlace('/panel/actividades', 'Bandeja editorial'),
+    esAdmin ? enlace('/panel/ventas', 'Ventas') : null,
     esAdmin ? enlace('/panel/catalogos', 'Catálogos') : null,
     esAdmin ? enlace('/panel/carga', 'Carga desde PDF') : null,
     esAdmin ? enlace('/panel/roles', 'Roles') : null,

@@ -52,3 +52,6 @@ Para la demo hacen falta tres cuentas: un **administrador**, un **usuario con co
 
 | Fecha | Comprobación | Resultado |
 |---|---|---|
+| 2026-11-20 | `npm test` (identidad, programación, participación y entrada común) | 220 pruebas en verde, incluidas las de concurrencia (último cupo, entrada usada dos veces, confirmación repetida) y el recorrido de punta a punta con los tres servicios |
+| 2026-11-20 | Demo en el navegador (escritorio) | Configurar venta (cupo 2), agregar al carrito, pagar con el simulador, ver dos entradas con QR y código, admitir con el código alternativo y rechazar al repetirlo («Entrada ya usada»). Sin errores en la consola |
+| 2026-11-20 | Pendiente de comprobar | Lectura del QR con la cámara de un celular real (Chrome Android) y la copia sin conexión de Mis entradas |

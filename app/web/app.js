@@ -1,4 +1,4 @@
-// Enrutador principal de VIVART (specs 001 y 002).
+// Enrutador principal de VIVART (specs 001, 002 y 005).
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
@@ -21,6 +21,10 @@ import { pantallaBandeja, tieneRolPanel, barraPanel } from './js/panel-bandeja.j
 import { pantallaEditor } from './js/panel-editor.js';
 import { pantallaCatalogos } from './js/panel-catalogos.js';
 import { pantallaCarga } from './js/panel-carga.js';
+import { pantallaCarrito, pantallaPedido, unidadesEnCarrito } from './js/carrito.js';
+import { pantallaEntradas } from './js/entradas.js';
+import { pantallaAcceso } from './js/acceso.js';
+import { pantallaVentas, pantallaVentasActividad } from './js/panel-ventas.js';
 
 const raiz = document.querySelector('#contenido');
 const navegacion = document.querySelector('#navegacion');
@@ -73,6 +77,8 @@ function pintarNavegacion() {
   ];
 
   const cuentaItems = [];
+  const enCarrito = unidadesEnCarrito();
+  cuentaItems.push(enlace('/carrito', enCarrito ? `Carrito (${enCarrito})` : 'Carrito'));
   if (persona) {
     if (tieneRolPanel(persona)) {
       cuentaItems.push(enlace('/panel/actividades', 'Panel editorial', esPanel));
@@ -157,6 +163,17 @@ async function resolverRuta(ruta) {
   if (matchEditor) {
     return { ancho: 'panel', contenido: await pantallaEditor({ ...ctx, id: decodeURIComponent(matchEditor[1]) }) };
   }
+  if (ruta === '/panel/ventas') return { ancho: 'panel', contenido: await pantallaVentas(ctx) };
+  const matchVentas = ruta.match(/^\/panel\/ventas\/actividad\/([^/]+)$/);
+  if (matchVentas) return { ancho: 'panel', contenido: await pantallaVentasActividad({ ...ctx, id: decodeURIComponent(matchVentas[1]) }) };
+
+  // Compra y entradas (spec 005)
+  if (ruta === '/carrito') return { ancho: 'normal', contenido: await pantallaCarrito(ctx) };
+  if (ruta === '/mis-entradas') return { ancho: 'normal', contenido: await pantallaEntradas(ctx) };
+  if (ruta === '/acceso') return { ancho: 'normal', contenido: await pantallaAcceso(ctx) };
+  const matchPedido = ruta.match(/^\/pedido\/([^/]+)$/);
+  if (matchPedido) return { ancho: 'normal', contenido: await pantallaPedido({ ...ctx, id: decodeURIComponent(matchPedido[1]) }) };
+
   if (ruta === '/panel/catalogos') return { ancho: 'panel', contenido: await pantallaCatalogos(ctx) };
   if (ruta === '/panel/carga') return { ancho: 'panel', contenido: await pantallaCarga(ctx) };
   if (ruta === '/panel/roles') return { ancho: 'panel', contenido: await panelRoles(ctx) };
@@ -219,6 +236,9 @@ document.addEventListener('click', (evento) => {
   aviso('');
   navegar(enlace.getAttribute('href'));
 });
+
+// El contador del carrito se actualiza al agregar o quitar entradas.
+document.addEventListener('vivart:carrito', () => pintarNavegacion());
 
 window.addEventListener('popstate', () => navegar(location.pathname + location.search, false));
 

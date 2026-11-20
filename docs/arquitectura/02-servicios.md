@@ -48,7 +48,8 @@ flowchart TB
 - Toda flecha entre servicios es una **llamada HTTP síncrona** a la API del otro servicio. Ningún servicio lee ni escribe las tablas de otro.
 - Si el servicio de identidad no responde, las operaciones protegidas **no se autorizan** y la consulta pública sigue disponible.
 - Mi recorrido (spec 004) no tiene servicio: su estado vive en el navegador y consulta a Programación.
-- Los flujos de cupo (spec 005) y de sello (spec 006) están dentro del servicio de participación y se describen en la vista de comportamiento; no están implementados todavía.
+- Los flujos de cupo (spec 005) y de sello (spec 006) están dentro del servicio de participación y se describen en la vista de comportamiento. El de cupo ya está implementado; el de sello llega con el spec 006.
+- Participación consulta a programación el estado vigente de cada función al vender y al validar, y programación le pide el impacto en entradas antes de reprogramar o cancelar: dos llamadas HTTP en sentidos opuestos, sin datos compartidos.
 
 ## Estado de implementación
 
@@ -56,6 +57,6 @@ flowchart TB
 |---|---|---|
 | Identidad | Implementado (spec 001) | `specs/001-identidad-y-permisos/contracts/` |
 | Programación y consulta pública | Implementado el backend del spec 002: Agenda, ficha, «¿Qué hay ahora?», flujo editorial, cambios con aviso, carga, catálogos y archivo. La interfaz está encargada aparte | `specs/002-programacion-y-publicacion/contracts/` |
-| Participación | Pendiente (spec 005) | — |
+| Participación | Implementado el spec 005: carrito, pedidos con retención, pago de prueba, entradas con QR, control de acceso y administración de la venta. Sellos y rutas llegan con los specs 006 y 007 | `specs/005-compra-y-entradas/contracts/` |
 
-Programación ya ofrece a participación `GET /internal/functions/{id}` (con credencial de servicio) y le pedirá `GET /internal/functions/{id}/impact` para mostrar entradas y pedidos antes de reprogramar; mientras participación no exista, ese dato se informa como «no disponible», sin inventarlo.
+Programación ofrece a participación `GET /internal/functions/{id}` y `GET /internal/functions?ids=` (con credencial de servicio), y pide a participación `GET /internal/functions/{id}/impact` antes de reprogramar o cancelar. Si participación no responde, el impacto se informa como «no disponible» y solo el administrador puede cancelar.

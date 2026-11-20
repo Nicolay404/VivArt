@@ -204,6 +204,8 @@ export function perfil({ persona }) {
         'div',
         { class: 'fila-acciones' },
         !persona.emailVerified ? reenviar : null,
+        h('a', { href: '/mis-entradas', 'data-enlace': true, class: 'boton secundario' }, 'Mis entradas'),
+        persona.roles.includes('personal_acceso') ? h('a', { href: '/acceso', 'data-enlace': true, class: 'boton secundario' }, 'Control de acceso') : null,
         tienePanel ? h('a', { href: '/panel/actividades', 'data-enlace': true, class: 'boton' }, 'Ir al panel editorial') : null,
       ),
     ),
@@ -237,6 +239,9 @@ export async function retorno({ persona, navegar }) {
         'Aquí no se paga ni se canjea nada automáticamente. El servicio que corresponde volverá a comprobar si la acción sigue vigente antes de continuar.',
       ),
     ),
+    d.type === 'compra' && d.canProceed
+      ? h('a', { href: '/carrito', 'data-enlace': true, class: 'boton' }, 'Volver al carrito')
+      : null,
     !d.canProceed
       ? h(
           'p',
