@@ -265,7 +265,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - **FR-027**: El sistema DEBE permitir que el equipo habilite la primera cuenta administrativa para un correo designado mediante un procedimiento interno y documentado, y su titular DEBE establecer su propia contraseña al activarla. NO DEBE existir un registro público especial para el primer administrador ni credenciales predeterminadas en el repositorio. A partir de esa cuenta, un administrador activo DEBE poder asignar roles a otras cuentas.
 - **FR-028**: El registro público DEBE pedir únicamente un correo electrónico único y una contraseña, y NUNCA DEBE otorgar permisos internos. La contraseña DEBE tener al menos 15 caracteres, DEBE permitir espacios y pegarse desde un gestor de contraseñas, DEBE admitir una longitud máxima de al menos 64 caracteres (el plan fija el máximo en 128; `research.md`, decisión 5) y NO DEBE exigir combinaciones de mayúsculas, números o símbolos. El sistema NO DEBE pedir cédula, teléfono ni dirección para crear una cuenta.
 - **FR-029**: Al registrarse, el sistema DEBE enviar un enlace de verificación al correo. Pagar y canjear un sello DEBEN exigir una cuenta con correo verificado, mientras que Agenda, Mapa y Alforjita permanecen abiertos sin cuenta. Tras verificar el correo e iniciar sesión, el sistema DEBE permitir retomar la acción original y comprobar si sigue vigente. Para recuperar el acceso, el sistema DEBE enviar un enlace de un solo uso y con vencimiento, y DEBE mostrar el mismo mensaje tanto si el correo está registrado como si no.
-- **FR-030**: Para la demo DEBE poder comprobarse la verificación y la recuperación sin enviar correos reales, mediante un buzón de pruebas. La elección del proveedor de correo y los plazos exactos de los enlaces corresponden al plan técnico.
+- **FR-030**: En desarrollo y en pruebas DEBE poder comprobarse la verificación y la recuperación sin enviar correos reales, mediante un buzón de pruebas. En el entorno de despliegue, los correos DEBEN enviarse con el proveedor que el equipo defina (P-12), sin cambiar los requisitos de verificación y recuperación, y el buzón de pruebas NO DEBE estar disponible. Los plazos exactos de los enlaces corresponden al plan técnico.
 
 **Retorno a la acción original** (contrato con los specs 05 y 06: este spec garantiza el regreso y la revalidación; cada spec dueño define sus comprobaciones y no se duplican aquí)
 
@@ -394,7 +394,7 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 - Las acciones de ventas (activar venta, cancelar con entradas vendidas), el flujo editorial y la validación de entradas se definen en los specs 05 y 02; este spec solo fija quién tiene el permiso para ejecutarlas.
 - Este spec no elige arquitectura ni tecnología; la elección del estilo arquitectónico se acuerda antes de los planes técnicos.
 
-- La demo usa un buzón de pruebas; el proveedor de correo y los plazos exactos de los enlaces los define el plan técnico.
+- Desarrollo y pruebas usan un buzón de pruebas; el entorno de despliegue envía correos reales con el proveedor que el equipo defina (P-12). Los plazos exactos de los enlaces los define el plan técnico.
 
 **Dependencias con otros specs** (no son pendientes de este spec; P-10 y P-11 se cerraron el 2026-11-20):
 

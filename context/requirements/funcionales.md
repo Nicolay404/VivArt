@@ -168,6 +168,7 @@ Estas preguntas siguen abiertas. Cuando surja una nueva, se añade aquí con un 
 | ID | Pendiente | Afecta |
 |---|---|---|
 | P-09 | El PDF de programación aún no tiene una carpeta compartida con enlace para el equipo. No bloquea el spec de identidad y permisos. | `context/assets/README.md` |
+| P-12 | Entorno de despliegue (además del de desarrollo). Propuesto para el correo: **Brevo** (plan gratuito, a confirmar con el equipo). Siguen abiertos: dónde se hospeda, si lleva dominio propio y cómo se presenta el pago de prueba en ese entorno (hoy el simulador solo existe en demo o pruebas, spec 005, FR-036). No bloquea ningún spec. | RF-02, RF-03, RF-20, RF-21 |
 
 ### Decisiones cerradas para el MVP
 
