@@ -29,6 +29,8 @@ export function loadConfig(env = process.env, overrides = {}) {
     publicBaseUrl: (env.PUBLIC_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, ''),
     allowedOrigins: (env.ALLOWED_ORIGINS ?? 'http://localhost:8080').split(',').map((s) => s.trim()).filter(Boolean),
     mailTransport: env.MAIL_TRANSPORT ?? 'test',
+    // Solo se usa con MAIL_TRANSPORT=brevo (despliegue). La clave nunca se versiona.
+    brevo: { apiKey: env.BREVO_API_KEY ?? '', fromEmail: env.MAIL_FROM_EMAIL ?? '', fromName: env.MAIL_FROM_NAME ?? 'VIVART' },
     production: env.NODE_ENV === 'production',
     trustProxy: env.TRUST_PROXY === '1',
     // Vigencias. P-10 y P-11 decididos el 2026-11-20: sesión de 7 días como máximo, acción pendiente de 24 h.

@@ -3,8 +3,10 @@ import { buildApp } from './app.js';
 
 const config = loadConfig();
 
+// FR-030: en el entorno de despliegue no hay buzón de pruebas; los correos salen con el proveedor real.
 if (config.production && config.mailTransport === 'test') {
-  console.warn('Aviso: MAIL_TRANSPORT=test en producción; el buzón de pruebas no envía correos reales.');
+  console.error('Error: MAIL_TRANSPORT=test no se admite con NODE_ENV=production. Usa MAIL_TRANSPORT=brevo.');
+  process.exit(1);
 }
 if (config.serviceKeys.size === 0) {
   console.warn('Aviso: SERVICE_KEYS vacío; ningún servicio podrá usar la introspección.');
