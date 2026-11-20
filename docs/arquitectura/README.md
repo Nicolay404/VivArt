@@ -20,7 +20,7 @@ Este documento es la decisión arquitectónica compartida por los ocho specs. Cu
 
 ## Reglas de la arquitectura
 
-1. **Un solo repositorio**, con una carpeta por servicio (`services/<nombre>/`), la web (`web/`) y la entrada común (`edge/`).
+1. **Un solo repositorio.** Todo el código vive bajo `app/`, con una carpeta por servicio (`app/services/<nombre>/`), la web (`app/web/`) y la entrada común (`app/edge/`). La documentación (`context/`, `specs/`, `docs/`) y las herramientas de agentes quedan fuera de `app/`, para no mezclarlas con el código.
 2. **Cada servicio es dueño de sus datos** y se despliega por separado. Ningún servicio escribe en los datos de otro; solo los lee a través de su API.
 3. **Para la demo** los servicios pueden compartir una instancia de base de datos si cada uno tiene una base lógica y credenciales propias.
 4. **APIs síncronas por HTTP**, versionadas. No hay broker de eventos.
