@@ -4,48 +4,55 @@ Guía de ejecución y comprobación. Los detalles viven en los [contratos](contr
 
 ## Requisitos
 
-- Node.js 24 o superior (`node --version`).
-- Para las pruebas y la demo sin contenedores: nada más (sin base de datos externa y sin correo real).
-- Opcional: Docker, para la demo con contenedores.
+- Docker Desktop abierto (la base de datos PostgreSQL corre en un contenedor).
+- Node.js 24 o superior (`node --version`), para las pruebas y para generar `app/.env`.
+- No hace falta correo real: hay un buzón de pruebas.
 
-## Preparar
+## Preparar (una sola vez después de clonar)
 
 ```text
-cd app/services/identidad
+cd app
+node preparar-entorno.mjs
+cd services/identidad
 npm install
 ```
+
+`preparar-entorno.mjs` crea `app/.env` con contraseñas y claves **aleatorias** para tu equipo (no se versiona). Si el puerto local 55432 ya está ocupado, cambia `DB_PUERTO_LOCAL` en `app/.env` antes de levantar la base.
 
 ## Ejecutar las pruebas
 
 ```text
 cd app
+docker compose up -d db
 npm test
 ```
 
-Ejecuta las pruebas del servicio de identidad y las de la entrada común (incluido el recorrido de punta a punta). Cada criterio de éxito (SC-001 a SC-018) tiene al menos una prueba; el mapa está en `research.md`.
+Las pruebas usan la base `identidad_pruebas` del contenedor: cada aplicación de prueba crea su propio esquema y lo borra al terminar, así que no tocan los datos de la demo. Ejecuta las pruebas del servicio de identidad y las de la entrada común (incluido el recorrido de punta a punta). En la integración continua se usa una base PostgreSQL efímera. Cada criterio de éxito (SC-001 a SC-018) tiene al menos una prueba; el mapa está en `research.md`.
 
 ## Ejecutar la demo sin contenedores
 
-1. Variables de entorno (valores de ejemplo, no son credenciales):
+1. Levantar solo la base: `docker compose up -d db` dentro de `app`.
+2. Variables de entorno (valores de ejemplo, no son credenciales):
+   - `DATABASE_URL=postgres://identidad:<IDENTIDAD_DB_PASSWORD de app/.env>@127.0.0.1:55432/identidad`
    - `MAIL_TRANSPORT=test` (buzón de pruebas en memoria)
    - `SERVICE_KEYS=programacion:<clave>,participacion:<clave>` (define tus propias claves; no se versionan)
    - `PUBLIC_BASE_URL=http://localhost:8080`
-2. Iniciar el servicio: `npm start` dentro de `app/services/identidad` (puerto 3001).
-3. Iniciar la entrada común: `node edge/server.js` dentro de `app` (puerto 8080).
-4. Abrir `http://localhost:8080`. Los correos de la demo se leen en `/demo/buzon`.
+3. Iniciar el servicio: `npm start` dentro de `app/services/identidad` (puerto 3001).
+4. Iniciar la entrada común: `node edge/server.js` dentro de `app` (puerto 8080).
+5. Abrir `http://localhost:8080`. Los correos de la demo se leen en `/demo/buzon`.
 
 ## Ejecutar la demo con contenedores
 
 ```text
 cd app
-docker compose up --build
+docker compose up -d --build
 ```
 
-Abre `http://localhost:8080`. Solo la entrada común publica un puerto; el servicio de identidad queda dentro de la red de contenedores. Para borrar todo: `docker compose down -v`. Las imágenes también se construyen y prueban en la integración continua.
+Levanta tres contenedores: `db` (PostgreSQL), `identidad` y `entrada`. Abre `http://localhost:8080`. Solo la entrada común publica un puerto hacia el navegador; la base solo escucha en `127.0.0.1:55432` (para las pruebas o un cliente como DBeaver, con el usuario `identidad` y su contraseña de `app/.env`) y el servicio de identidad queda dentro de la red de contenedores. Los datos se conservan entre reinicios; para borrar todo: `docker compose down -v`. Las imágenes también se construyen y prueban en la integración continua.
 
 ## Primer administrador (procedimiento interno)
 
-1. Un integrante del equipo ejecuta, con el correo designado: `node bin/crear-primer-administrador.js --email <correo>` dentro de `app/services/identidad`, con `MAIL_TRANSPORT=console`.
+1. Con la demo levantada, un integrante del equipo ejecuta dentro de `app`, con el correo designado: `docker compose exec -e MAIL_TRANSPORT=console identidad node bin/crear-primer-administrador.js --email <correo>`. Cada persona que clona el repositorio tiene su propia base vacía y crea su propio administrador.
 2. El script crea la cuenta pendiente de activación y emite el enlace de activación por consola (no hay correo real).
 3. El titular abre el enlace y establece su contraseña. No existen credenciales predeterminadas.
 4. Desde ahí, ese administrador asigna roles a otras cuentas desde «Roles».
