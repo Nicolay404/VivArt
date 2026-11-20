@@ -16,6 +16,10 @@ const ACCIONES = {
   'draft.reassign': { roles: ['administrador'] },
   'event.create_publish': { roles: ['administrador'] },
   'catalog.load': { roles: ['administrador'] },
+  // Spec 002: reprogramar o cancelar funciones con aviso, gestionar catálogos y archivar actividades.
+  'schedule.change': { roles: ['publicador', 'administrador'] },
+  'catalog.manage': { roles: ['administrador'] },
+  'activity.archive': { roles: ['administrador'] },
   // Publicar no concede activar ventas: solo el administrador (RF-04, RF-22).
   'sales.configure': { roles: ['administrador'] },
   'access.validate': { roles: ['personal_acceso'], needsFunction: true },

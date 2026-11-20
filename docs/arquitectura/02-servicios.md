@@ -49,3 +49,13 @@ flowchart TB
 - Si el servicio de identidad no responde, las operaciones protegidas **no se autorizan** y la consulta pública sigue disponible.
 - Mi recorrido (spec 004) no tiene servicio: su estado vive en el navegador y consulta a Programación.
 - Los flujos de cupo (spec 005) y de sello (spec 006) están dentro del servicio de participación y se describen en la vista de comportamiento; no están implementados todavía.
+
+## Estado de implementación
+
+| Servicio | Estado | Contrato |
+|---|---|---|
+| Identidad | Implementado (spec 001) | `specs/001-identidad-y-permisos/contracts/` |
+| Programación y consulta pública | Implementado el backend del spec 002: Agenda, ficha, «¿Qué hay ahora?», flujo editorial, cambios con aviso, carga, catálogos y archivo. La interfaz está encargada aparte | `specs/002-programacion-y-publicacion/contracts/` |
+| Participación | Pendiente (spec 005) | — |
+
+Programación ya ofrece a participación `GET /internal/functions/{id}` (con credencial de servicio) y le pedirá `GET /internal/functions/{id}/impact` para mostrar entradas y pedidos antes de reprogramar; mientras participación no exista, ese dato se informa como «no disponible», sin inventarlo.

@@ -9,7 +9,8 @@ USER vivart
 
 ENV PORT=8080 \
     HOST=0.0.0.0 \
-    IDENTIDAD_URL=http://identidad:3001
+    IDENTIDAD_URL=http://identidad:3001 \
+    PROGRAMACION_URL=http://programacion:3002
 
 EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --start-period=3s \

@@ -18,7 +18,6 @@ USER vivart
 # Fuera de la demo: NODE_ENV=production y un transporte de correo real.
 ENV PORT=3001 \
     HOST=0.0.0.0 \
-\
     MAIL_TRANSPORT=test
 
 EXPOSE 3001

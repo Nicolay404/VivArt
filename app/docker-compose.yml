@@ -1,5 +1,5 @@
-# Demo local de VIVART: base de datos + servicio de identidad + entrada común con la web.
-#   node preparar-entorno.mjs        (una sola vez: crea app/.env con contraseñas aleatorias)
+# Demo local de VIVART: base de datos + servicios de identidad y programación + entrada común con la web.
+#   node preparar-entorno.mjs        (crea o completa app/.env con contraseñas aleatorias)
 #   docker compose up -d --build     (desde la carpeta app/)
 #   docker compose down -v           (borra contenedores y datos de la demo)
 # Abre http://localhost:8080. El buzón de pruebas está en /demo/buzon: no se envía ningún correo real.
@@ -12,11 +12,8 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta app/.env. Ejecuta primero node preparar-entorno.mjs}
-      IDENTIDAD_DB_PASSWORD: ${IDENTIDAD_DB_PASSWORD:?Falta IDENTIDAD_DB_PASSWORD en app/.env}
     volumes:
       - db-datos:/var/lib/postgresql/data
-      # Crea una base y un usuario por servicio la primera vez que arranca.
-      - ./db/init:/docker-entrypoint-initdb.d:ro
     # Solo en 127.0.0.1: para las pruebas locales y para conectar un cliente. No queda abierto a la red.
     ports:
       - "127.0.0.1:${DB_PUERTO_LOCAL:-55432}:5432"
@@ -27,6 +24,23 @@ services:
       retries: 20
     restart: unless-stopped
 
+  # Crea o actualiza una base y un usuario por servicio en cada arranque (idempotente) y termina.
+  db-preparar:
+    image: postgres:17-alpine
+    environment:
+      PGHOST: db
+      PGUSER: postgres
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      IDENTIDAD_DB_PASSWORD: ${IDENTIDAD_DB_PASSWORD:?Falta IDENTIDAD_DB_PASSWORD en app/.env}
+      PROGRAMACION_DB_PASSWORD: ${PROGRAMACION_DB_PASSWORD:?Falta PROGRAMACION_DB_PASSWORD en app/.env. Ejecuta node preparar-entorno.mjs}
+    volumes:
+      - ./db/init:/scripts:ro
+    entrypoint: ["sh", "/scripts/01-bases-por-servicio.sh"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
   identidad:
     build: ./services/identidad
     environment:
@@ -34,15 +48,36 @@ services:
       PUBLIC_BASE_URL: http://localhost:8080
       ALLOWED_ORIGINS: http://localhost:8080
       TRUST_PROXY: "1"
-      SERVICE_KEYS: ${SERVICE_KEYS:-}
+      # Servicios que pueden consultar permisos (introspección), cada uno con su credencial.
+      SERVICE_KEYS: programacion:${PROGRAMACION_SERVICE_KEY:?Falta PROGRAMACION_SERVICE_KEY en app/.env. Ejecuta node preparar-entorno.mjs},participacion:${PARTICIPACION_SERVICE_KEY:?Falta PARTICIPACION_SERVICE_KEY en app/.env. Ejecuta node preparar-entorno.mjs}
       # El servicio solo conoce su propia base y su propio usuario.
       DATABASE_URL: postgres://identidad:${IDENTIDAD_DB_PASSWORD}@db:5432/identidad
     depends_on:
-      db:
-        condition: service_healthy
-    # Solo la entrada común es visible desde fuera: el servicio no publica puertos.
+      db-preparar:
+        condition: service_completed_successfully
+    # Solo la entrada común es visible desde fuera: los servicios no publican puertos.
     expose:
       - "3001"
+    restart: unless-stopped
+
+  programacion:
+    build: ./services/programacion
+    environment:
+      ALLOWED_ORIGINS: http://localhost:8080
+      DATABASE_URL: postgres://programacion:${PROGRAMACION_DB_PASSWORD}@db:5432/programacion
+      IDENTIDAD_URL: http://identidad:3001
+      IDENTIDAD_SERVICE_KEY: ${PROGRAMACION_SERVICE_KEY}
+      # Quién puede consultar su API interna (participación, spec 05).
+      SERVICE_KEYS: participacion:${PARTICIPACION_SERVICE_KEY:?Falta PARTICIPACION_SERVICE_KEY en app/.env. Ejecuta node preparar-entorno.mjs}
+      # Reloj fijo opcional para la demo (se ignora con NODE_ENV=production).
+      CLOCK_FIXED: ${CLOCK_FIXED:-}
+    depends_on:
+      db-preparar:
+        condition: service_completed_successfully
+      identidad:
+        condition: service_healthy
+    expose:
+      - "3002"
     restart: unless-stopped
 
   entrada:
@@ -51,10 +86,13 @@ services:
       dockerfile: edge/Dockerfile
     environment:
       IDENTIDAD_URL: http://identidad:3001
+      PROGRAMACION_URL: http://programacion:3002
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
       identidad:
+        condition: service_healthy
+      programacion:
         condition: service_healthy
     restart: unless-stopped
 

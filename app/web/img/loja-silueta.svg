@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" preserveAspectRatio="xMaxYMax slice" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="cielo" x1="0" y1="0" x2="1" y2="0.9">
+      <stop offset="0%" stop-color="#2c0b4e"/>
+      <stop offset="48%" stop-color="#5a177a"/>
+      <stop offset="82%" stop-color="#b4335c"/>
+      <stop offset="100%" stop-color="#ec742e"/>
+    </linearGradient>
+    <radialGradient id="sol" cx="84%" cy="68%" r="40%">
+      <stop offset="0%" stop-color="#ffd166" stop-opacity="0.72"/>
+      <stop offset="45%" stop-color="#f26b3a" stop-opacity="0.32"/>
+      <stop offset="100%" stop-color="#5a177a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="torre" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffd580"/>
+      <stop offset="55%" stop-color="#e9783a"/>
+      <stop offset="100%" stop-color="#4e1664"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="320" fill="url(#cielo)"/>
+  <rect width="1200" height="320" fill="url(#sol)"/>
+  <!-- Montañas andinas de Loja -->
+  <path d="M0 245 Q180 178 360 220 T740 198 T1060 214 L1200 192 L1200 320 L0 320 Z" fill="#3a0f5c" opacity="0.58"/>
+  <path d="M0 272 Q220 224 440 254 T860 232 L1200 248 L1200 320 L0 320 Z" fill="#2a0a47" opacity="0.78"/>
+  <!-- Silueta inspirada en la torre del reloj de San Sebastián -->
+  <g transform="translate(888 54)">
+    <!-- Cúpula y aguja -->
+    <rect x="66" y="0" width="4" height="22" rx="2" fill="#ffe194"/>
+    <path d="M44 48 C44 26 92 26 92 48 Z" fill="url(#torre)"/>
+    <rect x="38" y="48" width="60" height="8" rx="2" fill="#f7a855"/>
+    <!-- Cuerpo superior con reloj -->
+    <rect x="44" y="56" width="48" height="58" fill="url(#torre)"/>
+    <circle cx="68" cy="84" r="14" fill="#fff7e6"/>
+    <circle cx="68" cy="84" r="11" fill="none" stroke="#4e1664" stroke-width="2"/>
+    <line x1="68" y1="84" x2="68" y2="77" stroke="#4e1664" stroke-width="2" stroke-linecap="round"/>
+    <line x1="68" y1="84" x2="74" y2="87" stroke="#4e1664" stroke-width="2" stroke-linecap="round"/>
+    <!-- Cornisa intermedia -->
+    <rect x="34" y="114" width="68" height="9" rx="2" fill="#f29444"/>
+    <!-- Cuerpo medio con arcos iluminados -->
+    <rect x="38" y="123" width="60" height="72" fill="#5e1b6e"/>
+    <rect x="48" y="138" width="14" height="28" rx="7" fill="#ffd988" opacity="0.9"/>
+    <rect x="74" y="138" width="14" height="28" rx="7" fill="#ffd988" opacity="0.9"/>
+    <!-- Base colonial lateral -->
+    <rect x="0" y="182" width="148" height="86" rx="3" fill="#320d4f"/>
+    <rect x="16" y="200" width="16" height="32" rx="8" fill="#ffb869" opacity="0.72"/>
+    <rect x="60" y="200" width="18" height="38" rx="9" fill="#ffd988" opacity="0.88"/>
+    <rect x="108" y="200" width="16" height="32" rx="8" fill="#ffb869" opacity="0.72"/>
+  </g>
+  <!-- Destellos sutiles junto a la torre -->
+  <g stroke="#ffd166" stroke-width="3" stroke-linecap="round" opacity="0.72">
+    <line x1="1032" y1="68" x2="1044" y2="56"/>
+    <line x1="1046" y1="80" x2="1060" y2="75"/>
+    <line x1="1044" y1="94" x2="1056" y2="98"/>
+  </g>
+</svg>

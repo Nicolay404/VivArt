@@ -23,7 +23,7 @@ npm install
 
 ```text
 cd app
-docker compose up -d db
+docker compose up -d db db-preparar
 npm test
 ```
 
@@ -31,7 +31,7 @@ Las pruebas usan la base `identidad_pruebas` del contenedor: cada aplicación de
 
 ## Ejecutar la demo sin contenedores
 
-1. Levantar solo la base: `docker compose up -d db` dentro de `app`.
+1. Levantar solo la base: `docker compose up -d db db-preparar` dentro de `app`.
 2. Variables de entorno (valores de ejemplo, no son credenciales):
    - `DATABASE_URL=postgres://identidad:<IDENTIDAD_DB_PASSWORD de app/.env>@127.0.0.1:55432/identidad`
    - `MAIL_TRANSPORT=test` (buzón de pruebas en memoria)
