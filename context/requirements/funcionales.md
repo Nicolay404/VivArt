@@ -34,12 +34,13 @@ Los identificadores **RF-xx** (requisitos) y **RC-xx** (reglas comunes) son esta
 | ID | Requisito |
 |---|---|
 | RF-01 | El visitante puede consultar Agenda, fichas, Mapa y Alforjita, preparar un carrito y guardar su recorrido local sin cuenta. |
-| RF-02 | El usuario puede registrarse, iniciar y cerrar sesión, recuperar el acceso y consultar sus propios pedidos, entradas, sellos e insignias desde los espacios correspondientes (pedidos y entradas en Perfil; sellos e insignias en Pasaporte). |
-| RF-03 | Si se solicita iniciar sesión durante una compra o un canje, el usuario vuelve a la acción original y el sistema comprueba que todavía sea válida. Si ya no lo es (cupo agotado, QR vencido, función cancelada), se lo indica con el motivo y le ofrece volver a la ficha o al carrito. |
+| RF-02 | El usuario puede registrarse con un **correo electrónico único y una contraseña** (sin pedir cédula, teléfono ni dirección), verificar su correo, iniciar y cerrar sesión, recuperar el acceso y consultar sus propios pedidos, entradas, sellos e insignias desde los espacios correspondientes (pedidos y entradas en Perfil; sellos e insignias en Pasaporte). La contraseña tiene al menos 15 caracteres, admite espacios y pegarse desde un gestor, admite una longitud máxima de al menos 64 caracteres y no exige combinaciones de mayúsculas, números o símbolos. La recuperación usa un enlace de un solo uso y con vencimiento, y la pantalla muestra el mismo mensaje exista o no el correo. |
+| RF-03 | **Pagar y reclamar un sello exigen una cuenta con correo verificado.** Si se solicita iniciar sesión durante una compra o un canje, el usuario vuelve a la acción original (tras verificar el correo e iniciar sesión, si la cuenta es nueva) y el sistema comprueba que todavía sea válida. Si ya no lo es (cupo agotado, QR vencido, función cancelada), se lo indica con el motivo y le ofrece volver a la ficha o al carrito. |
 | RF-04 | El administrador asigna y revoca roles (RC-01). **El editor** prepara y edita sus propios borradores y los envía a revisión (RF-08), pero no puede publicar, ni siquiera mediante una llamada directa a la API. **El publicador** revisa, edita propuestas ajenas, aprueba y publica, incluidas las fichas que él mismo editó; no se exige una segunda persona. **El administrador** gestiona la operación, revisa y edita propuestas ajenas, reasigna borradores, y también puede crear y publicar eventos y cargar el catálogo o la programación planificada. No hay permisos por organización. **El personal de acceso** valida solo las funciones que se le asignan. Publicar no concede permiso para activar ventas. Toda acción rechazada por permisos indica qué rol falta, sin revelar contenido que el usuario no puede ver. |
+| RF-04c | **Primer administrador.** El equipo habilita la primera cuenta administrativa para un correo designado mediante un procedimiento interno y documentado; su titular establece su contraseña al activarla. No hay registro público especial ni credenciales predeterminadas en el repositorio. Después, un administrador activo asigna roles a otras cuentas. **El registro público nunca otorga permisos internos.** |
 | RF-04b | Al revocar un rol, los borradores y propuestas pendientes se conservan con su autor e historial, y el usuario pierde solo las acciones que concedía ese rol. El administrador puede reasignar el trabajo y otro publicador puede continuar una revisión. Revocar un rol no despublica contenido. |
 
-**Flujo:** el visitante inicia una compra o abre un QR de pasaporte → se identifica → retoma la acción → el sistema verifica su vigencia.
+**Flujo:** el visitante inicia una compra o abre un QR de pasaporte → se identifica (si la cuenta es nueva, verifica su correo e inicia sesión) → retoma la acción → el sistema verifica su vigencia. Agenda, Mapa y Alforjita siguen abiertos sin cuenta. En la demo, la verificación y la recuperación pueden comprobarse con un buzón de pruebas, sin correos reales; el proveedor y los plazos de los enlaces se deciden en el plan técnico.
 
 ## 02. Programación, agenda y publicación
 
@@ -166,6 +167,8 @@ Estas preguntas siguen abiertas. Cuando surja una nueva, se añade aquí con un 
 
 | ID | Pendiente | Afecta |
 |---|---|---|
+| P-10 | Si se revoca el último administrador o un administrador se revoca roles a sí mismo; si alguien puede auto-asignarse roles; vigencia de una sesión inactiva. | RF-04, RF-04b, RF-02 |
+| P-11 | Cuánto tiempo se conserva la acción original (compra o canje) mientras se verifica el correo, y si la activación por correo del primer administrador cuenta como verificación. | RF-03, RF-04c |
 | P-09 | El PDF de programación aún no tiene una carpeta compartida con enlace para el equipo. No bloquea el spec de identidad y permisos. | `context/assets/README.md` |
 
 ### Decisiones cerradas para el MVP
@@ -179,6 +182,9 @@ Estas preguntas siguen abiertas. Cuando surja una nueva, se añade aquí con un 
 | P-05 | Mi recorrido se queda en el navegador y no se sincroniza con la cuenta. | RF-16 |
 | P-06 | Solo el administrador archiva, y antes se cancela con aviso. | RF-35 |
 | P-07 | Retención inicial de 10 minutos; solo el administrador la cambia y aplica a pedidos nuevos. | RF-20 |
+| I-01 | Primer administrador preparado por el equipo con procedimiento interno documentado; sin registro especial ni credenciales predeterminadas. | RF-04c |
+| I-02 | Registro solo con correo único y contraseña de al menos 15 caracteres, sin reglas de composición. | RF-02 |
+| I-03 | Verificación de correo al registrarse; pagar y reclamar un sello exigen correo verificado; recuperación por enlace de un solo uso y con vencimiento. | RF-02, RF-03 |
 | M-01 | Pasaporte sin meta global: «Mi pasaporte» muestra el total de sellos obtenidos; el progreso con denominador es de cada ruta. | RF-27, RF-29 |
 | M-02 | El buscador del mapa busca **sedes** («Buscar sede»); las funciones por nombre se buscan en Agenda. Solo aparecen sedes registradas en la programación. | RF-12, RF-13 |
 | M-03 | Filtro del mapa «Funciones del día»; sin otro filtro temporal. «¿Qué hay ahora?» se queda en Agenda. | RF-12, RF-07 |
