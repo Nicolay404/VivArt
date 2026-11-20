@@ -181,7 +181,7 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 - [x] T064 [P] Crear `app/services/identidad/test/unit/no-secrets.test.js`: recorre los archivos versionables y falla si encuentra credenciales, contraseñas o claves de servicio fijas (FR-026, FR-027; SC-015)
 - [x] T065 Ejecutar `npm test` desde la raíz y comprobar que pasan todas las pruebas del servicio y de la entrada común
 - [x] T066 Recorrer el `quickstart.md` de principio a fin con el buzón de pruebas y anotar el resultado (hecho con contenedores reales; resultado en `quickstart.md`, «Resultados registrados»)
-- [ ] T067 Comprobar con teclado y a 360 px de ancho los flujos de FR-038 (RNF-01, RNF-03; SC-019) y anotar el resultado en `quickstart.md`, «Resultados registrados»
+- [x] T067 Comprobar con teclado y a 360 px de ancho los flujos de FR-038 (RNF-01, RNF-03; SC-019) y anotar el resultado en `quickstart.md`, «Resultados registrados»
 - [x] T068 Revisar que el repositorio no contenga secretos, que `.specify/integration.json` no esté en los commits y que no existan rutas ni código de carrito, pago, canje o Pasaporte
 - [x] T069 Marcar las tareas completadas en este archivo y registrar los pendientes (P-10, P-11)
 - [x] T070 [P] Crear `app/services/identidad/Dockerfile` y `.dockerignore` (imagen mínima, sin root, con comprobación de salud y sin secretos)

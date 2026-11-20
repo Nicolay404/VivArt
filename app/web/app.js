@@ -108,9 +108,25 @@ function pintarNavegacion() {
   } else {
     items.push(enlace('/ingresar', 'Ingresar'), enlace('/registro', 'Crear cuenta'));
   }
-  items.push(enlace('/demo/retorno', 'Demo: retorno a la acción'), enlace('/demo/buzon', 'Buzón de pruebas'));
-  navegacion.replaceChildren(...items);
+  const demo = h('div', { class: 'nav-demo', role: 'group', 'aria-label': 'Demostración' },
+    enlace('/demo/retorno', 'Demo: retorno a la acción'), enlace('/demo/buzon', 'Buzón de pruebas'));
+  navegacion.replaceChildren(h('div', { class: 'nav-principal' }, items), demo);
 }
+
+const botonMenu = document.querySelector('#boton-menu');
+
+function abrirMenu(abierto) {
+  botonMenu.setAttribute('aria-expanded', String(abierto));
+  document.body.classList.toggle('menu-abierto', abierto);
+}
+
+botonMenu.addEventListener('click', () => abrirMenu(botonMenu.getAttribute('aria-expanded') !== 'true'));
+document.addEventListener('keydown', (evento) => {
+  if (evento.key === 'Escape' && botonMenu.getAttribute('aria-expanded') === 'true') {
+    abrirMenu(false);
+    botonMenu.focus();
+  }
+});
 
 async function salir() {
   await api('POST', '/auth/logout');
@@ -386,15 +402,15 @@ async function historial() {
   if (!r.ok) return [h('h1', {}, 'Historial'), h('p', { class: 'aviso error-caja' }, r.datos?.message ?? 'No se pudo cargar el historial.')];
   const filas = r.datos.entries.map((e) =>
     h('tr', {},
-      h('td', {}, e.at),
-      h('td', {}, e.actor_id),
-      h('td', {}, e.action),
-      h('td', {}, `${e.target_type} ${e.target_id}`),
-      h('td', {}, e.details ? JSON.stringify(e.details) : '')));
+      h('td', { 'data-etiqueta': 'Cuándo' }, e.at),
+      h('td', { 'data-etiqueta': 'Quién' }, e.actor_id),
+      h('td', { 'data-etiqueta': 'Acción' }, e.action),
+      h('td', { 'data-etiqueta': 'Sobre' }, `${e.target_type} ${e.target_id}`),
+      h('td', { 'data-etiqueta': 'Detalle' }, e.details ? JSON.stringify(e.details) : '')));
   const encabezados = ['Cuándo', 'Quién', 'Acción', 'Sobre', 'Detalle'].map((texto) => h('th', { scope: 'col' }, texto));
   return [
     h('h1', {}, 'Historial de permisos'),
-    h('div', { class: 'tabla-scroll' },
+    h('div', { class: 'tabla-scroll', tabindex: '0', role: 'region', 'aria-label': 'Historial de permisos' },
       h('table', {},
         h('caption', { class: 'ayuda' }, 'Quién, cuándo y sobre qué registro'),
         h('thead', {}, h('tr', {}, encabezados)),
@@ -414,6 +430,8 @@ async function pintar() {
   const pantalla = RUTAS[location.pathname];
   const contenido = pantalla ? await pantalla() : [h('h1', {}, 'No encontramos esta página'), h('a', { href: '/', 'data-enlace': true }, 'Volver al inicio')];
   raiz.replaceChildren(...[contenido].flat());
+  raiz.classList.toggle('ancho', location.pathname.startsWith('/panel/'));
+  abrirMenu(false);
   pintarNavegacion();
   document.title = `${raiz.querySelector('h1')?.textContent ?? 'VIVART'} · VIVART`;
   raiz.focus();
