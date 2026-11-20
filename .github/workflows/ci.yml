@@ -55,7 +55,7 @@ jobs:
         run: |
           for servicio in app/services/*/; do
             if [ -f "$servicio/package-lock.json" ]; then
-              (cd "$servicio" && npm ci)
+              (cd "$servicio" && npm ci --ignore-scripts)
             fi
           done
       - name: Ejecutar pruebas
@@ -128,7 +128,7 @@ jobs:
           fi
       - name: Analizar con SonarCloud
         if: steps.sonar.outputs.listo == 'true'
-        uses: SonarSource/sonarqube-scan-action@v5
+        uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703 # v5
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
