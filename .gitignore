@@ -21,3 +21,7 @@ node_modules/
 app/services/*/data/
 *.sqlite
 *.sqlite-journal
+
+# Informes de cobertura generados localmente o en el CI
+cobertura/
+coverage/
