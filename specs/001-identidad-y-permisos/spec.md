@@ -262,7 +262,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 
 - **FR-031**: Antes de pedir identificación por una compra o un canje, el sistema DEBE conservar la acción pendiente (su tipo y su referencia) para poder retomarla.
 - **FR-032**: Tras identificarse (iniciar sesión, o registrarse, verificar el correo e iniciar sesión), el sistema DEBE devolver a la persona al punto donde estaba: el carrito con su contenido en una compra, o el enlace del QR de la función en un canje.
-- **FR-033**: Al retomar la acción, el sistema DEBE volver a comprobar su vigencia con las reglas del spec dueño, y NO DEBE completar la compra ni el canje sin esa comprobación.
+- **FR-033**: Al retomar la acción, el sistema DEBE volver a comprobar su vigencia con las reglas del spec dueño. Retomar la acción NO DEBE ejecutar automáticamente un pago ni un canje desde este spec: qué ocurre después de revalidar (por ejemplo, si se pide una confirmación) lo define el spec dueño de cada flujo (spec 05 para la compra y spec 06 para el canje).
 - **FR-034**: Si la comprobación falla, el sistema DEBE indicar el motivo y ofrecer volver a la ficha o al carrito, sin completar la acción.
 - **FR-035**: Si la cuenta no tiene el correo verificado, el sistema DEBE impedir completar la compra o el canje, indicarlo y ofrecer reenviar el enlace; la acción pendiente se retoma tras verificar el correo e iniciar sesión (FR-029).
 
@@ -305,7 +305,7 @@ Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garan
 - **SC-014**: Un enlace de recuperación o de verificación usado una vez o vencido se rechaza en el 100 % de los intentos posteriores.
 - **SC-015**: 0 cuentas obtienen permisos internos a través del registro público, y 0 credenciales predeterminadas de administrador existen en el repositorio.
 - **SC-016**: La verificación y la recuperación pueden comprobarse de principio a fin en la demo sin enviar ningún correo real.
-- **SC-017**: En el 100 % de los retornos tras identificarse, la vigencia de la compra o del canje se vuelve a comprobar antes de completar nada, y 0 compras o canjes se completan sin esa comprobación.
+- **SC-017**: En el 100 % de los retornos tras identificarse, la vigencia de la compra o del canje se vuelve a comprobar, y 0 pagos o canjes se ejecutan automáticamente por el solo hecho de retomar la acción desde este spec.
 - **SC-018**: El 100 % de las acciones retomadas con una comprobación fallida muestra el motivo y ofrece volver a la ficha o al carrito.
 
 ## Anexo técnico y de arquitectura
@@ -376,4 +376,4 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 - Si una persona puede auto-asignarse roles o solo los asigna el administrador (se asume lo segundo por RF-04).
 - Vigencia y cierre automático de una sesión inactiva.
 - Cuánto tiempo se conserva la acción original (compra o canje) mientras la persona verifica su correo, y si la activación por correo del primer administrador cuenta como verificación (P-11 del contexto).
-- Si, tras retomar la acción y comprobar que sigue vigente, el pago o el canje se completa solo o requiere una confirmación explícita de la persona. Este spec solo garantiza el regreso y la revalidación; el paso final lo define cada spec dueño.
+- Qué ocurre tras revalidar la acción (por ejemplo, si se pide una confirmación antes de pagar o de reclamar) lo definen los specs 05 y 06; este spec solo garantiza el regreso y la revalidación.
