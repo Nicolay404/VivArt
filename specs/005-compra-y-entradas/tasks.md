@@ -66,7 +66,7 @@
 - [x] T026 [P] [US3] Pruebas en `P/test/integration/payments.test.js`: confirmado emite N con secretos distintos, repetido no emite más (también simultáneo), fallido libera, `confirmed_late` crea incidencia sin entradas, función cancelada impide confirmar, simulador ausente con `NODE_ENV=production`, Mis entradas solo propias (SC-004, SC-005, SC-012, SC-013)
 - [x] T027 [US3] Dominio de pago y emisión en `P/src/domain/payments.js` y repositorio `P/src/repositories/tickets.js`: referencia única, secreto y código derivados con HMAC (`TICKET_KEY`) y guardados como SHA-256, contenido del QR `VIVART-E1:<secreto>`, código de 10 caracteres sin 0/O/1/I/L
 - [x] T028 [US3] Rutas `POST /orders/{id}/simulate-payment` (solo con simulador) y `GET /tickets` (estado vigente desde programación, aviso público, QR en SVG; `unverified` si programación no responde) en `P/src/http/routes-person.js`
-- [x] T029 [US3] Web: `app/web/js/entradas.js` con el simulador de pago (tres resultados, sin datos de tarjeta), Mis pedidos y Mis entradas en Perfil, QR y código, copia en `localStorage` y aviso «Estado sin confirmar» sin conexión; rutas en `app/web/app.js`
+- [x] T029 [US3] Web: `app/web/js/entradas.js` con el simulador de pago (tres resultados, sin datos de tarjeta), Mis pedidos y Mis entradas en Perfil, QR y código, copia en la Cache API del navegador y aviso «Estado sin confirmar» sin conexión; rutas en `app/web/app.js`
 
 ## Phase 6: User Story 5 - Validar entradas en la sede (P1)
 

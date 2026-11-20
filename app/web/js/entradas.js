@@ -6,8 +6,6 @@ import { apiParticipacion } from './api.js';
 import { formatoFecha, formatoFechaHoraIso, etiquetaAviso } from './format.js';
 import { usd, etiquetaPedido } from './carrito.js';
 
-const CLAVE = 'vivart.entradas.v1';
-
 const ESTADOS = {
   valid: { texto: 'Válida', clase: 'entrada-valida' },
   used: { texto: 'Usada', clase: 'entrada-usada' },
@@ -36,20 +34,26 @@ function copiaSegura(t) {
   };
 }
 
-function guardarCopia(usuario, items) {
+const CACHE = 'vivart-entradas-v1';
+const URL_COPIA = '/__copia-entradas';
+
+/** Copia local para ver las entradas sin conexión (FR-040). Usa la Cache API; si no existe, no hay copia. */
+async function guardarCopia(usuario, items) {
   try {
     const seguros = Array.isArray(items) ? items.map(copiaSegura) : [];
-    // Se guarda codificada: al leerla se decodifica y se vuelve a validar su forma.
-    localStorage.setItem(CLAVE, encodeURIComponent(JSON.stringify({ usuario: texto(usuario, 64), guardado: new Date().toISOString(), items: seguros })));
+    const cuerpo = JSON.stringify({ usuario: texto(usuario, 64), guardado: new Date().toISOString(), items: seguros });
+    const cache = await caches.open(CACHE);
+    await cache.put(URL_COPIA, new Response(cuerpo, { headers: { 'content-type': 'application/json' } }));
   } catch {
-    // Sin almacenamiento: no habrá copia sin conexión.
+    // Sin Cache API (navegador antiguo o sin HTTPS): no habrá copia sin conexión.
   }
 }
 
-function leerCopia(usuario) {
+async function leerCopia(usuario) {
   try {
-    const crudo = localStorage.getItem(CLAVE);
-    const c = crudo ? JSON.parse(decodeURIComponent(crudo)) : null;
+    const cache = await caches.open(CACHE);
+    const r = await cache.match(URL_COPIA);
+    const c = r ? await r.json() : null;
     return c && c.usuario === usuario && Array.isArray(c.items) ? { ...c, items: c.items.map(copiaSegura) } : null;
   } catch {
     return null;
@@ -121,10 +125,10 @@ export async function pantallaEntradas({ persona }) {
   let nota = null;
   if (rt.ok) {
     entradas = rt.datos.items;
-    if (rt.datos.verified) guardarCopia(persona.id, entradas);
+    if (rt.datos.verified) await guardarCopia(persona.id, entradas);
     else nota = 'No se pudo confirmar el estado de las funciones: se muestra sin confirmar.';
   } else {
-    const copia = leerCopia(persona.id);
+    const copia = await leerCopia(persona.id);
     entradas = copia?.items ?? [];
     sinConexion = true;
     nota = copia
