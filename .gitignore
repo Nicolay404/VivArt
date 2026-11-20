@@ -1,3 +1,16 @@
 # Fuente de programación: se conserva en una carpeta compartida, no en Git.
 # Ver context/assets/README.md. Se ignora solo este archivo; los mockups y el afiche sí se versionan.
 /context/assets/PROGRAMACION 2026 digital.pdf
+
+# Integraciones de agentes de Spec Kit: se instalan en local, no se versionan.
+# La base neutra (.specify/) sí se versiona. Ver AGENTS.md.
+.claude/skills/speckit-*/
+.agents/skills/speckit-*/
+.specify/integrations/*.manifest.json
+!.specify/integrations/none.manifest.json
+!.specify/integrations/speckit.manifest.json
+
+# Preferencias, permisos y secretos locales.
+.claude/settings.local.json
+.env
+.env.*

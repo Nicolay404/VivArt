@@ -26,10 +26,12 @@ Reglas de contenido:
 - **Máximo ocho specs.** El estilo arquitectónico no es un noveno spec.
 - Primero se propone el reparto de los ocho specs; solo después se genera cada uno.
 - Las skills o comandos de Spec Kit se instalan **por proyecto** con `specify init` o `specify integration`; no existe una instalación global de skills.
-- No ejecutes `specify init`, `specify integration install|switch|uninstall|upgrade`, `specify extension add` ni actualices `specify` sin acuerdo explícito del equipo.
+- No actualices `specify`, no cambies ni desinstales integraciones ajenas y no añadas extensiones (`specify extension add`) sin acuerdo explícito del equipo.
 - No instales la extensión `agent-context` sin acuerdo: escribe un bloque dentro de `AGENTS.md` o `CLAUDE.md`.
 - Revisa la extensión `git` antes de habilitarla: puede crear ramas y hacer commits automáticos.
-- **Preferencia del equipo (no probada ni inicializada):** base neutra con `specify init --integration none` e integraciones locales por persona con `specify integration switch <clave>`. Antes de aplicarla hay que comprobar su comportamiento en una copia de prueba.
+- **Base neutra (aplicada con Spec Kit 1.4.0):** el repositorio se inicializó con `specify init --here --integration none --script ps`. Solo crea `.specify/` (plantillas, scripts, constitución y flujo); no toca `AGENTS.md` ni crea carpetas de agentes. `.specify/` se versiona; su propio `.specify/.gitignore` deja fuera el estado local. Los scripts generados son de PowerShell (`ps`); quien trabaje en otro sistema debe avisarlo antes de regenerarlos.
+- **Cada persona activa su agente en local**, sin versionarlo: `specify integration install claude` (Claude Code), `codex` (Codex) o `agy` (Antigravity). Codex y Antigravity comparten `.agents/skills/` y Antigravity no está declarado como compatible con instalaciones múltiples; instala solo el que uses. Esto modifica `.specify/integration.json` en tu copia: no lo incluyas en tus commits.
+- La constitución del proyecto está en `.specify/memory/constitution.md` y prevalece sobre este archivo en las restricciones académicas.
 - No edites a mano las skills o comandos que Spec Kit genera; las personalizaciones se hacen con presets o sobrescrituras del proyecto.
 
 ## Ramas
