@@ -35,17 +35,18 @@ test('FR-025: solo el administrador consulta el historial', async () => {
 test('FR-026: el historial nunca guarda contraseñas, tokens ni claves', async () => {
   const ctx = await crearApp();
   const admin = await crearAdmin(ctx);
-  ctx.deps.audit(admin.id, 'prueba', 'user', 'x', { password: 'secreto123', token: 'abc', clave: 'x', passwordHash: 'h', role: 'editor' });
-  const ultimo = ctx.deps.repos.audit.list(1)[0];
+  await ctx.deps.audit(admin.id, 'prueba', 'user', 'x', { password: 'secreto123', token: 'abc', clave: 'x', passwordHash: 'h', role: 'editor' });
+  const ultimo = (await ctx.deps.repos.audit.list(1))[0];
   assert.deepEqual(ultimo.details, { role: 'editor' });
-  assert.ok(!JSON.stringify(ctx.deps.repos.audit.list(200)).includes('secreto123'));
+  assert.ok(!JSON.stringify(await ctx.deps.repos.audit.list(200)).includes('secreto123'));
 });
 
-test('el historial es de solo anexar: no se puede modificar ni borrar', async () => {
+test('el historial es de solo anexar: no se puede modificar, borrar ni vaciar', async () => {
   const ctx = await crearApp();
   await crearAdmin(ctx);
-  assert.throws(() => ctx.deps.db.exec("UPDATE audit_log SET action = 'x'"), /solo anexar/);
-  assert.throws(() => ctx.deps.db.exec('DELETE FROM audit_log'), /solo anexar/);
+  await assert.rejects(() => ctx.deps.db.run("UPDATE audit_log SET action = 'x'"), /solo anexar/);
+  await assert.rejects(() => ctx.deps.db.run('DELETE FROM audit_log'), /solo anexar/);
+  await assert.rejects(() => ctx.deps.db.run('TRUNCATE audit_log'), /solo anexar/);
 });
 
 test('el límite del historial se acota', async () => {

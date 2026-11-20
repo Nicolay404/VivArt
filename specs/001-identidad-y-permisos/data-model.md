@@ -1,6 +1,6 @@
 # Data Model: Identidad, perfil y permisos
 
-Base de datos propia del servicio de identidad (SQLite). Ningún otro servicio escribe en ella; la consultan solo a través de la API de introspección.
+Base de datos propia del servicio de identidad (PostgreSQL: base `identidad` con su propio usuario). Ningún otro servicio escribe en ella; la consultan solo a través de la API de introspección.
 
 ## Entidades
 

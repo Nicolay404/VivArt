@@ -27,11 +27,11 @@ if (config.mailTransport === 'test') {
 }
 
 try {
-  const servicios = createServices({ config });
+  const servicios = await createServices({ config });
   await servicios.accounts.createFirstAdmin(email, { allowAdditional: process.argv.includes('--permitir-adicional') });
   console.log(`\nCuenta administrativa pendiente de activación para ${email.trim().toLowerCase()}.`);
   console.log('Entrega el enlace impreso arriba solo a su titular: establecerá su contraseña al abrirlo.');
-  servicios.db.close();
+  await servicios.db.close();
 } catch (error) {
   console.error(`No se pudo crear la cuenta: ${error.message}`);
   process.exit(1);

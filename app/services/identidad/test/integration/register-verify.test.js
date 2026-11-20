@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { crearApp, json, tokenDe, cookieDe, CLAVE_VALIDA } from '../helpers.js';
+import { crearApp, json, tokenDe, cookieDe, CLAVE_VALIDA, fila } from '../helpers.js';
 
 test('SC-010: el registro pide solo correo y contraseña y no guarda datos extra', async () => {
   const ctx = await crearApp();
@@ -8,9 +8,9 @@ test('SC-010: el registro pide solo correo y contraseña y no guarda datos extra
     email: 'Ana@Vivart.test ', password: CLAVE_VALIDA, cedula: '1100000000', telefono: '0999999999', direccion: 'Loja',
   }));
   assert.equal(r.statusCode, 202);
-  const columnas = ctx.deps.db.prepare("SELECT name FROM pragma_table_info('users')").all().map((c) => c.name).sort();
+  const columnas = (await ctx.deps.db.query("SELECT column_name AS name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'users'")).map((c) => c.name).sort();
   assert.deepEqual(columnas, ['created_at', 'email', 'email_verified_at', 'id', 'password_hash', 'status', 'updated_at']);
-  const usuario = ctx.deps.repos.users.findByEmail('ana@vivart.test'); // el correo se normaliza
+  const usuario = await ctx.deps.repos.users.findByEmail('ana@vivart.test'); // el correo se normaliza
   assert.ok(usuario);
   assert.equal(usuario.status, 'active');
 });
@@ -34,7 +34,7 @@ test('SC-013: correo nuevo y repetido reciben exactamente la misma respuesta y n
   const b = await ctx.app.inject(json('POST', '/auth/register', { email: 'luz@vivart.test', password: 'otra clave larga de prueba' }));
   assert.equal(a.statusCode, b.statusCode);
   assert.deepEqual(a.json(), b.json());
-  assert.equal(ctx.deps.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
+  assert.equal(Number((await fila(ctx, 'SELECT COUNT(*) AS n FROM users')).n), 1);
   assert.equal(ctx.correos.count('luz@vivart.test', 'already_registered'), 1);
   // la clave de la segunda solicitud no sustituye a la de la cuenta
   const login = await ctx.app.inject(json('POST', '/auth/login', { email: 'luz@vivart.test', password: 'otra clave larga de prueba' }));
@@ -46,7 +46,7 @@ test('SC-014 y SC-016: el enlace de verificación llega al buzón de pruebas, es
   await ctx.app.inject(json('POST', '/auth/register', { email: 'mia@vivart.test', password: CLAVE_VALIDA }));
   const token = tokenDe(ctx.correos.last('mia@vivart.test', 'verify'));
   assert.ok(token);
-  const guardado = ctx.deps.db.prepare('SELECT token_hash FROM email_tokens').all().map((f) => f.token_hash);
+  const guardado = (await ctx.deps.db.query('SELECT token_hash FROM email_tokens')).map((f) => f.token_hash);
   assert.ok(!guardado.includes(token));
 
   const login1 = await ctx.app.inject(json('POST', '/auth/login', { email: 'mia@vivart.test', password: CLAVE_VALIDA }));
@@ -86,10 +86,10 @@ test('SC-015: el registro público nunca otorga permisos internos', async () => 
   await ctx.app.inject(json('POST', '/auth/register', { email: 'pub@vivart.test', password: CLAVE_VALIDA }));
   const login = await ctx.app.inject(json('POST', '/auth/login', { email: 'pub@vivart.test', password: CLAVE_VALIDA }));
   assert.deepEqual(login.json().roles, ['usuario_registrado']);
-  assert.equal(ctx.deps.db.prepare('SELECT COUNT(*) AS n FROM role_assignments').get().n, 0);
+  assert.equal(Number((await fila(ctx, 'SELECT COUNT(*) AS n FROM role_assignments')).n), 0);
   // intentar colar roles en el cuerpo no tiene efecto
   await ctx.app.inject(json('POST', '/auth/register', { email: 'pub2@vivart.test', password: CLAVE_VALIDA, roles: ['administrador'], role: 'administrador' }));
-  assert.equal(ctx.deps.db.prepare('SELECT COUNT(*) AS n FROM role_assignments').get().n, 0);
+  assert.equal(Number((await fila(ctx, 'SELECT COUNT(*) AS n FROM role_assignments')).n), 0);
 });
 
 test('un token inexistente o vacío se rechaza igual', async () => {

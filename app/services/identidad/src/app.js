@@ -14,8 +14,10 @@ import { registerInternalRoutes } from './http/routes-internal.js';
  * Fábrica de la aplicación. Devuelve la app de Fastify y los servicios (útil para pruebas y para el script interno).
  * No hay en este servicio ninguna ruta de carrito, pago, canje ni Pasaporte: son de otros specs.
  */
-export async function buildApp({ config, services = createServices({ config }), logger = false } = {}) {
+export async function buildApp({ config, services, logger = false } = {}) {
+  services ??= await createServices({ config });
   const app = Fastify({ logger, trustProxy: config.trustProxy, bodyLimit: 16 * 1024 });
+  app.addHook('onClose', async () => services.db.close());
   await app.register(cookie);
 
   // Acepta cuerpos JSON vacíos (por ejemplo, un cierre de sesión enviado con tipo JSON y sin cuerpo).
@@ -34,7 +36,15 @@ export async function buildApp({ config, services = createServices({ config }), 
   const guards = createGuards(services);
   const deps = { ...services, config, guards, limiter: new RateLimiter(services.clock) };
 
-  app.get('/health', async () => ({ status: 'ok', service: 'identidad' }));
+  // Salud: el servicio responde y su base de datos también.
+  app.get('/health', async (request, reply) => {
+    try {
+      await services.db.query('SELECT 1');
+      return { status: 'ok', service: 'identidad' };
+    } catch {
+      return reply.code(503).send({ status: 'error', service: 'identidad', message: 'La base de datos no responde.' });
+    }
+  });
   registerAuthRoutes(app, deps);
   registerPendingRoutes(app, deps);
   registerRoleRoutes(app, deps);

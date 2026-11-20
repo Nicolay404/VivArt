@@ -22,7 +22,10 @@ export function loadConfig(env = process.env, overrides = {}) {
   const base = {
     port: Number(env.PORT ?? 3001),
     host: env.HOST ?? '127.0.0.1',
-    dbFile: env.DB_FILE ?? './data/identidad.sqlite',
+    // Base de datos propia del servicio (PostgreSQL). La URL incluye la contraseña: se define en el entorno y no se versiona.
+    databaseUrl: env.DATABASE_URL,
+    // Esquema opcional dentro de esa base; las pruebas usan uno distinto por aplicación.
+    dbSchema: env.DB_SCHEMA || undefined,
     publicBaseUrl: (env.PUBLIC_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, ''),
     allowedOrigins: (env.ALLOWED_ORIGINS ?? 'http://localhost:8080').split(',').map((s) => s.trim()).filter(Boolean),
     mailTransport: env.MAIL_TRANSPORT ?? 'test',

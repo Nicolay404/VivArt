@@ -55,12 +55,12 @@ test('revocar un rol que la cuenta no tiene no falla ni repite el historial', as
   const u = await crearUsuario(ctx, 'sinrol@vivart.test');
   const r = await ctx.app.inject(json('DELETE', `/users/${u.id}/roles/editor`, undefined, admin.cookie));
   assert.equal(r.statusCode, 204);
-  assert.equal(ctx.deps.repos.audit.list().filter((e) => e.action === 'role.revoked').length, 0);
+  assert.equal((await ctx.deps.repos.audit.list()).filter((e) => e.action === 'role.revoked').length, 0);
 });
 
 test('FR-019 a FR-021: el servicio solo conoce sus propias tablas; no hay nada de contenido que borrar o despublicar', async () => {
   const ctx = await crearApp();
-  const tablas = ctx.deps.db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' AND name NOT LIKE 'sqlite_%'").all().map((t) => t.name).sort();
+  const tablas = (await ctx.deps.db.query("SELECT table_name AS name FROM information_schema.tables WHERE table_schema = current_schema() AND table_type = 'BASE TABLE'")).map((t) => t.name).sort();
   assert.deepEqual(tablas, ['audit_log', 'email_tokens', 'function_assignments', 'pending_actions', 'role_assignments', 'sessions', 'users']);
 });
 
@@ -71,6 +71,6 @@ test('revocar y volver a asignar un rol deja la cuenta como estaba y todo queda 
   await ctx.app.inject(json('PUT', `/users/${u.id}/roles/publicador`, undefined, admin.cookie));
   await ctx.app.inject(json('DELETE', `/users/${u.id}/roles/publicador`, undefined, admin.cookie));
   await ctx.app.inject(json('PUT', `/users/${u.id}/roles/publicador`, undefined, admin.cookie));
-  const acciones = ctx.deps.repos.audit.list().filter((e) => e.target_id === u.id).map((e) => e.action).reverse();
+  const acciones = (await ctx.deps.repos.audit.list()).filter((e) => e.target_id === u.id).map((e) => e.action).reverse();
   assert.deepEqual(acciones, ['role.assigned', 'role.revoked', 'role.assigned']);
 });

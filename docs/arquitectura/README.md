@@ -56,7 +56,7 @@ Este documento es la decisión arquitectónica compartida por los ocho specs. Cu
 
 Estas son decisiones de trabajo que se pueden cambiar sin alterar la arquitectura:
 
-- Servicios en Node.js con HTTP simple y bases SQLite por servicio en el MVP; una instancia compartida con bases lógicas queda como opción para la demo.
+- Servicios en Node.js con HTTP simple. Datos en un contenedor PostgreSQL con una base y un usuario propios por servicio (adoptado el 2026-11-20 al cerrar el spec 001).
 - Sesiones en servidor con cookie `HttpOnly`; contraseñas con un hash lento (scrypt); enlaces de verificación y recuperación de un solo uso con vencimiento.
 - Buzón de pruebas para la demo, sin enviar correos reales.
 

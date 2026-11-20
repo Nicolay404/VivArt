@@ -1,19 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
-import { tmpdir } from 'node:os';
-import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { crearApp, json, tokenDe, CLAVE_VALIDA } from '../helpers.js';
+import { crearApp, json, tokenDe, CLAVE_VALIDA, urlPruebas, nuevoEsquema } from '../helpers.js';
+import pg from 'pg';
 
 test('FR-027: el procedimiento interno crea una cuenta pendiente, sin contraseña y con el rol de administrador', async () => {
   const ctx = await crearApp();
   await ctx.deps.accounts.createFirstAdmin('Primera@Vivart.test');
-  const u = ctx.deps.repos.users.findByEmail('primera@vivart.test');
+  const u = await ctx.deps.repos.users.findByEmail('primera@vivart.test');
   assert.equal(u.status, 'pending_activation');
   assert.equal(u.password_hash, null); // no hay credenciales predeterminadas
-  assert.deepEqual(ctx.deps.repos.roles.listRoles(u.id), ['administrador']);
+  assert.deepEqual(await ctx.deps.repos.roles.listRoles(u.id), ['administrador']);
   // aún no se puede iniciar sesión
   const intento = await ctx.app.inject(json('POST', '/auth/login', { email: 'primera@vivart.test', password: CLAVE_VALIDA }));
   assert.equal(intento.statusCode, 401);
@@ -45,7 +43,7 @@ test('el registro público con el correo designado no da permisos ni toma la cue
   assert.equal(intento.statusCode, 202);
   const login = await ctx.app.inject(json('POST', '/auth/login', { email: 'designado@vivart.test', password: 'una clave de quien intenta registrarse' }));
   assert.equal(login.statusCode, 401); // la cuenta sigue pendiente de activación por su titular
-  assert.equal(ctx.deps.repos.users.findByEmail('designado@vivart.test').password_hash, null);
+  assert.equal((await ctx.deps.repos.users.findByEmail('designado@vivart.test')).password_hash, null);
 });
 
 test('no se crea otro primer administrador si ya existe uno activo, salvo que se pida expresamente', async () => {
@@ -57,11 +55,13 @@ test('no se crea otro primer administrador si ya existe uno activo, salvo que se
   await assert.doesNotReject(() => ctx.deps.accounts.createFirstAdmin('dos@vivart.test', { allowAdditional: true }));
 });
 
-test('el script interno emite el enlace de activación por consola y no define contraseñas', () => {
-  const carpeta = mkdtempSync(join(tmpdir(), 'vivart-script-'));
+test('el script interno emite el enlace de activación por consola y no define contraseñas', async () => {
+  const esquema = nuevoEsquema();
   try {
     const script = fileURLToPath(new URL('../../bin/crear-primer-administrador.js', import.meta.url));
-    const entorno = { ...process.env, MAIL_TRANSPORT: 'console', DB_FILE: join(carpeta, 'prueba.sqlite'), PUBLIC_BASE_URL: 'http://localhost:8080' };
+    const entorno = {
+      ...process.env, MAIL_TRANSPORT: 'console', DATABASE_URL: urlPruebas(), DB_SCHEMA: esquema, PUBLIC_BASE_URL: 'http://localhost:8080',
+    };
     const ok = spawnSync(process.execPath, [script, '--email', 'script@vivart.test'], { env: entorno, encoding: 'utf8' });
     assert.equal(ok.status, 0, ok.stderr);
     assert.match(ok.stdout, /http:\/\/localhost:8080\/activar\?token=/);
@@ -72,6 +72,8 @@ test('el script interno emite el enlace de activación por consola y no define c
     const conTest = spawnSync(process.execPath, [script, '--email', 'x@vivart.test'], { env: { ...entorno, MAIL_TRANSPORT: 'test' }, encoding: 'utf8' });
     assert.equal(conTest.status, 2); // el buzón en memoria perdería el enlace
   } finally {
-    rmSync(carpeta, { recursive: true, force: true });
+    const pool = new pg.Pool({ connectionString: urlPruebas(), max: 1 });
+    await pool.query(`DROP SCHEMA IF EXISTS ${esquema} CASCADE`);
+    await pool.end();
   }
 });

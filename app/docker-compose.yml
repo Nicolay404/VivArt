@@ -1,11 +1,32 @@
-# Demo local de VIVART: servicio de identidad + entrada común con la web.
-#   docker compose up --build        (desde la carpeta app/)
-#   docker compose down -v           (para borrar contenedores y datos de la demo)
+# Demo local de VIVART: base de datos + servicio de identidad + entrada común con la web.
+#   node preparar-entorno.mjs        (una sola vez: crea app/.env con contraseñas aleatorias)
+#   docker compose up -d --build     (desde la carpeta app/)
+#   docker compose down -v           (borra contenedores y datos de la demo)
 # Abre http://localhost:8080. El buzón de pruebas está en /demo/buzon: no se envía ningún correo real.
-# Las claves de servicio no se versionan: defínelas en el entorno o en app/.env (ignorado por Git).
+# Las contraseñas y claves no se versionan: viven en app/.env (ignorado por Git).
 name: vivart
 
 services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Falta app/.env. Ejecuta primero node preparar-entorno.mjs}
+      IDENTIDAD_DB_PASSWORD: ${IDENTIDAD_DB_PASSWORD:?Falta IDENTIDAD_DB_PASSWORD en app/.env}
+    volumes:
+      - db-datos:/var/lib/postgresql/data
+      # Crea una base y un usuario por servicio la primera vez que arranca.
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    # Solo en 127.0.0.1: para las pruebas locales y para conectar un cliente. No queda abierto a la red.
+    ports:
+      - "127.0.0.1:${DB_PUERTO_LOCAL:-55432}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
   identidad:
     build: ./services/identidad
     environment:
@@ -14,8 +35,11 @@ services:
       ALLOWED_ORIGINS: http://localhost:8080
       TRUST_PROXY: "1"
       SERVICE_KEYS: ${SERVICE_KEYS:-}
-    volumes:
-      - identidad-datos:/data
+      # El servicio solo conoce su propia base y su propio usuario.
+      DATABASE_URL: postgres://identidad:${IDENTIDAD_DB_PASSWORD}@db:5432/identidad
+    depends_on:
+      db:
+        condition: service_healthy
     # Solo la entrada común es visible desde fuera: el servicio no publica puertos.
     expose:
       - "3001"
@@ -35,4 +59,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  identidad-datos:
+  db-datos:

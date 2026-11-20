@@ -14,9 +14,9 @@ Es un servicio HTTP independiente y dueño de sus datos, dentro de la arquitectu
 
 **Language/Version**: JavaScript (módulos ES) sobre Node.js 24
 
-**Primary Dependencies**: Fastify 5 y @fastify/cookie; criptografía, SQLite y pruebas con módulos integrados de Node (`node:crypto`, `node:sqlite`, `node:test`)
+**Primary Dependencies**: Fastify 5, @fastify/cookie y el cliente `pg` de PostgreSQL; criptografía y pruebas con módulos integrados de Node (`node:crypto`, `node:test`)
 
-**Storage**: SQLite (`node:sqlite`) en un archivo propio del servicio de identidad, detrás de una capa de repositorio reemplazable
+**Storage**: PostgreSQL 17 en contenedor, con una base y un usuario propios del servicio de identidad (`identidad`, y `identidad_pruebas` para las pruebas), detrás de una capa de repositorio reemplazable. Cambiado desde SQLite el 2026-11-20 (ver `research.md`, decisión 3)
 
 **Testing**: `node:test` con `inject` de Fastify para el servicio; pruebas de la entrada común con `node:test`
 

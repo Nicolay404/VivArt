@@ -12,7 +12,8 @@ import { createPending } from './domain/pending.js';
 import { iso } from './domain/tokens.js';
 
 /** Ensambla repositorios y lógica de dominio. Lo comparten la aplicación HTTP y el script interno. */
-export function createServices({ config, db = openDb(config.dbFile), mailer = createMailer(config) }) {
+export async function createServices({ config, db, mailer = createMailer(config) }) {
+  db ??= await openDb({ url: config.databaseUrl, schema: config.dbSchema });
   const clock = config.clock;
   const repos = {
     users: usersRepo(db),

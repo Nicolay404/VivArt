@@ -74,7 +74,7 @@ test('restablecer deja constancia en el historial sin contraseñas ni enlaces', 
   await ctx.app.inject(json('POST', '/auth/password-reset/request', { email: 'rosa@vivart.test' }));
   const token = tokenDe(ctx.correos.last('rosa@vivart.test', 'reset'));
   await ctx.app.inject(json('POST', '/auth/password-reset/confirm', { token, password: NUEVA }));
-  const entradas = ctx.deps.repos.audit.list();
+  const entradas = await ctx.deps.repos.audit.list();
   assert.ok(entradas.some((e) => e.action === 'password.reset' && e.target_id === u.id));
   const texto = JSON.stringify(entradas);
   assert.ok(!texto.includes(NUEVA) && !texto.includes(token));
