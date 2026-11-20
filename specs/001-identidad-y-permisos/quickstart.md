@@ -60,6 +60,13 @@ Abre `http://localhost:8080`. Solo la entrada común publica un puerto; el servi
 | Rechazo | Como editor, abrir «Roles» | Mensaje que indica que falta el rol de administrador, sin datos de contenido |
 | Retorno a la acción | En «Demo: retorno a la acción», simular un canje sin sesión; iniciar sesión | Pantalla «Volviste a donde estabas» con el destino; bloqueada si el correo no está verificado; no se paga ni se canjea nada |
 
+## Resultados registrados
+
+| Fecha | Tarea | Resultado |
+|---|---|---|
+| 2026-11-20 | T066 (recorrido del quickstart con contenedores reales) | Correcto: las dos imágenes se construyen y quedan sanas; ambos contenedores corren sin root; solo la entrada común publica un puerto (127.0.0.1:8080); recorrido completo registro → verificación por el buzón → inicio de sesión → retorno a la acción con `executed=false`; un `Origin` ajeno se rechaza con 403. Después se borraron contenedores, volúmenes e imágenes locales |
+| pendiente | T067 (teclado y 360 px; SC-019) | Sin hacer. Anotar aquí la fecha, el navegador y cada flujo de FR-038 con OK o el fallo encontrado |
+
 ## Qué NO hace esta rama
 
 No incluye carrito, pago, canje ni Pasaporte. El contrato de acción pendiente solo conserva el tipo y la referencia, y devuelve a la persona; la revalidación y el paso final los definen los specs 05 y 06.

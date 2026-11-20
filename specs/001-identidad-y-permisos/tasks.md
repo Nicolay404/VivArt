@@ -180,8 +180,8 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 - [x] T064 [P] Crear `app/services/identidad/test/unit/no-secrets.test.js`: recorre los archivos versionables y falla si encuentra credenciales, contraseñas o claves de servicio fijas (FR-026, FR-027; SC-015)
 - [x] T065 Ejecutar `npm test` desde la raíz y comprobar que pasan todas las pruebas del servicio y de la entrada común
-- [x] T066 Recorrer el `quickstart.md` de principio a fin con el buzón de pruebas y anotar el resultado (hecho con contenedores reales: construcción, salud, usuario no root y recorrido completo; ver resultado en el informe)
-- [ ] T067 Comprobar la web con teclado y a ancho de celular (RNF-01, RNF-03) y anotar el resultado
+- [x] T066 Recorrer el `quickstart.md` de principio a fin con el buzón de pruebas y anotar el resultado (hecho con contenedores reales; resultado en `quickstart.md`, «Resultados registrados»)
+- [ ] T067 Comprobar con teclado y a 360 px de ancho los flujos de FR-038 (RNF-01, RNF-03; SC-019) y anotar el resultado en `quickstart.md`, «Resultados registrados»
 - [x] T068 Revisar que el repositorio no contenga secretos, que `.specify/integration.json` no esté en los commits y que no existan rutas ni código de carrito, pago, canje o Pasaporte
 - [x] T069 Marcar las tareas completadas en este archivo y registrar los pendientes (P-10, P-11)
 - [x] T070 [P] Crear `app/services/identidad/Dockerfile` y `.dockerignore` (imagen mínima, sin root, con comprobación de salud y sin secretos)
@@ -248,6 +248,9 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 | FR-033 | T045, T046, T047 |
 | FR-034 | T045, T048, T049 |
 | FR-035 | T045, T048 |
+| FR-036 | T035, T038 |
+| FR-037 | T020, T028, T036 |
+| FR-038 | T030, T031, T032, T056, T067 |
 
 | Criterio | Tareas |
 |---|---|
@@ -268,4 +271,17 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 | SC-015 | T041, T064 |
 | SC-016 | T035, T037 |
 | SC-017 | T045, T046 |
-| SC-018 | T045 |
+| SC-018 | T045 (parcial) |
+| SC-019 | T067 |
+| SC-020 | T028, T035, T036 |
+
+### Cobertura parcial: qué parte pertenece a otro spec
+
+Estas filas solo se cubren en lo que toca a identidad; el resto lo verifica el spec dueño. No se crean tareas aquí para esos specs.
+
+| Criterio o requisito | Lo que cubre este spec | Lo que pertenece a otro spec |
+|---|---|---|
+| SC-002, FR-001 | La entrada común y el servicio no exigen sesión ni ubicación | Agenda y fichas (spec 02), Mapa (spec 03), recorrido local (spec 04), carrito (spec 05) y Alforjita (spec 08) |
+| SC-008, FR-006 | `/me` devuelve solo la propia cuenta | Pedidos y entradas (spec 05); sellos (spec 06); insignias (spec 07) |
+| SC-018, FR-034 | Una acción vencida o descartada no se retoma | El motivo concreto y la opción de volver a la ficha o al carrito: compra (spec 05) y canje (spec 06) |
+| SC-005, FR-019 a FR-021 | La revocación solo borra la asignación de rol y no toca nada fuera de identidad | Conservar, reasignar y no despublicar borradores y fichas, y registrar la reasignación (spec 02) |

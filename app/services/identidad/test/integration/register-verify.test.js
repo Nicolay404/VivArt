@@ -100,3 +100,12 @@ test('un token inexistente o vacío se rechaza igual', async () => {
   }
   assert.ok(cookieDe({ cookies: [] }) === undefined);
 });
+
+test('SC-020, FR-037: el limitador bloquea registros repetidos desde el mismo origen', async () => {
+  const ctx = await crearApp({ overrides: { limits: { register: { max: 2, windowMs: 60_000 } } } });
+  const registrar = (n) => ctx.app.inject(json('POST', '/auth/register', { email: `limite${n}@vivart.test`, password: CLAVE_VALIDA }));
+  for (let i = 0; i < 2; i += 1) assert.notEqual((await registrar(i)).statusCode, 429);
+  const bloqueado = await registrar(9);
+  assert.equal(bloqueado.statusCode, 429);
+  assert.equal(bloqueado.json().error, 'too_many_requests');
+});

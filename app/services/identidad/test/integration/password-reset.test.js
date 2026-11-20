@@ -79,3 +79,12 @@ test('restablecer deja constancia en el historial sin contraseñas ni enlaces', 
   const texto = JSON.stringify(entradas);
   assert.ok(!texto.includes(NUEVA) && !texto.includes(token));
 });
+
+test('SC-020, FR-037: el limitador bloquea pedidos de recuperación repetidos', async () => {
+  const ctx = await crearApp({ overrides: { limits: { reset: { max: 2, windowMs: 60_000 } } } });
+  const pedir = () => ctx.app.inject(json('POST', '/auth/password-reset/request', { email: 'nadie@vivart.test' }));
+  for (let i = 0; i < 2; i += 1) assert.notEqual((await pedir()).statusCode, 429);
+  const bloqueado = await pedir();
+  assert.equal(bloqueado.statusCode, 429);
+  assert.equal(bloqueado.json().error, 'too_many_requests');
+});
