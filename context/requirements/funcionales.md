@@ -167,8 +167,6 @@ Estas preguntas siguen abiertas. Cuando surja una nueva, se añade aquí con un 
 
 | ID | Pendiente | Afecta |
 |---|---|---|
-| P-10 | Si se revoca el último administrador o un administrador se revoca roles a sí mismo; si alguien puede auto-asignarse roles; vigencia de una sesión inactiva. | RF-04, RF-04b, RF-02 |
-| P-11 | Cuánto tiempo se conserva la acción original (compra o canje) mientras se verifica el correo, y si la activación por correo del primer administrador cuenta como verificación. | RF-03, RF-04c |
 | P-09 | El PDF de programación aún no tiene una carpeta compartida con enlace para el equipo. No bloquea el spec de identidad y permisos. | `context/assets/README.md` |
 
 ### Decisiones cerradas para el MVP
@@ -182,6 +180,8 @@ Estas preguntas siguen abiertas. Cuando surja una nueva, se añade aquí con un 
 | P-05 | Mi recorrido se queda en el navegador y no se sincroniza con la cuenta. | RF-16 |
 | P-06 | Solo el administrador archiva, y antes se cancela con aviso. | RF-35 |
 | P-07 | Retención inicial de 10 minutos; solo el administrador la cambia y aplica a pedidos nuevos. | RF-20 |
+| P-10 | (2026-11-20) No se puede quitar el rol de administrador a la última cuenta administradora activa; un administrador sí puede quitarse sus otros roles, o el de administrador si queda otro. Nadie se asigna roles ni funciones a sí mismo: solo un administrador los asigna a otra cuenta. Sesión: se cierra tras 2 horas sin actividad si la cuenta tiene algún rol interno (panel) y tras 7 días sin actividad en la web pública; máximo absoluto de 7 días. | RF-04, RF-04b, RF-02 |
+| P-11 | (2026-11-20) La acción pendiente (compra o canje) se conserva 24 horas, igual que el enlace de verificación; al retomarla siempre se revalida. Activar la cuenta del primer administrador con el enlace recibido cuenta como verificación del correo. | RF-03, RF-04c |
 | I-01 | Primer administrador preparado por el equipo con procedimiento interno documentado; sin registro especial ni credenciales predeterminadas. | RF-04c |
 | I-02 | Registro solo con correo único y contraseña de al menos 15 caracteres, sin reglas de composición. | RF-02 |
 | I-03 | Verificación de correo al registrarse; pagar y reclamar un sello exigen correo verificado; recuperación por enlace de un solo uso y con vencimiento. | RF-02, RF-03 |

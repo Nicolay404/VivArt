@@ -190,6 +190,14 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 ---
 
+## Phase 13: Decisiones P-10 y P-11 y base de datos (2026-11-20)
+
+- [x] T073 Cambiar el almacenamiento de `node:sqlite` a PostgreSQL con base y usuario propios (`app/services/identidad/src/db.js`, repositorios, `app/docker-compose.yml`, `app/db/init/`, `app/preparar-entorno.mjs`) y adaptar las pruebas a un esquema por aplicación
+- [x] T074 [US4] Rechazar quitar el rol de administrador a la última cuenta administradora activa, con transacción y bloqueo, en `app/services/identidad/src/repositories/roles.js` y `app/services/identidad/src/domain/roles.js` (FR-039)
+- [x] T075 [US4] Rechazar la auto-asignación de roles y funciones en `app/services/identidad/src/domain/roles.js` (FR-040)
+- [x] T076 [US7] Cierre de sesión por inactividad (`last_seen_at`; 2 h con rol interno, 7 días sin él) en `app/services/identidad/src/domain/accounts.js` y `src/config.js` (FR-041)
+- [x] T077 [P] Crear `app/services/identidad/test/integration/decisiones-p10-p11.test.js` (FR-039 a FR-042; SC-021 a SC-023)
+
 ## Dependencies & Execution Order
 
 - Fase 1 → Fase 2 → historias. Dentro de las pruebas de cada historia, escribirlas primero y comprobar que fallan antes de implementar.
@@ -251,6 +259,10 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 | FR-036 | T035, T038 |
 | FR-037 | T020, T028, T036 |
 | FR-038 | T030, T031, T032, T056, T067 |
+| FR-039 | T074, T077 |
+| FR-040 | T075, T077 |
+| FR-041 | T076, T077 |
+| FR-042 | T047, T077 |
 
 | Criterio | Tareas |
 |---|---|
@@ -274,6 +286,9 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 | SC-018 | T045 (parcial) |
 | SC-019 | T067 |
 | SC-020 | T028, T035, T036 |
+| SC-021 | T074, T077 |
+| SC-022 | T075, T077 |
+| SC-023 | T076, T077 |
 
 ### Cobertura parcial: qué parte pertenece a otro spec
 

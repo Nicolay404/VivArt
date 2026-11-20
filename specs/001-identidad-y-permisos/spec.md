@@ -16,6 +16,13 @@
 - Q: ¿Qué datos y credenciales pide el registro público? → A: Solo un correo electrónico único y una contraseña de al menos 15 caracteres, sin reglas de composición, con espacios permitidos, pegado desde un gestor permitido y una longitud máxima admitida de al menos 64 caracteres. No se piden cédula, teléfono ni dirección.
 - Q: ¿Cómo se verifica la cuenta y se recupera el acceso? → A: Un enlace de verificación por correo al registrarse. Comprar o reclamar un sello exige una cuenta con correo verificado; Agenda, Mapa y Alforjita siguen abiertos sin cuenta. Recuperar el acceso usa un enlace de un solo uso y con vencimiento, y la pantalla muestra el mismo mensaje exista o no el correo. En la demo se puede usar un buzón de pruebas. El proveedor de correo y los plazos exactos de los enlaces se deciden en el plan técnico.
 
+### Session 2026-11-20
+
+- Q: ¿Qué pasa al revocar el último administrador o si un administrador se revoca roles a sí mismo? → A: No se puede quitar el rol de administrador a la última cuenta administradora activa; con otro administrador activo, sí (también a uno mismo). Un administrador puede quitarse sus otros roles (P-10).
+- Q: ¿Alguien puede asignarse roles a sí mismo? → A: No. Solo un administrador asigna roles y funciones, y siempre a otra cuenta (P-10).
+- Q: ¿Cuándo se cierra una sesión sin uso? → A: Tras 2 horas sin actividad si la cuenta tiene algún rol interno (panel) y tras 7 días sin actividad en la web pública, con un máximo absoluto de 7 días (P-10).
+- Q: ¿Cuánto se conserva la acción original mientras se verifica el correo, y la activación del primer administrador cuenta como verificación? → A: 24 horas, igual que el enlace de verificación, y siempre se revalida al retomarla. Sí: activar la cuenta con el enlace recibido verifica el correo (P-11).
+
 ## Alcance y límites
 
 Este spec define **quién puede hacer qué** en VIVART: la consulta pública sin cuenta, la identificación de usuarios, los roles y sus permisos, la revocación de roles y el historial de las operaciones sensibles de permisos. Es el primero de un máximo de ocho specs y los demás dependen de él.
@@ -200,8 +207,10 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - ¿Qué pasa si el enlace de verificación o el de recuperación se abre dos veces o después de vencer? El segundo uso o el uso vencido se rechaza y se ofrece pedir uno nuevo.
 - ¿Qué pasa si alguien pide recuperar el acceso de un correo no registrado? La pantalla muestra el mismo mensaje que si estuviera registrado y no revela si la cuenta existe.
 - ¿Qué pasa si una persona pega una contraseña desde un gestor? El sistema la acepta, incluidos los espacios, hasta la longitud máxima admitida (al menos 64 caracteres).
-- ¿Qué pasa si se revoca el último rol de administrador? El contexto no lo define: queda como pendiente registrado en Assumptions.
-- ¿Qué pasa si un usuario se asigna o se revoca roles a sí mismo? El contexto no lo define: queda como pendiente registrado en Assumptions.
+- ¿Qué pasa si se intenta quitar el rol de administrador a la última cuenta administradora activa? Se rechaza y se pide asignar antes otro administrador (FR-039).
+- ¿Qué pasa si un administrador intenta asignarse un rol o una función a sí mismo? Se rechaza; debe pedírselo a otro administrador (FR-040).
+- ¿Qué pasa si dos administradores se quitan el rol mutuamente a la vez? Solo una de las dos revocaciones se completa; siempre queda al menos un administrador activo (FR-039).
+- ¿Qué pasa si una persona deja la sesión abierta sin usarla? Se cierra tras 2 horas si tiene algún rol interno y tras 7 días si no lo tiene (FR-041).
 
 ## Requirements *(mandatory)*
 
@@ -277,6 +286,10 @@ Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garan
 
 - **FR-036**: El registro DEBE dar la misma respuesta tanto si el correo es nuevo como si ya está registrado, para no revelar qué correos tienen cuenta (RNF-05).
 - **FR-037**: El sistema DEBE limitar los intentos repetidos de inicio de sesión, de registro y de recuperación de acceso. El contexto no fija los valores: el número de intentos y la ventana de tiempo son un valor definido en el plan técnico (`research.md`, decisión 13).
+- **FR-039**: El sistema NO DEBE permitir quitar el rol de administrador a la última cuenta administradora activa, ni siquiera a ella misma; DEBE indicar que antes hay que asignar otro administrador. Si queda otro administrador activo, la revocación (también la propia) DEBE permitirse. Un administrador DEBE poder quitarse sus demás roles. Dos revocaciones simultáneas NO DEBEN dejar el sistema sin administradores (P-10).
+- **FR-040**: Nadie DEBE poder asignarse roles ni funciones del personal de acceso a sí mismo: solo un administrador los asigna, y siempre a otra cuenta (P-10).
+- **FR-041**: El sistema DEBE cerrar una sesión tras 2 horas sin actividad si la cuenta tiene algún rol interno, y tras 7 días sin actividad si no lo tiene; ninguna sesión DEBE durar más de 7 días desde el inicio de sesión (P-10).
+- **FR-042**: La acción pendiente DEBE conservarse 24 horas y revalidarse siempre al retomarla. Activar la cuenta del primer administrador con el enlace recibido DEBE contar como verificación de su correo (P-11).
 - **FR-038**: Los flujos de identidad (registro, verificación, inicio y cierre de sesión, recuperación, activación del primer administrador, retorno a la acción, gestión de roles e historial) DEBEN poder completarse solo con teclado y en una pantalla de celular sin desbordamiento horizontal, con foco visible, etiquetas comprensibles y estados que no se comuniquen solo con color (RNF-01, RNF-03).
 
 ### Key Entities
@@ -314,6 +327,9 @@ Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garan
 - **SC-017**: En el 100 % de los retornos tras identificarse, la vigencia de la compra o del canje se vuelve a comprobar, y 0 pagos o canjes se ejecutan automáticamente por el solo hecho de retomar la acción desde este spec.
 - **SC-018**: El 100 % de las acciones retomadas con una comprobación fallida muestra el motivo y ofrece volver a la ficha o al carrito.
 - **SC-019**: El 100 % de los flujos de identidad de FR-038 se completa solo con teclado y a 360 px de ancho sin desplazamiento horizontal, en la comprobación manual T067.
+- **SC-021**: En el 100 % de los intentos de quitar el rol de administrador a la última cuenta administradora activa, la revocación se rechaza, incluso con dos solicitudes simultáneas, y queda al menos un administrador activo.
+- **SC-022**: 0 cuentas obtienen un rol o una función por asignación propia.
+- **SC-023**: El 100 % de las sesiones de cuentas con rol interno se cierra tras más de 2 horas sin actividad; el 100 % de las demás sigue abierta tras horas sin uso y se cierra tras 7 días; ninguna supera 7 días desde el inicio de sesión.
 - **SC-020**: En las pruebas, el registro con un correo nuevo y con uno ya registrado devuelve la misma respuesta en el 100 % de los casos, y los intentos que superan el límite definido en el plan se rechazan en el 100 % de los casos.
 
 ## Anexo técnico y de arquitectura
@@ -362,6 +378,7 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 | Decisión Q1 (primer administrador) | FR-027; Historia 9; SC-015 |
 | Decisión Q2 (correo y contraseña) | FR-028; Historia 7; SC-010, SC-011 |
 | RF-03 (retorno y revalidación), contrato con specs 05 y 06 | FR-031 a FR-035; Historia 2; SC-017, SC-018 |
+| P-10 y P-11 (decisiones del 2026-11-20) | FR-039 a FR-042; SC-021 a SC-023 |
 | Decisión Q3 (verificación y recuperación) | FR-003, FR-007, FR-029, FR-030; Historias 2 y 7; SC-012 a SC-014, SC-016 |
 | RNF-01 (uso móvil) y RNF-03 (accesibilidad) | FR-038; SC-019 |
 | RNF-02 (mensaje de rechazo) | FR-022, SC-006 |
@@ -379,10 +396,6 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 
 - La demo usa un buzón de pruebas; el proveedor de correo y los plazos exactos de los enlaces los define el plan técnico.
 
-**Pendientes registrados sin marcador** (no estaban en el contexto y se llevan a clarificación):
+**Dependencias con otros specs** (no son pendientes de este spec; P-10 y P-11 se cerraron el 2026-11-20):
 
-- Qué ocurre si se revoca el último rol de administrador o si un administrador se revoca roles a sí mismo.
-- Si una persona puede auto-asignarse roles o solo los asigna el administrador (se asume lo segundo por RF-04).
-- Vigencia y cierre automático de una sesión inactiva.
-- Cuánto tiempo se conserva la acción original (compra o canje) mientras la persona verifica su correo, y si la activación por correo del primer administrador cuenta como verificación (P-11 del contexto).
 - Qué ocurre tras revalidar la acción (por ejemplo, si se pide una confirmación antes de pagar o de reclamar) lo definen los specs 05 y 06; este spec solo garantiza el regreso y la revalidación.

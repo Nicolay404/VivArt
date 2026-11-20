@@ -56,6 +56,18 @@ export function createAccounts({ repos, config, mailer, audit, clock }) {
     const user = await repos.users.findById(sesion.user_id);
     if (!user || user.status !== 'active') return null;
     const [guardados, funciones] = await Promise.all([repos.roles.listRoles(user.id), repos.roles.listFunctions(user.id)]);
+
+    // Cierre por inactividad (P-10): las cuentas con algún rol interno (panel) tras 2 h sin uso;
+    // las demás tras 7 días. El vencimiento absoluto de 7 días se aplica a todas.
+    const momento = ahora();
+    const limite = guardados.length > 0 ? config.ttl.idleInternal : config.ttl.idlePublic;
+    const ultimaActividad = new Date(sesion.last_seen_at ?? sesion.created_at).getTime();
+    if (momento.getTime() - ultimaActividad > limite) {
+      await repos.sessions.delete(sesion.id);
+      return null;
+    }
+    // Se anota la actividad como mucho una vez por minuto, para no escribir en cada solicitud.
+    if (momento.getTime() - ultimaActividad > 60 * 1000) await repos.sessions.touch(sesion.id, iso(momento));
     return {
       userId: user.id,
       email: user.email,

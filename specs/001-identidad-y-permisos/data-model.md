@@ -27,7 +27,7 @@ Transiciones: `registro → active` (correo sin verificar) → verificar → cor
 | assigned_by | texto | Cuenta que la asignó |
 | assigned_at | fecha | |
 
-Único por (`user_id`, `role`). **«Usuario registrado»** es implícito para toda cuenta activa y **«visitante»** para quien no tiene sesión; no se guardan. Los permisos de una persona son la **suma** de sus roles activos (RC-01). Un registro público **nunca** crea filas aquí.
+Único por (`user_id`, `role`). No se puede quitar `administrador` a la última cuenta administradora activa, y nadie se asigna filas a sí mismo (P-10, FR-039 y FR-040). **«Usuario registrado»** es implícito para toda cuenta activa y **«visitante»** para quien no tiene sesión; no se guardan. Los permisos de una persona son la **suma** de sus roles activos (RC-01). Un registro público **nunca** crea filas aquí.
 
 ### function_assignments (funciones del personal de acceso)
 
@@ -45,7 +45,8 @@ Transiciones: `registro → active` (correo sin verificar) → verificar → cor
 |---|---|---|
 | id | texto | Hash SHA-256 del token opaco; el token solo existe en la cookie |
 | user_id | texto | |
-| created_at, expires_at | fecha | Vencimiento absoluto configurable (valor técnico, pendiente P-10) |
+| created_at, expires_at | fecha | Vencimiento absoluto de 7 días (P-10) |
+| last_seen_at | fecha | Última actividad; la sesión se cierra tras 2 h sin uso si la cuenta tiene un rol interno y tras 7 días si no (P-10, FR-041) |
 
 Se elimina al cerrar sesión, al restablecer la contraseña (todas las sesiones de la cuenta) y al vencer.
 
@@ -67,7 +68,7 @@ Se elimina al cerrar sesión, al restablecer la contraseña (todas las sesiones 
 | type | texto | `compra` o `canje` (nada más) |
 | ref | texto | Referencia opaca de la acción: para `canje`, el identificador del QR de la función, con el patrón `^[A-Za-z0-9_-]{1,64}$`; para `compra`, opcional con el mismo patrón |
 | user_id | texto, opcional | Se asocia al identificarse |
-| created_at, expires_at | fecha | Vigencia configurable (24 h por defecto, pendiente P-11) |
+| created_at, expires_at | fecha | Vigencia de 24 h (P-11, FR-042) |
 
 **Destino de retorno** (lo fija el servicio, nunca la persona): `compra → /carrito` y `canje → /pasaporte/canje/{ref}`. Esto evita redirecciones abiertas. La fila **no ejecuta nada**: solo conserva el tipo y la referencia.
 

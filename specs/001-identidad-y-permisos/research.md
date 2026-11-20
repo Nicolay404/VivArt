@@ -12,9 +12,9 @@ Todas las decisiones son **técnicas, reversibles y no cambian ningún requisito
 | 4 | Hash de contraseñas | `scrypt` de Node, sal aleatoria de 16 bytes y parámetros guardados con el hash (`scrypt$N$r$p$sal$hash`) | Hash lento integrado, sin compilar módulos nativos | argon2id (requiere dependencia nativa); bcrypt (límite de 72 bytes) |
 | 5 | Contraseñas | 15 a 128 caracteres, normalización NFKC, espacios permitidos, sin reglas de composición | Cumple FR-028 (15 mínimas, máximo admitido de al menos 64) | Reglas de mayúsculas, números o símbolos (descartadas por el spec) |
 | 6 | Sesiones | Token opaco de 32 bytes aleatorios; en base de datos solo su hash SHA-256; cookie `vivart_sid` `HttpOnly`, `SameSite=Lax`, `Secure` en producción | Revocable al instante; no hay datos de permisos dentro de la credencial | Tokens firmados autocontenidos (no se pueden revocar sin consulta) |
-| 7 | Vigencia de sesión | Vencimiento absoluto configurable, 7 días por defecto | El spec deja la sesión inactiva como **pendiente de producto P-10**; es un valor técnico de partida | — |
+| 7 | Vigencia de sesión | Máximo absoluto de 7 días; cierre por inactividad tras 2 h si la cuenta tiene algún rol interno y tras 7 días si no (`last_seen_at`, anotada como mucho una vez por minuto) | Decisión P-10 del 2026-11-20 (FR-041). El servidor decide por los roles de la cuenta, no por la pantalla abierta, así no depende de la interfaz | Cierre por inactividad solo en el navegador (se puede saltar con solicitudes directas) |
 | 8 | Tokens de correo | 32 bytes aleatorios, solo su hash en base de datos, un solo uso, vencimiento configurable: verificación 24 h, recuperación 1 h, activación del primer administrador 72 h | Cumple FR-029 (enlace de un solo uso y con vencimiento); plazos exactos son del plan técnico (FR-030) | — |
-| 9 | Acción pendiente | Registro propio con vigencia configurable, 24 h por defecto | El spec deja la conservación durante la verificación como **pendiente P-11**; valor técnico de partida | — |
+| 9 | Acción pendiente | Registro propio con vigencia de 24 h | Decisión P-11 del 2026-11-20 (FR-042): igual que el enlace de verificación; siempre se revalida al retomar | — |
 | 10 | Correo | Puerto de correo con dos transportes: **buzón de pruebas en memoria** (demo y pruebas) y **consola** (procedimiento interno del primer administrador). No hay transporte real en esta rama | FR-030: la demo comprueba verificación y recuperación sin correos reales | Proveedor real (queda para producción, sin cambiar el puerto) |
 | 11 | Autorización entre servicios | Introspección: `POST /internal/introspect` y `POST /internal/authorize` con cabecera de credencial de servicio por consumidor (variables de entorno) | Arquitectura: los servicios consultan permisos vigentes; un rol revocado deja de autorizar en la siguiente consulta (RF-04b) | Copiar roles dentro de la sesión (se desactualiza) |
 | 12 | CSRF | Los métodos que cambian estado exigen `Content-Type: application/json` y, si llega `Origin`, que esté en la lista permitida; `SameSite=Lax` | Defensa simple sin dependencias | Token CSRF por formulario (más pieza para una interfaz de pocas pantallas) |
@@ -27,10 +27,13 @@ Todas las decisiones son **técnicas, reversibles y no cambian ningún requisito
 | 19 | Interfaz | Web estática con JavaScript sin dependencias: etiquetas, errores junto al campo, foco visible y teclado | RNF-02, RNF-03 | Un framework (innecesario para pocas pantallas) |
 | 20 | Entrada común | Servidor Node mínimo que sirve `app/web/` y enruta `/api/identidad` al servicio, quitando el prefijo | La arquitectura pide enrutamiento simple, no gateway dedicado | Nginx u otro proxy (infraestructura extra) |
 
-## Pendientes de producto que el plan no resuelve
+## Decisiones de producto aplicadas (2026-11-20)
 
-- **P-10:** qué ocurre si se revoca el último administrador o si un administrador se revoca roles a sí mismo; si alguien puede auto-asignarse roles (el plan asume que **no**: solo un administrador asigna); vigencia de una sesión inactiva (hoy solo hay vencimiento absoluto).
-- **P-11:** cuánto tiempo se conserva la acción original mientras se verifica el correo, y si la activación del primer administrador cuenta como verificación (el plan marca la cuenta activada como verificada porque el enlace llegó a su correo: es un valor técnico de partida, a confirmar).
+- **P-10 (FR-039 a FR-041):** la revocación del rol de administrador se hace en una transacción con bloqueo y solo procede si queda otro administrador activo (las cuentas pendientes de activación no cuentan); nadie se asigna roles ni funciones a sí mismo; cierre de sesión por inactividad según los roles de la cuenta.
+- **P-11 (FR-042):** acción pendiente de 24 h; activar la cuenta del primer administrador verifica su correo.
+
+## Dependencias con otros specs
+
 - Qué ocurre tras revalidar una acción (confirmar o no antes de pagar o reclamar): lo definen los specs 05 y 06.
 
 ## Mapa de pruebas contra los criterios de éxito
@@ -52,4 +55,5 @@ Todas las decisiones son **técnicas, reversibles y no cambian ningún requisito
 | SC-016 (demo sin correos reales) | Todo el flujo funciona con el buzón de pruebas | Integración |
 | SC-017 y SC-018 (revalidación, sin ejecutar pago ni canje, con motivo) | `resume` devuelve `executed=false` y el servicio dueño revalida; no existe ninguna ruta que pague o canjee | Integración |
 | SC-019 (flujos de identidad con teclado y a 360 px) | Recorrido manual de los flujos de FR-038 sin ratón y en modo dispositivo de 360 px | Manual (T067) |
+| SC-021 a SC-023 (último administrador, sin auto-asignación, inactividad) | Revocación del último administrador, incluida la simultánea; auto-asignación de roles y funciones; reloj simulado para 2 h, 7 días y el máximo absoluto | Integración |
 | SC-020 (registro neutro y límite de intentos) | Misma respuesta para correo nuevo y repetido; respuesta 429 al superar el límite en inicio de sesión, registro y recuperación | Integración |
