@@ -1,0 +1,136 @@
+name: CI
+
+# Integración continua de todo el proyecto. Se adapta a lo que exista: si todavía no hay código
+# en app/, los trabajos de aplicación y contenedores se omiten sin fallar.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reglas:
+    name: Reglas del equipo
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Verificar reglas (sin coautoría de IA, sin PDF, sin archivos locales ni secretos)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: bash .github/scripts/verificar-reglas.sh
+
+  aplicacion:
+    name: Pruebas de la aplicación
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: ¿Existe código en app/?
+        id: app
+        run: |
+          if [ -f app/package.json ]; then echo "existe=true" >> "$GITHUB_OUTPUT"; else echo "existe=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.app.outputs.existe == 'true'
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: app/services/*/package-lock.json
+      - name: Instalar dependencias de cada servicio
+        if: steps.app.outputs.existe == 'true'
+        run: |
+          for servicio in app/services/*/; do
+            if [ -f "$servicio/package-lock.json" ]; then
+              (cd "$servicio" && npm ci --ignore-scripts)
+            fi
+          done
+      - name: Ejecutar pruebas
+        if: steps.app.outputs.existe == 'true'
+        working-directory: app
+        run: npm test
+      - name: Auditar dependencias de producción
+        if: steps.app.outputs.existe == 'true'
+        run: |
+          for servicio in app/services/*/; do
+            if [ -f "$servicio/package-lock.json" ]; then
+              (cd "$servicio" && npm audit --omit=dev --audit-level=high)
+            fi
+          done
+
+  contenedores:
+    name: Imágenes y demo con contenedores
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: ¿Existe la demo con contenedores?
+        id: demo
+        run: |
+          if [ -f app/docker-compose.yml ]; then echo "existe=true" >> "$GITHUB_OUTPUT"; else echo "existe=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Construir e iniciar la demo
+        if: steps.demo.outputs.existe == 'true'
+        working-directory: app
+        run: docker compose up -d --build --wait
+      - name: Comprobar que los contenedores no corren como root
+        if: steps.demo.outputs.existe == 'true'
+        working-directory: app
+        run: |
+          for servicio in identidad entrada; do
+            usuario="$(docker compose exec -T "$servicio" id -u)"
+            if [ "$usuario" = "0" ]; then echo "::error::$servicio corre como root"; exit 1; fi
+          done
+      - name: Prueba de humo
+        if: steps.demo.outputs.existe == 'true'
+        run: bash .github/scripts/humo-contenedores.sh
+      - name: Mostrar registros si algo falló
+        if: failure() && steps.demo.outputs.existe == 'true'
+        working-directory: app
+        run: docker compose logs --no-color --tail 100
+      - name: Apagar la demo
+        if: always() && steps.demo.outputs.existe == 'true'
+        working-directory: app
+        run: docker compose down -v
+
+  sonarcloud:
+    name: Análisis en SonarCloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Los PR desde forks no reciben secretos: en ese caso el análisis se omite sin fallar.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: ¿Está configurado SonarCloud?
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ] && [ -n "$SONAR_ORGANIZATION" ] && [ -d app ]; then
+            echo "listo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::SonarCloud omitido: falta SONAR_TOKEN, la variable SONAR_ORGANIZATION o la carpeta app/."
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Analizar con SonarCloud
+        if: steps.sonar.outputs.listo == 'true'
+        uses: SonarSource/sonarqube-scan-action@2f77a1ec69fb1d595b06f35ab27e97605bdef703 # v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}

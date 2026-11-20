@@ -1,0 +1,35 @@
+# Mantenimiento automático de dependencias. Las carpetas de app/ existen cuando se integra la aplicación;
+# hasta entonces Dependabot puede avisar de que no las encuentra.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(ci)"
+
+  - package-ecosystem: npm
+    directory: /app/services/identidad
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 3
+    commit-message:
+      prefix: "chore(deps)"
+
+  - package-ecosystem: docker
+    directory: /app/services/identidad
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "chore(docker)"
+
+  - package-ecosystem: docker
+    directory: /app/edge
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 2
+    commit-message:
+      prefix: "chore(docker)"

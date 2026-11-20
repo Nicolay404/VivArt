@@ -1,0 +1,71 @@
+name: CD
+
+# Entrega continua: al unir cambios de app/ a main se publican las imágenes de cada servicio en el
+# registro de contenedores de GitHub (ghcr.io), etiquetadas con el commit. El despliegue a un entorno
+# concreto todavía no está definido por el equipo y no se automatiza aquí.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - ".github/workflows/cd.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: cd-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publicar:
+    name: Publicar imagen de ${{ matrix.nombre }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - nombre: identidad
+            contexto: app/services/identidad
+            dockerfile: app/services/identidad/Dockerfile
+          - nombre: entrada
+            contexto: app
+            dockerfile: app/edge/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+      - name: ¿Existe el Dockerfile?
+        id: existe
+        run: |
+          if [ -f "${{ matrix.dockerfile }}" ]; then echo "si=true" >> "$GITHUB_OUTPUT"; else echo "si=false" >> "$GITHUB_OUTPUT"; fi
+      - name: Nombre de la imagen en minúsculas
+        if: steps.existe.outputs.si == 'true'
+        run: echo "IMAGEN=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/vivart-${{ matrix.nombre }}" >> "$GITHUB_ENV"
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+        if: steps.existe.outputs.si == 'true'
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        if: steps.existe.outputs.si == 'true'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        if: steps.existe.outputs.si == 'true'
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ${{ env.IMAGEN }}
+          tags: |
+            type=sha,format=long
+            type=raw,value=latest
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        if: steps.existe.outputs.si == 'true'
+        with:
+          context: ${{ matrix.contexto }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
