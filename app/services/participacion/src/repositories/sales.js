@@ -16,7 +16,7 @@ export function salesRepo(db) {
 
     /** Bloquea las filas de venta en orden de id para evitar interbloqueos (research.md, decisión 6). */
     async lock(ids) {
-      const ordenados = [...new Set(ids)].sort();
+      const ordenados = [...new Set(ids)].sort((a, b) => (a < b ? -1 : a > b ? 1 : 0));
       if (ordenados.length === 0) return new Map();
       const filas = await db.query(
         'SELECT function_id, capacity, enabled FROM sales WHERE function_id = ANY($1) ORDER BY function_id FOR UPDATE',

@@ -16,9 +16,30 @@ const ESTADOS = {
   unverified: { texto: 'Estado sin confirmar', clase: 'entrada-sin-confirmar' },
 };
 
+const texto = (v, max = 4000) => (typeof v === 'string' ? v.slice(0, max) : '');
+
+/** Solo se guardan los campos conocidos, como texto acotado: nada de lo recibido se guarda tal cual. */
+function copiaSegura(t) {
+  return {
+    id: texto(t.id, 64),
+    functionId: texto(t.functionId, 64),
+    title: texto(t.title, 200),
+    date: texto(t.date, 10),
+    startTime: texto(t.startTime, 5),
+    venueName: t.venueName ? texto(t.venueName, 200) : null,
+    state: Object.hasOwn(ESTADOS, t.state) ? t.state : 'unverified',
+    usedAt: t.usedAt ? texto(t.usedAt, 40) : null,
+    invalidationReason: t.invalidationReason ? texto(t.invalidationReason, 500) : null,
+    notice: t.notice ? { kind: texto(t.notice.kind, 20), text: texto(t.notice.text, 2000) } : null,
+    qrSvg: texto(t.qrSvg, 20000),
+    code: texto(t.code, 10),
+  };
+}
+
 function guardarCopia(usuario, items) {
   try {
-    localStorage.setItem(CLAVE, JSON.stringify({ usuario, guardado: new Date().toISOString(), items }));
+    const seguros = Array.isArray(items) ? items.map(copiaSegura) : [];
+    localStorage.setItem(CLAVE, JSON.stringify({ usuario: texto(usuario, 64), guardado: new Date().toISOString(), items: seguros }));
   } catch {
     // Sin almacenamiento: no habrá copia sin conexión.
   }

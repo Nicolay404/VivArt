@@ -60,7 +60,7 @@ function lectorQr(alLeer) {
       }
       requestAnimationFrame(buscar);
     };
-    buscar();
+    void buscar();
   }
 
   const boton = h('button', { type: 'button', class: 'secundario', onclick: iniciar }, 'Escanear con la cámara');
