@@ -21,4 +21,18 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' -X POST "$BASE/internal/introsp
 { [ "$codigo" = "404" ] || [ "$codigo" = "405" ]; }
 echo "ok: las rutas internas entre servicios no se exponen"
 
+curl -fsS "$BASE/api/programacion/health" | grep -q '"programacion"'
+echo "ok: la entrada enruta al servicio de programación y su base responde"
+
+curl -fsS "$BASE/api/programacion/agenda" | grep -q '"items"'
+echo "ok: la Agenda pública responde sin sesión"
+
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/panel/activities")"
+[ "$codigo" = "401" ]
+echo "ok: el panel de programación pide identificarse"
+
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/internal/functions/x")"
+[ "$codigo" = "401" ]
+echo "ok: la API interna de programación exige credencial de servicio"
+
 echo "Humo de contenedores: todo correcto."
