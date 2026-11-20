@@ -8,6 +8,13 @@
 
 **Input**: User description: "Spec 04 de 8 de VIVART: Mi recorrido y alternativas. Cubre RF-16 a RF-18, con RC-02, RC-03 y RC-06. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Qué alternativas se sugieren y qué se entiende por sedes cercanas? → A: Solo funciones publicadas, no canceladas y que aún no hayan comenzado en la misma sede. Si no hay alternativas, se ofrece volver a la Agenda. En el MVP no se calculan distancias ni se mantiene una lista de sedes vecinas.
+- Q: ¿Qué pasa con una función guardada que se archiva? → A: Permanece en Mi recorrido hasta que el visitante la quite. Se muestra que ya no está en la programación activa y, si fue cancelada, se conserva el aviso de cancelación.
+
 ## Alcance y límites
 
 Este spec define cómo el visitante organiza su visita: guardar funciones o franjas sin cuenta, verlas ordenadas por horario, recibir advertencias de cruces y de cambios, y encontrar alternativas cuando una función guardada se cancela, ya empezó o se agota.
@@ -76,12 +83,14 @@ Si una función guardada cambia de hora o de sede, Mi recorrido muestra los dato
 3. **Given** una función guardada que se cancela, **When** se abre Mi recorrido, **Then** sigue visible con su aviso de cancelación.
 4. **Given** una función cancelada en Mi recorrido, **When** el visitante la quita, **Then** desaparece.
 5. **Given** un cambio de hora que genera o elimina un cruce, **When** se abre Mi recorrido, **Then** la advertencia de cruce se actualiza.
+6. **Given** una función guardada que el equipo archiva, **When** se abre Mi recorrido, **Then** permanece visible con la indicación de que ya no está en la programación activa, hasta que el visitante la quite.
+7. **Given** una función archivada que había sido cancelada, **When** se abre Mi recorrido, **Then** conserva además su aviso de cancelación.
 
 ---
 
 ### User Story 4 - Alternativas cuando algo falla (Priority: P2)
 
-Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada, Mi recorrido sugiere funciones que aún no comiencen, priorizando la misma sede y luego sedes cercanas si hay datos suficientes.
+Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada, Mi recorrido sugiere funciones de la misma sede que aún no comiencen. En el MVP no se sugieren sedes cercanas.
 
 **Why this priority**: ayuda a recomponer el plan, pero depende de que los cambios y avisos ya funcionen.
 
@@ -90,8 +99,8 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 **Acceptance Scenarios**:
 
 1. **Given** una función cancelada, **When** el visitante abre sus alternativas, **Then** se sugieren funciones que aún no comienzan.
-2. **Given** alternativas disponibles en la misma sede, **When** se sugieren, **Then** esas aparecen primero.
-3. **Given** que no hay alternativas en la misma sede y hay datos suficientes, **When** se sugieren, **Then** se ofrecen funciones de sedes cercanas.
+2. **Given** alternativas disponibles, **When** se sugieren, **Then** todas son funciones publicadas, no canceladas y que aún no han comenzado, de la misma sede que la función afectada.
+3. **Given** que no hay alternativas en la misma sede, **When** se sugieren, **Then** no se ofrecen funciones de otras sedes y se ofrece volver a la Agenda.
 4. **Given** una función cuya hora de inicio ya pasó y no tiene hora de fin, **When** se sugieren alternativas, **Then** se indica «Hora de inicio pasada» y no se afirma que la original terminó (RC-03).
 5. **Given** una función agotada, **When** se abren sus alternativas, **Then** se sugieren funciones futuras que no estén canceladas.
 6. **Given** que no hay ninguna alternativa, **When** se abren, **Then** se muestra un mensaje de sin resultados y se ofrece volver a la Agenda.
@@ -101,7 +110,7 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 
 - Un recorrido vacío.
 - Datos del navegador borrados: el recorrido se pierde, porque vive solo en el navegador; el visitante puede volver a guardar.
-- Una función guardada que el equipo archiva o retira de la programación activa.
+- Una función guardada que el equipo archiva: permanece en Mi recorrido con la indicación de que ya no está en la programación activa.
 - Una función guardada sin hora de fin (por ejemplo, «Lo que Somos»): no se advierte cruce y se muestra «Hora de inicio pasada» cuando corresponde.
 - La misma función guardada dos veces.
 - Muchas funciones guardadas.
@@ -136,22 +145,22 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 **Alternativas**
 
 - **FR-012**: Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada, el sistema DEBE sugerir funciones que aún no comiencen y no estén canceladas.
-- **FR-013**: El sistema DEBE priorizar las funciones de la misma sede y, después, las de sedes cercanas si hay datos suficientes.
+- **FR-013**: Las alternativas DEBEN ser solo funciones publicadas, no canceladas y que aún no hayan comenzado en la misma sede que la función afectada. Si no hay, el sistema DEBE ofrecer volver a la Agenda. El sistema NO DEBE calcular distancias ni mantener una lista de sedes vecinas en el MVP.
 - **FR-014**: El sistema NO DEBE afirmar que una función terminó si no se sabe: «Terminada» solo se muestra con hora de fin, una duración conocida que permita calcularla o una confirmación operativa explícita (RC-03).
 - **FR-015**: El sistema DEBE permitir conservar, quitar o sustituir la función original al elegir una alternativa.
 - **FR-016**: Mi recorrido DEBE usar la misma referencia de fecha y hora, en hora de Loja, que la Agenda, y que pueda fijarse en pruebas y demo (RC-07).
 
-**Decisiones pendientes**
+**Alternativas y funciones archivadas** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-017**: Una sede se considera «cercana» a otra cuando [NEEDS CLARIFICATION: el contexto no define cómo se determina la cercanía ni qué datos son «suficientes»; el mapa no es fuente de coordenadas exactas].
-- **FR-018**: Una función guardada que el equipo archiva o retira de la programación activa DEBE tratarse así en Mi recorrido: [NEEDS CLARIFICATION: el contexto no define si desaparece, queda con un aviso o se oculta].
+- **FR-017**: El sistema NO DEBE considerar sedes cercanas en el MVP; las alternativas se limitan a la misma sede (FR-013).
+- **FR-018**: Una función guardada que el equipo archiva DEBE permanecer en Mi recorrido hasta que el visitante la quite, DEBE indicar que ya no está en la programación activa y, si fue cancelada, DEBE conservar el aviso de cancelación.
 
 ### Key Entities
 
 - **Recorrido**: conjunto de funciones y franjas guardadas por un visitante en su navegador, ordenado por horario.
 - **Elemento guardado**: una función o una franja con su estado (vigente, cambiada, cancelada).
 - **Cruce**: solapamiento entre dos intervalos conocidos.
-- **Alternativa**: función futura no cancelada sugerida para sustituir una afectada.
+- **Alternativa**: función de la misma sede, publicada, no cancelada y que aún no ha comenzado, sugerida para sustituir una afectada.
 - **Aviso de cambio**: mensaje público de reprogramación o cancelación (spec 02).
 
 ## Success Criteria *(mandatory)*
@@ -163,8 +172,9 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 - **SC-003**: En el 100 % de los casos con intervalos conocidos que se solapan, se advierte el cruce; en el 100 % de los casos con algún intervalo desconocido, no.
 - **SC-004**: 0 advertencias de cruce impiden guardar una función.
 - **SC-005**: El 100 % de los cambios de hora o de sede se refleja en Mi recorrido con su aviso, y el 100 % de las canceladas permanece visible hasta que el visitante la quita.
-- **SC-006**: En el 100 % de las pruebas, las alternativas son funciones que aún no comienzan y no están canceladas, con la misma sede primero.
+- **SC-006**: En el 100 % de las pruebas, las alternativas son funciones publicadas que aún no comienzan, no están canceladas y son de la misma sede; 0 alternativas son de otra sede y, si no hay, se ofrece volver a la Agenda.
 - **SC-007**: 0 funciones con solo hora de inicio se muestran como «terminada» sin una hora de fin, una duración conocida o una confirmación operativa.
+- **SC-009**: El 100 % de las funciones archivadas permanece en Mi recorrido con la indicación correspondiente hasta que el visitante la quite, y las canceladas conservan su aviso.
 - **SC-008**: Tras iniciar sesión, el 100 % del recorrido sigue solo en el navegador y no aparece asociado a la cuenta.
 
 ## Trazabilidad con el contexto
@@ -172,8 +182,8 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 | Contexto | Cubierto por |
 |---|---|
 | RF-16, P-05 | FR-001 a FR-005; Historia 1 |
-| RF-17, RC-02 | FR-006 a FR-011; Historias 2 y 3 |
-| RF-18, RC-03 | FR-012 a FR-015; Historia 4 |
+| RF-17, RC-02, Q8 | FR-006 a FR-011, FR-018; Historias 2 y 3 |
+| RF-18, RC-03, Q7 | FR-012 a FR-015, FR-017; Historia 4 |
 | RC-07 | FR-016 |
 | RNF-01 | FR-005; SC-001 |
 | RNF-08 | FR-014; SC-007 |
@@ -181,6 +191,7 @@ Ante una función cancelada, con «Hora de inicio pasada», terminada o agotada,
 ## Assumptions
 
 - Mi recorrido se guarda solo en el navegador del visitante; no hay cuenta ni sincronización.
+- No se calculan distancias entre sedes en el MVP.
 - Las funciones, franjas, avisos y estados vienen del spec 02; el estado «agotada» viene del spec 05.
 - Hoy existe solo el acceso a Mi recorrido desde la Agenda en el mockup; la pantalla de Mi recorrido no tiene mockup.
 - Un recorrido se pierde si se borran los datos del navegador; esto no se considera un defecto.
