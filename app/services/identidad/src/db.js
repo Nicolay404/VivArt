@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS sessions (
   created_at TEXT NOT NULL,
   expires_at TEXT NOT NULL
 );
+-- Última actividad, para cerrar sesiones sin uso (P-10). Se añade sin perder las sesiones existentes.
+ALTER TABLE sessions ADD COLUMN IF NOT EXISTS last_seen_at TEXT;
+UPDATE sessions SET last_seen_at = created_at WHERE last_seen_at IS NULL;
 
 CREATE TABLE IF NOT EXISTS email_tokens (
   token_hash TEXT PRIMARY KEY,
@@ -112,10 +115,33 @@ export async function openDb({ url, schema } = {}) {
     cliente.release();
   }
 
+  const capa = (ejecutor) => ({
+    query: async (sql, params = []) => (await ejecutor.query(sql, params)).rows,
+    run: async (sql, params = []) => (await ejecutor.query(sql, params)).rowCount,
+  });
+
   return {
     pool,
-    query: async (sql, params = []) => (await pool.query(sql, params)).rows,
-    run: async (sql, params = []) => (await pool.query(sql, params)).rowCount,
+    ...capa(pool),
+    /**
+     * Ejecuta `trabajo` dentro de una transacción con un bloqueo por `clave`: dos operaciones con la misma clave
+     * no se mezclan (por ejemplo, dos administradores revocándose a la vez). Si `trabajo` falla, se deshace todo.
+     */
+    async transaction(clave, trabajo) {
+      const conexion = await pool.connect();
+      try {
+        await conexion.query('BEGIN');
+        await conexion.query('SELECT pg_advisory_xact_lock(hashtext($1))', [clave]);
+        const resultado = await trabajo(capa(conexion));
+        await conexion.query('COMMIT');
+        return resultado;
+      } catch (error) {
+        await conexion.query('ROLLBACK').catch(() => {});
+        throw error;
+      } finally {
+        conexion.release();
+      }
+    },
     close: () => pool.end(),
   };
 }

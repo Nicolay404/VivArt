@@ -31,9 +31,12 @@ export function loadConfig(env = process.env, overrides = {}) {
     mailTransport: env.MAIL_TRANSPORT ?? 'test',
     production: env.NODE_ENV === 'production',
     trustProxy: env.TRUST_PROXY === '1',
-    // Vigencias (valores técnicos de partida; P-10 y P-11 siguen pendientes de decisión de producto).
+    // Vigencias. P-10 y P-11 decididos el 2026-11-20: sesión de 7 días como máximo, acción pendiente de 24 h.
     ttl: {
       session: horas(env.SESSION_TTL_HOURS, 168),
+      // Inactividad (P-10, decidido el 2026-11-20): panel interno 2 h; web pública 7 días.
+      idleInternal: horas(env.SESSION_IDLE_INTERNAL_HOURS, 2),
+      idlePublic: horas(env.SESSION_IDLE_PUBLIC_HOURS, 168),
       verify: horas(env.VERIFY_TTL_HOURS, 24),
       reset: horas(env.RESET_TTL_HOURS, 1),
       activate: horas(env.ACTIVATE_TTL_HOURS, 72),
