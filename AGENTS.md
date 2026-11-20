@@ -16,7 +16,7 @@ Reglas de contenido:
 
 - No inventes precios, cupos, duraciones, horarios, accesibilidad ni decisiones. Si falta un dato, repórtalo como pendiente.
 - No cambies los IDs RF, RC ni RNF; añade nuevos al final del bloque que corresponda.
-- Integración del contexto: rama `docs/contexto-inicial` → PR a `main`. Esa rama no es uno de los ocho specs.
+- Los cambios en `context/` van en la rama del spec que los motiva y llegan a `main` con su PR.
 - Cada regla tiene **un solo RF dueño**; los demás requisitos remiten a él en lugar de repetirla (por ejemplo, la cancelación con ventas vive en RF-24).
 - Una decisión pendiente (`funcionales.md`, «Decisiones pendientes») se pregunta al equipo, no se resuelve en un spec.
 - No uses la ilustración de Alforjita como avatar sin autorización.
@@ -60,6 +60,7 @@ El código no se mezcla con la documentación ni con las herramientas de agentes
 
 - **Una rama por spec**, con tres dígitos y nombre descriptivo: `001-identidad-y-permisos`.
 - Si Spec Kit crea la rama, se reutiliza. No trabajes dos specs en la misma rama.
+- **Solo `main` y una rama por spec.** Todo el trabajo de un spec (especificación, plan, código, pruebas, CI, documentación y contexto) va en su rama. No crees ramas aparte para CI, documentación o implementación; si alguna vez hace falta una derivada, se borra al fusionarse.
 - No hagas commit, push, merge ni crees ramas sin que el equipo lo pida.
 - **Sin coautoría de IA:** no añadas `Co-Authored-By`, «Generated with» ni créditos de ningún agente en commits, PR o archivos.
 - **Sin basura local:** no crees copias del repositorio ni carpetas de prueba. Verifica en una rama y revierte con Git lo que no sirva.
