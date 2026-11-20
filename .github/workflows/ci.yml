@@ -104,3 +104,33 @@ jobs:
         if: always() && steps.demo.outputs.existe == 'true'
         working-directory: app
         run: docker compose down -v
+
+  sonarcloud:
+    name: Análisis en SonarCloud
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Los PR desde forks no reciben secretos: en ese caso el análisis se omite sin fallar.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: ¿Está configurado SonarCloud?
+        id: sonar
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_ORGANIZATION: ${{ vars.SONAR_ORGANIZATION }}
+        run: |
+          if [ -n "$SONAR_TOKEN" ] && [ -n "$SONAR_ORGANIZATION" ] && [ -d app ]; then
+            echo "listo=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::SonarCloud omitido: falta SONAR_TOKEN, la variable SONAR_ORGANIZATION o la carpeta app/."
+            echo "listo=false" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Analizar con SonarCloud
+        if: steps.sonar.outputs.listo == 'true'
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}

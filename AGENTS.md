@@ -38,6 +38,7 @@ El código no se mezcla con la documentación ni con las herramientas de agentes
 ## Integración y entrega continuas
 
 - **CI** (`.github/workflows/ci.yml`): en cada pull request y en cada cambio a `main` comprueba las reglas del equipo (`.github/scripts/verificar-reglas.sh`), ejecuta las pruebas de `app/`, audita dependencias y construye y prueba la demo con contenedores.
+- **SonarCloud** (`sonar-project.properties`): análisis de calidad y seguridad del código de `app/`. Necesita el secreto `SONAR_TOKEN` y la variable `SONAR_ORGANIZATION` en el repositorio; si faltan, el paso se omite sin fallar. Nunca pongas el token en el código.
 - **CD** (`.github/workflows/cd.yml`): al unir cambios de `app/` a `main` publica las imágenes de cada servicio en `ghcr.io`, etiquetadas con el commit. El despliegue a un entorno concreto aún no está definido por el equipo.
 - Puedes correr las reglas en local: `bash .github/scripts/verificar-reglas.sh`.
 - Un PR no se fusiona con la CI en rojo.
