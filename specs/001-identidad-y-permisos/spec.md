@@ -20,7 +20,7 @@
 
 Este spec define **quién puede hacer qué** en VIVART: la consulta pública sin cuenta, la identificación de usuarios, los roles y sus permisos, la revocación de roles y el historial de las operaciones sensibles de permisos. Es el primero de un máximo de ocho specs y los demás dependen de él.
 
-**Dentro de este spec:** RF-01, RF-02, RF-03, RF-04, RF-04b, RC-01 y RC-06 (en lo que toca a permisos), y las verificaciones RNF-02, RNF-04, RNF-05 y RNF-09 aplicables a identidad y permisos.
+**Dentro de este spec:** RF-01, RF-02, RF-03, RF-04, RF-04b, RC-01 y RC-06 (en lo que toca a permisos), y las verificaciones RNF-01, RNF-02, RNF-03, RNF-04, RNF-05 y RNF-09 aplicables a identidad y permisos.
 
 **Fuera de este spec** (solo son dependencias; cada uno define sus propios flujos):
 
@@ -141,7 +141,7 @@ Cuando una acción se rechaza por permisos, la persona recibe un mensaje que ind
 
 Una persona se registra, inicia y cierra sesión, recupera el acceso si lo pierde y consulta solo sus propios pedidos, entradas, sellos e insignias desde los espacios correspondientes.
 
-**Why this priority**: es la base de identidad de cada usuario, pero depende de decisiones pendientes (credenciales y verificación) que se resuelven antes de planificar.
+**Why this priority**: es la base de identidad de cada usuario y de las historias que exigen una cuenta.
 
 **Independent Test**: se puede probar registrando una cuenta, cerrando e iniciando sesión, recuperando el acceso y verificando que solo se ven los datos propios.
 
@@ -196,7 +196,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - ¿Qué pasa si una persona se identifica y la acción original ya no es válida (cupo agotado, QR vencido, función cancelada)? Se muestra el motivo y se ofrece volver a la ficha o al carrito.
 - ¿Qué pasa si el visitante cierra el navegador antes de identificarse? Conserva lo que tenía guardado localmente (carrito y recorrido), sin cuenta.
 - ¿Qué pasa si la identificación falla o no se puede verificar? La acción no se completa y se muestra que no está confirmada.
-- ¿Qué pasa si una persona se registra con un correo ya registrado? El sistema no crea una segunda cuenta; el correo es único.
+- ¿Qué pasa si una persona se registra con un correo ya registrado? El sistema no crea una segunda cuenta; el correo es único, y la respuesta no revela que ya existía (FR-036).
 - ¿Qué pasa si el enlace de verificación o el de recuperación se abre dos veces o después de vencer? El segundo uso o el uso vencido se rechaza y se ofrece pedir uno nuevo.
 - ¿Qué pasa si alguien pide recuperar el acceso de un correo no registrado? La pantalla muestra el mismo mensaje que si estuviera registrado y no revela si la cuenta existe.
 - ¿Qué pasa si una persona pega una contraseña desde un gestor? El sistema la acepta, incluidos los espacios, hasta la longitud máxima admitida (al menos 64 caracteres).
@@ -237,7 +237,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 
 - **FR-018**: Al revocar un rol, el usuario DEBE perder solo las acciones que ese rol concedía y conservar las de sus demás roles.
 - **FR-019**: Al revocar un rol, los borradores y propuestas pendientes del usuario DEBEN conservarse con su autor e historial.
-- **FR-020**: El administrador DEBE poder reasignar el trabajo conservado, y otro publicador DEBE poder continuar una revisión pendiente.
+- **FR-020**: El administrador DEBE poder reasignar el trabajo conservado, y otro publicador DEBE poder continuar una revisión pendiente. Este spec fija **quién** tiene el permiso; la reasignación en sí y la conservación de borradores y propuestas las ejecuta el spec 02, dueño del contenido editorial.
 - **FR-021**: Revocar un rol NO DEBE despublicar contenido ya publicado.
 
 **Rechazos**
@@ -247,14 +247,14 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 
 **Historial y privacidad**
 
-- **FR-024**: Toda asignación o revocación de roles, asignación de funciones al personal de acceso y reasignación de borradores DEBE conservar quién la hizo, cuándo y sobre qué registro.
+- **FR-024**: Toda asignación o revocación de roles, asignación de funciones al personal de acceso y reasignación de borradores DEBE conservar quién la hizo, cuándo y sobre qué registro. El historial de roles y funciones pertenece a este spec; el registro de la reasignación de borradores lo hace el spec 02, que la ejecuta.
 - **FR-025**: Un administrador autorizado DEBE poder consultar ese historial, y ningún otro rol PUEDE hacerlo.
 - **FR-026**: El sistema NO DEBE exponer credenciales ni códigos privados en registros operativos.
 
 **Primer administrador, credenciales, verificación y recuperación** (decisiones cerradas el 2026-11-19; véase Clarifications)
 
 - **FR-027**: El sistema DEBE permitir que el equipo habilite la primera cuenta administrativa para un correo designado mediante un procedimiento interno y documentado, y su titular DEBE establecer su propia contraseña al activarla. NO DEBE existir un registro público especial para el primer administrador ni credenciales predeterminadas en el repositorio. A partir de esa cuenta, un administrador activo DEBE poder asignar roles a otras cuentas.
-- **FR-028**: El registro público DEBE pedir únicamente un correo electrónico único y una contraseña, y NUNCA DEBE otorgar permisos internos. La contraseña DEBE tener al menos 15 caracteres, DEBE permitir espacios y pegarse desde un gestor de contraseñas, DEBE admitir una longitud máxima de al menos 64 caracteres y NO DEBE exigir combinaciones de mayúsculas, números o símbolos. El sistema NO DEBE pedir cédula, teléfono ni dirección para crear una cuenta.
+- **FR-028**: El registro público DEBE pedir únicamente un correo electrónico único y una contraseña, y NUNCA DEBE otorgar permisos internos. La contraseña DEBE tener al menos 15 caracteres, DEBE permitir espacios y pegarse desde un gestor de contraseñas, DEBE admitir una longitud máxima de al menos 64 caracteres (el plan fija el máximo en 128; `research.md`, decisión 5) y NO DEBE exigir combinaciones de mayúsculas, números o símbolos. El sistema NO DEBE pedir cédula, teléfono ni dirección para crear una cuenta.
 - **FR-029**: Al registrarse, el sistema DEBE enviar un enlace de verificación al correo. Pagar y canjear un sello DEBEN exigir una cuenta con correo verificado, mientras que Agenda, Mapa y Alforjita permanecen abiertos sin cuenta. Tras verificar el correo e iniciar sesión, el sistema DEBE permitir retomar la acción original y comprobar si sigue vigente. Para recuperar el acceso, el sistema DEBE enviar un enlace de un solo uso y con vencimiento, y DEBE mostrar el mismo mensaje tanto si el correo está registrado como si no.
 - **FR-030**: Para la demo DEBE poder comprobarse la verificación y la recuperación sin enviar correos reales, mediante un buzón de pruebas. La elección del proveedor de correo y los plazos exactos de los enlaces corresponden al plan técnico.
 
@@ -272,6 +272,12 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 | Canje de sello | La referencia al QR de la función | El enlace del QR, antes de reclamar | QR vigente, función habilitada y no cancelada y ventana de canje vigente (spec 06, FR-001) |
 
 Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garantiza que la persona vuelva a esas acciones identificada y que se revaliden.
+
+**Protección del acceso y accesibilidad** (añadidos el 2026-11-20 al revisar el spec)
+
+- **FR-036**: El registro DEBE dar la misma respuesta tanto si el correo es nuevo como si ya está registrado, para no revelar qué correos tienen cuenta (RNF-05).
+- **FR-037**: El sistema DEBE limitar los intentos repetidos de inicio de sesión, de registro y de recuperación de acceso. El contexto no fija los valores: el número de intentos y la ventana de tiempo son un valor definido en el plan técnico (`research.md`, decisión 13).
+- **FR-038**: Los flujos de identidad (registro, verificación, inicio y cierre de sesión, recuperación, activación del primer administrador, retorno a la acción, gestión de roles e historial) DEBEN poder completarse solo con teclado y en una pantalla de celular sin desbordamiento horizontal, con foco visible, etiquetas comprensibles y estados que no se comuniquen solo con color (RNF-01, RNF-03).
 
 ### Key Entities
 
@@ -307,6 +313,8 @@ Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garan
 - **SC-016**: La verificación y la recuperación pueden comprobarse de principio a fin en la demo sin enviar ningún correo real.
 - **SC-017**: En el 100 % de los retornos tras identificarse, la vigencia de la compra o del canje se vuelve a comprobar, y 0 pagos o canjes se ejecutan automáticamente por el solo hecho de retomar la acción desde este spec.
 - **SC-018**: El 100 % de las acciones retomadas con una comprobación fallida muestra el motivo y ofrece volver a la ficha o al carrito.
+- **SC-019**: El 100 % de los flujos de identidad de FR-038 se completa solo con teclado y a 360 px de ancho sin desplazamiento horizontal, en la comprobación manual T067.
+- **SC-020**: En las pruebas, el registro con un correo nuevo y con uno ya registrado devuelve la misma respuesta en el 100 % de los casos, y los intentos que superan el límite definido en el plan se rechazan en el 100 % de los casos.
 
 ## Anexo técnico y de arquitectura
 
@@ -355,9 +363,10 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 | Decisión Q2 (correo y contraseña) | FR-028; Historia 7; SC-010, SC-011 |
 | RF-03 (retorno y revalidación), contrato con specs 05 y 06 | FR-031 a FR-035; Historia 2; SC-017, SC-018 |
 | Decisión Q3 (verificación y recuperación) | FR-003, FR-007, FR-029, FR-030; Historias 2 y 7; SC-012 a SC-014, SC-016 |
+| RNF-01 (uso móvil) y RNF-03 (accesibilidad) | FR-038; SC-019 |
 | RNF-02 (mensaje de rechazo) | FR-022, SC-006 |
-| RNF-04 (verificación en servidor) | FR-012, FR-017, SC-001 |
-| RNF-05 (privacidad) | FR-002, FR-026 |
+| RNF-04 (verificación en servidor) | FR-012, FR-017, FR-037; SC-001, SC-020 |
+| RNF-05 (privacidad) | FR-002, FR-026, FR-036; SC-020 |
 | RNF-09 (trazabilidad) | FR-024, FR-025, SC-007 |
 
 ## Assumptions
