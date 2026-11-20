@@ -1,0 +1,18 @@
+{
+  "name": "vivart-programacion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Servicio de programación y consulta pública de VIVART: actividades, funciones, flujo editorial, carga y Agenda",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --env-file-if-exists=../../.env --test \"test/**/*.test.js\""
+  },
+  "dependencies": {
+    "fastify": "^5.0.0",
+    "pg": "^8.23.1"
+  }
+}
