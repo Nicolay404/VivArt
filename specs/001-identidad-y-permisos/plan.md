@@ -37,7 +37,7 @@ Es un servicio HTTP independiente y dueño de sus datos, dentro de la arquitectu
 | Principio | Evaluación |
 |---|---|
 | I. Desarrollo guiado por especificaciones | **Cumple.** Spec revisado y clarificado antes del plan; este plan precede a las tareas y a la implementación |
-| II. El contexto es la fuente de verdad | **Cumple.** Cada decisión técnica es reversible y no cambia requisitos. Los pendientes de producto (P-10, P-11) no se resuelven aquí |
+| II. El contexto es la fuente de verdad | **Cumple.** Cada decisión técnica es reversible y no cambia requisitos. P-10 y P-11 los decidió el equipo el 2026-11-20 y están en el spec (FR-039 a FR-042) |
 | III. Máximo ocho specs | **Cumple.** Este plan pertenece solo al spec 001; no crea specs |
 | IV. Arquitectura compartida, cuatro vistas, sin monolito modular | **Cumple con reserva.** Respeta la decisión de trabajo del PR #7; está **pendiente de validación del docente** y no se afirma como validada |
 | V. Cada spec es verificable | **Cumple.** Las pruebas se mapean a SC-001 a SC-018 (ver `research.md`) |
