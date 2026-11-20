@@ -39,7 +39,8 @@ function copiaSegura(t) {
 function guardarCopia(usuario, items) {
   try {
     const seguros = Array.isArray(items) ? items.map(copiaSegura) : [];
-    localStorage.setItem(CLAVE, JSON.stringify({ usuario: texto(usuario, 64), guardado: new Date().toISOString(), items: seguros }));
+    // Se guarda codificada: al leerla se decodifica y se vuelve a validar su forma.
+    localStorage.setItem(CLAVE, encodeURIComponent(JSON.stringify({ usuario: texto(usuario, 64), guardado: new Date().toISOString(), items: seguros })));
   } catch {
     // Sin almacenamiento: no habrá copia sin conexión.
   }
@@ -47,8 +48,9 @@ function guardarCopia(usuario, items) {
 
 function leerCopia(usuario) {
   try {
-    const c = JSON.parse(localStorage.getItem(CLAVE) ?? 'null');
-    return c && c.usuario === usuario ? c : null;
+    const crudo = localStorage.getItem(CLAVE);
+    const c = crudo ? JSON.parse(decodeURIComponent(crudo)) : null;
+    return c && c.usuario === usuario && Array.isArray(c.items) ? { ...c, items: c.items.map(copiaSegura) } : null;
   } catch {
     return null;
   }
