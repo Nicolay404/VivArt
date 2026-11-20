@@ -4,7 +4,7 @@
   "type": "module",
   "description": "VIVART: repositorio de servicios, web y entrada común",
   "scripts": {
-    "test": "npm --prefix services/identidad test && node --env-file-if-exists=.env --test \"edge/test/**/*.test.js\""
+    "test": "npm --prefix services/identidad test && npm --prefix services/programacion test && node --env-file-if-exists=.env --test \"edge/test/**/*.test.js\""
   },
   "engines": {
     "node": ">=24"

@@ -26,7 +26,10 @@ const DIRECTORIO_WEB = fileURLToPath(new URL('../web/', import.meta.url));
 
 export function createEdge({
   webDir = DIRECTORIO_WEB,
-  routes = [{ prefix: '/api/identidad', target: process.env.IDENTIDAD_URL ?? 'http://127.0.0.1:3001' }],
+  routes = [
+    { prefix: '/api/identidad', target: process.env.IDENTIDAD_URL ?? 'http://127.0.0.1:3001' },
+    { prefix: '/api/programacion', target: process.env.PROGRAMACION_URL ?? 'http://127.0.0.1:3002' },
+  ],
 } = {}) {
   const base = resolve(webDir);
 
