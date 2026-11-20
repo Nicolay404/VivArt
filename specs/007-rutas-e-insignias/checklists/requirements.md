@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,6 +31,6 @@
 
 ## Notes
 
-- Marcadores [NEEDS CLARIFICATION] abiertos: 2. Pendientes explícitos: comportamiento de una ruta cuando una función elegible se cancela o pierde su canje (FR-020) y recursos visuales de rutas e insignias (FR-021). Se cierran con /speckit-clarify.
+- Los marcadores [NEEDS CLARIFICATION] originales (FR-020 y FR-021) se cerraron el 2026-11-20; constan en «Clarifications» del spec.
 - No se inventaron métricas de tiempo ni de volumen; los criterios se expresan como porcentajes y conteos verificables sobre las reglas del contexto.
 - No se eligió arquitectura ni tecnología. Los permisos y la identidad dependen del spec 001.

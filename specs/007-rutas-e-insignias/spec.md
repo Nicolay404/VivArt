@@ -8,6 +8,13 @@
 
 **Input**: User description: "Spec 07 de 8 de VIVART: rutas culturales e insignias. Cubre RF-28 a RF-30. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Qué pasa con una ruta si una función elegible se cancela o pierde su canje? → A: Una función cancelada deja de aparecer como pendiente para nuevos canjes, pero sus sellos ya obtenidos siguen contando. Si todavía se puede alcanzar la meta, la ruta sigue activa. Si la cancelación impide completarla con las opciones restantes, se muestra «Ruta en revisión» y el administrador puede ajustarla, por ejemplo añadiendo otra función elegible. No se reduce la meta automáticamente ni se retira progreso, sellos o insignias ya otorgadas.
+- Q: ¿Cómo se presentan las rutas y las insignias? → A: Con plantillas visuales comunes de VIVART, con el nombre y la descripción que defina el administrador. No se exige una ilustración única ni subir archivos para publicar cada ruta.
+
 ## Alcance y límites
 
 Este spec define cómo se anima al público a explorar distintas propuestas a partir de los sellos que ya colecciona: la creación y publicación de rutas por el administrador, la consulta pública de las rutas, el progreso de cada usuario en cada ruta y el desbloqueo de insignias.
@@ -36,7 +43,8 @@ Un visitante, con o sin cuenta, abre la pestaña Pasaporte, ve las rutas públic
 2. **Given** una ruta, **When** se abre, **Then** muestra su descripción, sus funciones elegibles, su meta y su insignia.
 3. **Given** una ruta no publicada, **When** un visitante busca rutas, **Then** no aparece.
 4. **Given** un visitante sin cuenta, **When** intenta ver su progreso, **Then** se le pide identificarse; las rutas siguen visibles.
-5. **Given** una función elegible cancelada, **When** se muestra la ruta, **Then** se indica su estado cancelado.
+5. **Given** una función elegible cancelada, **When** se muestra la ruta, **Then** se indica su estado cancelado y deja de aparecer como pendiente para nuevos canjes.
+6. **Given** una ruta cuya meta ya no se puede completar con las funciones elegibles restantes, **When** se muestra, **Then** aparece como «Ruta en revisión».
 
 ---
 
@@ -55,7 +63,7 @@ Un usuario registrado ve cuántos sellos distintos de funciones elegibles ha reu
 3. **Given** un sello de una función no elegible, **When** se calcula, **Then** no suma.
 4. **Given** una ruta, **When** se muestra el progreso, **Then** marca qué funciones ya tienen sello y cuáles faltan.
 5. **Given** el pasaporte del usuario, **When** se consulta, **Then** el denominador «de N» pertenece solo a cada ruta, no al total de sellos (spec 06).
-6. **Given** un sello obtenido de una función que luego deja de ser elegible, **When** se consulta la ruta, **Then** el comportamiento queda sujeto a clarificación (FR-020).
+6. **Given** un sello obtenido de una función que luego se cancela, **When** se consulta la ruta, **Then** el sello sigue contando en el progreso y no se retira.
 
 ---
 
@@ -73,7 +81,7 @@ Al alcanzar la meta de una ruta, el usuario obtiene su insignia una sola vez, y 
 2. **Given** una insignia ya obtenida, **When** se vuelve a alcanzar o recalcular la meta, **Then** no se otorga otra vez.
 3. **Given** dos solicitudes simultáneas que completan la meta, **When** se procesan, **Then** se otorga una sola insignia.
 4. **Given** el apartado Insignias, **When** el usuario lo abre, **Then** ve solo sus propias insignias.
-5. **Given** una ruta cuya meta ya no es alcanzable, **When** se consulta, **Then** el comportamiento queda sujeto a clarificación (FR-020).
+5. **Given** un usuario que ya reunió el número de sellos de la meta, incluidos sellos de funciones luego canceladas, **When** se calcula su progreso, **Then** obtiene la insignia una sola vez, aunque la ruta esté en revisión.
 
 ---
 
@@ -93,11 +101,15 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 4. **Given** una ruta completa, **When** el administrador la publica, **Then** aparece en Pasaporte.
 5. **Given** una ruta publicada, **When** el administrador la edita, **Then** las insignias ya ganadas no se retiran automáticamente.
 6. **Given** un usuario sin rol de administrador, **When** intenta gestionar rutas, **Then** el sistema lo rechaza.
+7. **Given** una ruta en revisión, **When** el administrador la ajusta, por ejemplo añadiendo otra función elegible, **Then** la ruta vuelve a poder completarse y deja de estar en revisión.
+8. **Given** una ruta en revisión, **When** el sistema la muestra, **Then** no reduce la meta automáticamente ni retira progreso, sellos ni insignias ya otorgadas.
+9. **Given** un administrador, **When** publica una ruta con nombre y descripción, **Then** se presenta con las plantillas visuales comunes sin exigir una ilustración ni archivos propios.
 
 ### Edge Cases
 
 - Una ruta con una sola función elegible y meta 1.
-- Una ruta cuya función elegible se cancela o pierde su canje por una reprogramación.
+- Una ruta cuya función elegible se cancela o pierde su canje por una reprogramación: sus sellos ya obtenidos siguen contando y, si la meta ya no se puede completar, la ruta queda «en revisión».
+- Un usuario con sellos de una función cancelada en una ruta en revisión.
 - Una ruta editada después de que un usuario ganó su insignia.
 - Un usuario con sellos de una ruta que aún no se publicó.
 - Dos rutas que comparten funciones: un sello puede contar en ambas.
@@ -115,7 +127,7 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 - **FR-001**: El administrador DEBE poder crear y publicar rutas, seleccionar funciones elegibles, establecer una meta alcanzable y asignar la insignia.
 - **FR-002**: Solo las funciones con Pasaporte habilitado DEBEN poder ser elegibles; una franja de apertura NO DEBE ser elegible ni contar para rutas.
 - **FR-003**: El sistema DEBE rechazar una meta mayor al número de funciones elegibles de la ruta.
-- **FR-004**: El sistema NO DEBE permitir publicar una ruta sin insignia asignada ni sin funciones elegibles.
+- **FR-004**: El sistema NO DEBE permitir publicar una ruta sin insignia asignada (con nombre y descripción) ni sin funciones elegibles, ni exigir una ilustración ni archivos para publicarla.
 - **FR-005**: Solo el administrador DEBE poder crear, editar y publicar rutas, incluso con solicitudes directas.
 - **FR-006**: Editar una ruta NO DEBE retirar automáticamente insignias ya ganadas.
 - **FR-007**: Los cambios sobre rutas e insignias DEBEN quedar en el historial (RC-06).
@@ -125,7 +137,7 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 - **FR-008**: El visitante DEBE poder consultar las rutas públicas y sus funciones sin cuenta.
 - **FR-009**: La ruta DEBE mostrar descripción, funciones elegibles, meta e insignia.
 - **FR-010**: Una ruta no publicada NO DEBE ser visible para el público.
-- **FR-011**: Una función elegible cancelada DEBE mostrarse como cancelada en la ruta.
+- **FR-011**: Una función elegible cancelada DEBE mostrarse como cancelada en la ruta y dejar de aparecer como pendiente para nuevos canjes.
 
 **Progreso**
 
@@ -141,16 +153,18 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 - **FR-018**: Dos solicitudes simultáneas que completan la meta NO DEBEN otorgar la insignia dos veces (RC-05).
 - **FR-019**: El usuario DEBE ver solo sus propias insignias en el apartado Insignias.
 
-**Decisiones pendientes**
+**Ruta en revisión y presentación visual** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-020**: Cuando una función elegible se cancela o deja de tener canje habilitado y la meta deja de ser alcanzable, la ruta DEBE comportarse así: [NEEDS CLARIFICATION: el contexto exige una meta alcanzable al crear la ruta, pero no define qué ocurre si después una función elegible se cancela o pierde su canje, ni qué ocurre con el progreso ya acumulado].
-- **FR-021**: Las imágenes y textos de rutas e insignias son [NEEDS CLARIFICATION: el contexto no define quién produce los recursos visuales de las rutas y las insignias ni qué formatos admite].
+- **FR-020**: Los sellos ya obtenidos de una función cancelada DEBEN seguir contando en el progreso. Si la cancelación impide completar la meta con las funciones elegibles restantes, la ruta DEBE mostrarse como «Ruta en revisión» y el administrador DEBE poder ajustarla, por ejemplo añadiendo otra función elegible. El sistema NO DEBE reducir la meta automáticamente ni retirar progreso, sellos o insignias ya otorgadas.
+- **FR-021**: Las rutas y las insignias DEBEN presentarse con plantillas visuales comunes de VIVART y con el nombre y la descripción que defina el administrador; NO DEBE exigirse una ilustración única ni subir archivos para publicar cada ruta.
 
 ### Key Entities
 
 - **Ruta cultural**: conjunto publicado de funciones elegibles con meta e insignia.
 - **Función elegible**: función con Pasaporte habilitado incluida en una ruta.
-- **Meta**: cantidad de sellos distintos requerida; alcanzable respecto a las funciones elegibles.
+- **Meta**: cantidad de sellos distintos requerida; alcanzable respecto a las funciones elegibles al crear la ruta. No se reduce sola.
+- **Ruta en revisión**: estado de una ruta que ya no puede completarse con las funciones elegibles restantes tras una cancelación, a la espera de que el administrador la ajuste.
+- **Plantilla visual común**: presentación de VIVART para rutas e insignias con nombre y descripción definidos por el administrador.
 - **Progreso**: sellos distintos de funciones elegibles reunidos por un usuario en una ruta.
 - **Insignia**: reconocimiento obtenido una sola vez al alcanzar la meta.
 - **Colección de insignias**: insignias de un usuario.
@@ -168,6 +182,9 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 - **SC-007**: El 100 % de las metas rechazadas es mayor al número de funciones elegibles.
 - **SC-008**: 0 usuarios sin rol de administrador consiguen crear o publicar rutas, ni con solicitudes directas.
 - **SC-009**: 0 usuarios ven el progreso o las insignias de otra cuenta.
+- **SC-011**: El 100 % de las rutas cuya meta no puede completarse tras una cancelación se muestra como «Ruta en revisión», y 0 metas se reducen automáticamente.
+- **SC-012**: Tras una cancelación, 0 progresos, sellos o insignias ya otorgadas se retiran y el 100 % de los sellos de la función cancelada sigue contando para quienes los tienen.
+- **SC-013**: El 100 % de las rutas se publica con las plantillas comunes sin subir archivos.
 - **SC-010**: El 100 % de los cambios de rutas queda en el historial.
 
 ## Trazabilidad con el contexto
@@ -177,6 +194,8 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 | RF-28 | FR-001 a FR-007; Historia 4 |
 | RF-29, M-01 | FR-008 a FR-016; Historias 1 y 2 |
 | RF-30 | FR-017 a FR-019; Historia 3 |
+| Q14 (ruta en revisión) | FR-011, FR-020; Historias 1, 2, 3 y 4 |
+| Q15 (plantilla visual) | FR-004, FR-021; Historia 4 |
 | RC-05, RNF-06 | FR-013, FR-018; SC-002, SC-004 |
 | RNF-04 | FR-005, FR-009, FR-019; SC-008, SC-009 |
 
