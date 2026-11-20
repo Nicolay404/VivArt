@@ -8,6 +8,13 @@
 
 **Input**: User description: "Spec 06 de 8 de VIVART: Pasaporte Vivo y sellos. Cubre RF-25 a RF-27, con RC-04, RC-05 y RC-06. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Qué pasa con un sello cuando la función se cancela después? → A: Al cancelar una función se bloquean nuevos canjes. Los sellos obtenidos antes de la cancelación siguen en la colección, muestran el aviso en su detalle y siguen contando para las rutas que ya los reconocían.
+- Q: ¿Qué contenido tiene cada sello? → A: El sello siempre muestra los datos de la función en una plantilla común de VIVART. El administrador puede añadir una imagen autorizada, un texto breve o ambos; ninguno es obligatorio para emitir el sello.
+
 ## Alcance y límites
 
 Este spec define cómo el usuario conserva un recuerdo de cada función habilitada, sea gratuita o de pago: el QR del Pasaporte por función, el canje de un sello al abrir su enlace, la colección de sellos y el control del administrador sobre los QR y las ventanas de canje.
@@ -56,7 +63,7 @@ Cuando el canje no procede, el sistema indica el motivo: tipo de código incorre
 1. **Given** un QR de entrada abierto como canje, **When** se procesa, **Then** se rechaza con «tipo de código incorrecto» y no se otorga sello (RC-04).
 2. **Given** un QR desactivado o reemplazado, **When** se abre, **Then** se indica que ese QR ya no está vigente.
 3. **Given** un canje fuera de la ventana, **When** se abre, **Then** se indica si está vencido o aún no abierto.
-4. **Given** una función cancelada, **When** se abre el enlace, **Then** se rechaza con ese motivo.
+4. **Given** una función cancelada, **When** se abre el enlace, **Then** se rechaza con ese motivo y no se emite ningún sello nuevo.
 5. **Given** una cuenta con el correo sin verificar, **When** intenta reclamar, **Then** se le pide verificar el correo y no se otorga el sello.
 6. **Given** un canje que no puede verificarse, **When** ocurre, **Then** se muestra que no está confirmado.
 
@@ -75,9 +82,11 @@ El usuario consulta su colección en «Mi pasaporte», que muestra el total de s
 1. **Given** un usuario con sellos, **When** abre «Mi pasaporte», **Then** ve el total de sellos obtenidos (por ejemplo, «5 sellos»).
 2. **Given** «Mi pasaporte», **When** se muestra, **Then** no hay meta global, porcentaje global ni casillero bloqueado de un «próximo sello».
 3. **Given** un sello, **When** el usuario lo abre, **Then** ve espectáculo, fecha, sede y el recuerdo visual o textual, si existe.
-4. **Given** un sello sin recuerdo visual ni textual, **When** se abre, **Then** se muestra sin él, sin inventarlo.
-5. **Given** un usuario, **When** consulta su colección, **Then** ve solo sus propios sellos.
-6. **Given** un visitante sin cuenta, **When** abre la pestaña Pasaporte, **Then** puede ver las rutas públicas (spec 07) y se le pide identificarse para ver su colección.
+4. **Given** un sello sin imagen ni texto añadidos por el administrador, **When** se abre, **Then** se muestra con la plantilla común y los datos de la función, sin inventar contenido.
+5. **Given** un sello de una función cancelada después de obtenerlo, **When** el usuario lo abre, **Then** sigue en la colección y su detalle muestra el aviso de cancelación.
+6. **Given** un sello de una función cancelada, **When** se calcula el progreso de una ruta que ya lo reconocía, **Then** el sello sigue contando (spec 07).
+7. **Given** un usuario, **When** consulta su colección, **Then** ve solo sus propios sellos.
+8. **Given** un visitante sin cuenta, **When** abre la pestaña Pasaporte, **Then** puede ver las rutas públicas (spec 07) y se le pide identificarse para ver su colección.
 
 ---
 
@@ -94,7 +103,7 @@ El administrador genera, activa, desactiva o reemplaza el QR del Pasaporte por f
 1. **Given** una función, **When** el administrador genera y activa su QR, **Then** el canje queda habilitado dentro de la ventana configurada.
 2. **Given** un QR reemplazado, **When** se usa el anterior, **Then** se rechaza y los sellos ya obtenidos se conservan.
 3. **Given** un QR desactivado, **When** se abre, **Then** el canje se rechaza.
-4. **Given** el administrador, **When** configura el contenido del sello, **Then** se usa en los sellos futuros.
+4. **Given** el administrador, **When** configura el contenido del sello, **Then** puede añadir una imagen autorizada, un texto breve o ambos, o ninguno, y se usa en los sellos futuros.
 5. **Given** un usuario sin rol de administrador, **When** intenta gestionar un QR, **Then** el sistema lo rechaza.
 6. **Given** una actividad permanente, **When** solo tiene franjas, **Then** no puede tener QR de Pasaporte; sí puede tenerlo una función puntual de esa actividad.
 
@@ -126,7 +135,8 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 - Un usuario que reclama el sello fuera de la sede: el contexto no exige estar en la sede.
 - La ventana de canje abierta pero la función aún no empezó, o ya terminó.
 - Una función archivada con sellos: se conservan (spec 02).
-- Sellos con y sin recuerdo visual o textual.
+- Sellos con la plantilla común sola, con imagen, con texto breve o con ambos.
+- Un sello de una función cancelada después de obtenerlo.
 
 ## Requirements *(mandatory)*
 
@@ -137,7 +147,7 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 - **FR-001**: Al abrir el enlace del QR, el sistema DEBE verificar sesión iniciada con correo verificado, QR vigente, función habilitada y no cancelada, y ventana de canje vigente.
 - **FR-002**: El sistema NO DEBE exigir haber comprado ni validado una entrada para reclamar un sello, sea la función gratuita o de pago.
 - **FR-003**: El sistema DEBE entregar un solo sello por usuario y función, y si ya existe DEBE mostrar el mismo sello sin tratarlo como error (RC-05).
-- **FR-004**: Comprar una entrada NO DEBE entregar el sello automáticamente.
+- **FR-004**: Comprar una entrada NO DEBE entregar el sello automáticamente. Al cancelar una función, el sistema DEBE bloquear nuevos canjes.
 - **FR-005**: El sistema NO DEBE ofrecer código manual de canje en el MVP; DEBE bastar abrir el enlace del QR en el navegador.
 - **FR-006**: Si el usuario no tiene sesión, el sistema DEBE pedir identificarse y devolverlo al canje, que se revalida (spec 001).
 
@@ -149,7 +159,7 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 
 **Colección**
 
-- **FR-010**: El usuario DEBE poder consultar su colección y abrir cada sello para ver espectáculo, fecha, sede y recuerdo visual o textual, cuando exista.
+- **FR-010**: El usuario DEBE poder consultar su colección y abrir cada sello para ver espectáculo, fecha, sede y, cuando el administrador los haya añadido, la imagen y el texto breve.
 - **FR-011**: «Mi pasaporte» DEBE mostrar el total de sellos obtenidos y NO DEBE mostrar meta global, porcentaje global ni casilleros bloqueados.
 - **FR-012**: Cada usuario DEBE ver solo sus propios sellos.
 - **FR-013**: Un visitante sin cuenta DEBE poder ver las rutas públicas y DEBE identificarse para ver su colección.
@@ -164,16 +174,16 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 - **FR-019**: El administrador DEBE poder confirmar una nueva ventana y reactivar el canje, y los sellos ya obtenidos DEBEN conservarse.
 - **FR-020**: Los cambios de QR, ventana y contenido del sello DEBEN quedar en el historial (RC-06).
 
-**Decisiones pendientes**
+**Sello de una función cancelada y contenido del sello** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-021**: Un sello ya obtenido de una función que luego se cancela DEBE tratarse así: [NEEDS CLARIFICATION: el contexto conserva los sellos al reemplazar un QR y al reprogramar, pero no define qué ocurre con el sello si la función se cancela después].
-- **FR-022**: El contenido del sello (recuerdo visual o textual) DEBE entregarse así: [NEEDS CLARIFICATION: el contexto no define quién produce las imágenes o textos de cada sello ni qué formatos admite].
+- **FR-021**: Los sellos obtenidos antes de la cancelación de una función DEBEN seguir en la colección, DEBEN mostrar el aviso de cancelación en su detalle y DEBEN seguir contando para las rutas que ya los reconocían. La cancelación NO DEBE retirar sellos.
+- **FR-022**: El sello DEBE mostrar siempre los datos de la función en una plantilla común de VIVART. El administrador PUEDE añadir una imagen autorizada, un texto breve o ambos; ninguno DEBE ser obligatorio para emitir el sello.
 
 ### Key Entities
 
 - **QR de Pasaporte**: código por función que se abre como enlace para reclamar un sello; puede estar activo, desactivado o reemplazado.
 - **Ventana de canje**: intervalo en que el canje de una función es válido.
-- **Sello**: recuerdo de una función, con espectáculo, fecha, sede y contenido visual o textual opcional; único por usuario y función.
+- **Sello**: recuerdo de una función en una plantilla común de VIVART, con espectáculo, fecha y sede, y una imagen autorizada y un texto breve opcionales; único por usuario y función. Si la función se cancela, conserva su aviso.
 - **Colección**: sellos de un usuario, con su total.
 - **Motivo de rechazo del canje**: razón por la que un canje no procede.
 - **Función habilitada para Pasaporte**: función con fecha y hora con canje activado.
@@ -191,6 +201,8 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 - **SC-007**: 0 usuarios ven sellos de otra cuenta.
 - **SC-008**: 0 franjas de apertura tienen QR de Pasaporte; solo las funciones con fecha y hora.
 - **SC-009**: 0 usuarios sin rol de administrador consiguen gestionar un QR, incluso con solicitudes directas.
+- **SC-011**: El 100 % de los sellos obtenidos antes de una cancelación sigue en la colección con el aviso en su detalle, y 0 canjes nuevos se aceptan después de la cancelación.
+- **SC-012**: El 100 % de los sellos se emite con la plantilla común aunque no tenga imagen ni texto, y 0 sellos exigen contenido adicional para emitirse.
 - **SC-010**: El 100 % de los cambios de QR, ventana y contenido queda en el historial.
 
 ## Trazabilidad con el contexto
@@ -199,6 +211,8 @@ Al publicarse un cambio de fecha, hora o sede de una función con canje habilita
 |---|---|
 | RF-25, P-03 | FR-014 a FR-020; Historias 4 y 5 |
 | RF-26, RC-04, RC-05 | FR-001 a FR-009; Historias 1 y 2 |
+| Q12 (sello de función cancelada) | FR-004, FR-021; Historias 3 y 5 |
+| Q13 (contenido del sello) | FR-010, FR-022; Historias 3 y 4 |
 | RF-27, M-01 | FR-010 a FR-013; Historia 3 |
 | RNF-04 | FR-012, FR-017; SC-007, SC-009 |
 | RNF-06 | FR-003; SC-002 |
