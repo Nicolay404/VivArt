@@ -1,0 +1,277 @@
+openapi: 3.0.3
+info:
+  title: Servicio de identidad de VIVART (API pública)
+  version: 0.1.0
+  description: >
+    API del servicio de identidad que usa la interfaz web a través de la entrada común
+    (prefijo /api/identidad). Las respuestas de recuperación y de reenvío son neutras:
+    iguales exista o no el correo. Retomar una acción pendiente NUNCA ejecuta un pago ni un canje.
+servers:
+  - url: /api/identidad
+components:
+  securitySchemes:
+    sesion:
+      type: apiKey
+      in: cookie
+      name: vivart_sid
+  schemas:
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+        field: { type: string, description: "Campo al que se refiere el error, si aplica" }
+        message: { type: string }
+        missingRole: { type: string, description: "Rol que falta, sin revelar contenido" }
+        acceptedRoles: { type: array, items: { type: string } }
+    Neutral:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Si el correo es válido, recibirás un mensaje con las instrucciones.
+    Persona:
+      type: object
+      properties:
+        id: { type: string }
+        email: { type: string }
+        emailVerified: { type: boolean }
+        roles:
+          type: array
+          items: { type: string, enum: [usuario_registrado, editor, publicador, administrador, personal_acceso] }
+        functionIds: { type: array, items: { type: string } }
+    Credenciales:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 15, maxLength: 128 }
+    AccionPendiente:
+      type: object
+      required: [type]
+      properties:
+        type: { type: string, enum: [compra, canje] }
+        ref: { type: string, pattern: '^[A-Za-z0-9_-]{1,64}$' }
+paths:
+  /health:
+    get:
+      summary: Estado del servicio
+      responses:
+        '200': { description: Servicio activo }
+  /auth/register:
+    post:
+      summary: Registro público con correo y contraseña (nunca otorga permisos internos)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credenciales' }
+      responses:
+        '202':
+          description: Respuesta neutra, sea nuevo o ya registrado el correo
+          content: { application/json: { schema: { $ref: '#/components/schemas/Neutral' } } }
+        '422':
+          description: Contraseña o correo inválido; indica el campo
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+        '429': { description: Demasiados intentos }
+  /auth/verify-email:
+    post:
+      summary: Verifica el correo con un enlace de un solo uso
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [token], properties: { token: { type: string } } }
+      responses:
+        '200': { description: Correo verificado }
+        '400':
+          description: Enlace inválido, usado o vencido; se puede pedir uno nuevo
+          content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } }
+  /auth/resend-verification:
+    post:
+      summary: Reenvía el enlace de verificación (respuesta neutra)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string } } }
+      responses:
+        '202': { description: Respuesta neutra, content: { application/json: { schema: { $ref: '#/components/schemas/Neutral' } } } }
+  /auth/login:
+    post:
+      summary: Inicia sesión y entrega la cookie opaca
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Credenciales' }
+      responses:
+        '200':
+          description: Sesión iniciada
+          content: { application/json: { schema: { $ref: '#/components/schemas/Persona' } } }
+        '401': { description: Credenciales inválidas (mensaje genérico) }
+        '429': { description: Demasiados intentos }
+  /auth/logout:
+    post:
+      summary: Cierra la sesión
+      security: [{ sesion: [] }]
+      responses:
+        '204': { description: Sesión cerrada }
+  /auth/password-reset/request:
+    post:
+      summary: Pide un enlace de recuperación (respuesta neutra)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [email], properties: { email: { type: string } } }
+      responses:
+        '202': { description: Respuesta neutra, content: { application/json: { schema: { $ref: '#/components/schemas/Neutral' } } } }
+        '429': { description: Demasiados intentos }
+  /auth/password-reset/confirm:
+    post:
+      summary: Restablece la contraseña con un enlace de un solo uso y cierra las demás sesiones
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties: { token: { type: string }, password: { type: string } }
+      responses:
+        '204': { description: Contraseña restablecida }
+        '400': { description: Enlace inválido, usado o vencido }
+        '422': { description: Contraseña inválida }
+  /auth/activate:
+    post:
+      summary: Activa una cuenta pendiente (primer administrador) y establece su contraseña
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token, password]
+              properties: { token: { type: string }, password: { type: string } }
+      responses:
+        '204': { description: Cuenta activada }
+        '400': { description: Enlace inválido, usado o vencido }
+        '422': { description: Contraseña inválida }
+  /me:
+    get:
+      summary: Cuenta de la sesión actual
+      security: [{ sesion: [] }]
+      responses:
+        '200': { description: La persona, content: { application/json: { schema: { $ref: '#/components/schemas/Persona' } } } }
+        '401': { description: Sin sesión }
+  /auth/pending-actions:
+    post:
+      summary: Conserva una compra o un canje iniciados sin sesión
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/AccionPendiente' }
+      responses:
+        '201':
+          description: Acción conservada; se entrega la cookie vivart_pa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { expiresAt: { type: string, format: date-time } }
+        '422': { description: Tipo o referencia inválidos }
+  /auth/resume:
+    get:
+      summary: Devuelve a la persona al punto de origen, sin ejecutar nada
+      security: [{ sesion: [] }]
+      responses:
+        '200':
+          description: >
+            Siempre executed=false. canProceed=false mientras el correo no esté verificado.
+            La revalidación de vigencia la hace el servicio dueño (participación).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  found: { type: boolean }
+                  type: { type: string }
+                  ref: { type: string }
+                  destination: { type: string, example: /carrito }
+                  emailVerified: { type: boolean }
+                  canProceed: { type: boolean }
+                  blockedReason: { type: string, nullable: true, example: email_not_verified }
+                  executed: { type: boolean, example: false }
+        '401': { description: Sin sesión }
+  /auth/pending-actions/current:
+    delete:
+      summary: Descarta la acción pendiente
+      responses:
+        '204': { description: Descartada }
+  /users:
+    get:
+      summary: Busca cuentas por correo (solo administrador)
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: email, in: query, schema: { type: string } }
+      responses:
+        '200': { description: Lista de personas }
+        '403': { description: Falta el rol de administrador, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /users/{id}:
+    get:
+      summary: Detalle de una cuenta (solo administrador)
+      security: [{ sesion: [] }]
+      parameters: [{ name: id, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: Persona, content: { application/json: { schema: { $ref: '#/components/schemas/Persona' } } } }
+        '403': { description: Falta el rol de administrador }
+        '404': { description: No existe }
+  /users/{id}/roles/{role}:
+    put:
+      summary: Asigna un rol interno (solo administrador)
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: role, in: path, required: true, schema: { type: string, enum: [editor, publicador, administrador, personal_acceso] } }
+      responses:
+        '204': { description: Rol asignado }
+        '403': { description: Falta el rol de administrador }
+        '404': { description: No existe la cuenta }
+    delete:
+      summary: Revoca un rol (surte efecto en la siguiente consulta de permisos)
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: role, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Rol revocado; el trabajo del usuario se conserva en otros servicios }
+        '403': { description: Falta el rol de administrador }
+  /users/{id}/functions/{functionId}:
+    put:
+      summary: Asigna una función al personal de acceso (solo administrador)
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: functionId, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Función asignada }
+        '409': { description: La cuenta no tiene el rol de personal de acceso }
+    delete:
+      summary: Quita una función asignada
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+        - { name: functionId, in: path, required: true, schema: { type: string } }
+      responses:
+        '204': { description: Función quitada }
+  /audit:
+    get:
+      summary: Historial de operaciones sensibles de permisos (solo administrador)
+      security: [{ sesion: [] }]
+      parameters:
+        - { name: limit, in: query, schema: { type: integer, default: 50, maximum: 200 } }
+      responses:
+        '200': { description: Entradas del historial con quién, cuándo y sobre qué registro }
+        '403': { description: Falta el rol de administrador }

@@ -1,0 +1,97 @@
+openapi: 3.0.3
+info:
+  title: Contrato de introspección del servicio de identidad (uso entre servicios)
+  version: 0.1.0
+  description: >
+    Lo usan los demás servicios (programación, participación) para consultar permisos vigentes.
+    No se expone por la entrada común. Cada servicio consumidor tiene su propia credencial en
+    la cabecera X-Service-Key. Lee el estado actual, por lo que un rol revocado deja de autorizar
+    en la siguiente consulta. Si este servicio no responde, el consumidor debe fallar cerrado.
+components:
+  securitySchemes:
+    servicio:
+      type: apiKey
+      in: header
+      name: X-Service-Key
+paths:
+  /internal/introspect:
+    post:
+      summary: Estado vigente de una sesión
+      security: [{ servicio: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionToken]
+              properties:
+                sessionToken: { type: string, description: Valor de la cookie vivart_sid reenviada por el consumidor }
+      responses:
+        '200':
+          description: Sesión activa o inactiva
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  active: { type: boolean }
+                  userId: { type: string }
+                  email: { type: string }
+                  emailVerified: { type: boolean }
+                  roles:
+                    type: array
+                    items: { type: string }
+                  functionIds:
+                    type: array
+                    items: { type: string }
+        '401': { description: Credencial de servicio inválida }
+  /internal/authorize:
+    post:
+      summary: Decide si la sesión puede ejecutar una acción
+      security: [{ servicio: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [sessionToken, action]
+              properties:
+                sessionToken: { type: string }
+                action:
+                  type: string
+                  enum:
+                    - roles.manage
+                    - audit.view
+                    - draft.edit_own
+                    - draft.submit
+                    - draft.edit_any
+                    - draft.review
+                    - publish
+                    - draft.reassign
+                    - event.create_publish
+                    - catalog.load
+                    - sales.configure
+                    - access.validate
+                    - panel.access
+                context:
+                  type: object
+                  properties:
+                    ownerId: { type: string, description: "Dueño del borrador, para draft.edit_own" }
+                    functionId: { type: string, description: "Función, para access.validate" }
+      responses:
+        '200':
+          description: >
+            allowed=true si algún rol activo concede la acción. Si no, indica el rol que falta
+            y los roles aceptados, sin revelar contenido (título, texto ni autor).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  allowed: { type: boolean }
+                  reason: { type: string, enum: [no_session, missing_role, not_owner, function_not_assigned] }
+                  missingRole: { type: string }
+                  acceptedRoles: { type: array, items: { type: string } }
+        '401': { description: Credencial de servicio inválida }
