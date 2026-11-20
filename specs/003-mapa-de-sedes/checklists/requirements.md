@@ -34,3 +34,4 @@
 - Los marcadores [NEEDS CLARIFICATION] originales (FR-022, FR-023 y FR-024) se cerraron el 2026-11-20; constan en «Clarifications» del spec.
 - No se inventaron métricas de tiempo ni de volumen; los criterios se expresan como porcentajes y conteos verificables sobre las reglas del contexto.
 - No se eligió arquitectura ni tecnología. Los permisos y la identidad dependen del spec 001.
+- Segunda ronda de aclaraciones (2026-11-20): franjas, sedes listadas, funciones de la ficha, días de la edición, destino con coordenadas y Google Maps, foto de sede, marcador neutro y sin «ubicarme». Registradas como M-06 a M-09 y P-13 en `context/requirements/funcionales.md`.

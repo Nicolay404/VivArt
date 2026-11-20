@@ -88,7 +88,7 @@ Todo el equipo usa las mismas skills, aunque cada persona trabaje con un agente 
 
 - Instala solo para el agente que usas y no subas sus carpetas (están en `.gitignore`).
 - Si añades o actualizas una skill, acuérdalo antes con el equipo: cambia `skills-lock.json` para todos.
-- **taste-skill se usa como guía, no al pie de la letra.** Está pensada para páginas de empresa y choca con VIVART: prohíbe el violeta (es el color del festival), pide fotos de stock (no se usan: no se hacen pasar fotos ajenas por obras del festival) y exige una sección por pantalla (VIVART es una aplicación). Prevalecen los mockups de `context/assets/mockups/` y el sistema visual de `app/web/styles.css`: modo claro, paleta violeta y atardecer, Bricolage Grotesque y Figtree.
+- **taste-skill se usa como guía, no al pie de la letra.** Está pensada para páginas de empresa y choca con VIVART: prohíbe el violeta (es el color del festival), pide fotos de stock (no se hacen pasar fotos de stock por obras ni artistas del festival; las fotos propias o con licencia que permita reutilizarlas sí se admiten, véase M-09) y exige una sección por pantalla (VIVART es una aplicación). Prevalecen los mockups de `context/assets/mockups/` y el sistema visual de `app/web/styles.css`: modo claro, paleta violeta y atardecer, Bricolage Grotesque y Figtree.
 - En Claude Code, taste-skill añade un *hook* que, al terminar cada respuesta, revisa la página con Chrome sin ventana. Si te estorba o falla, avísalo; no edites los archivos de la skill.
 
 ## Compatibilidad entre agentes

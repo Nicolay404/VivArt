@@ -34,6 +34,9 @@ Los mockups no se editan en esta entrega. Cuando un mockup muestre algo distinto
 | Mapa | Búsqueda de «sede, función o punto de interés». | Buscador **«Buscar sede»**; solo sedes registradas en la programación (RF-12). |
 | Mapa | Filtro «Funciones ahora». | Filtro **«Funciones del día»**; «¿Qué hay ahora?» está en Agenda (RF-12, RF-07). |
 | Mapa | La tarjeta de sede no muestra «Cómo llegar» ni la alternativa en lista. | El mapa mantiene **«Cómo llegar»** cuando hay un destino verificado y una **vista alternativa en lista** (RF-13, RF-14). |
+| Mapa | Marcadores con iconos por tipo de obra (teatro, música, artes plásticas). | **Marcador neutro**: las sedes no tienen tipo artístico (M-08). |
+| Mapa | Botón para ubicar a la persona en el mapa. | **Sin botón «ubicarme»**: el mapa no pide ubicación (RNF-05, M-08). |
+| Mapa | Foto de la sede en la tarjeta. | Foto **opcional**, subida por el administrador, con texto alternativo y fuente o autoría; sin foto la tarjeta no cambia (RF-13, M-09). |
 | Pasaporte | «5 de 12 sellos», 42 % y un casillero «Próximo sello». | «Mi pasaporte» muestra el total obtenido («5 sellos»), sin meta, porcentaje ni casillero bloqueado (RF-27). |
 | Rutas | «2 de 3 sellos» en una ruta. | Es correcto: el denominador pertenece a cada ruta (RF-29). |
 | Todos | Fechas de octubre y nombres de funciones de ejemplo. | La programación sale del PDF y del catálogo publicado. |
