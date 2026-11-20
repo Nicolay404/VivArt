@@ -1,0 +1,88 @@
+{
+  "formato": "vivart-programacion/1",
+  "edicion": "Edición de ejemplo",
+  "nota": "DATOS FICTICIOS. Reproducen la FORMA de los siete casos de referencia del PDF (spec 002, Edge Cases) sin copiar sus títulos, artistas, horarios ni precios. No son datos del festival.",
+  "registros": [
+    {
+      "clave": "ejemplo-horario-partido",
+      "origen": { "pagina": 1, "nota": "Caso: horario partido (dos franjas el mismo día)" },
+      "revisado": true,
+      "titulo": "Exposición de ejemplo con horario partido",
+      "artistas": ["Colectivo Ficticio A"],
+      "organizacion": "Organización de ejemplo",
+      "categoria": "Exposición",
+      "descripcion": "Actividad permanente ficticia que cierra al mediodía.",
+      "etiqueta": "Entrada Libre",
+      "franjas": [
+        { "sede": "Museo de Ejemplo", "desde": "2026-11-20", "hasta": "2026-11-30", "abre": "10:00", "cierra": "14:00" },
+        { "sede": "Museo de Ejemplo", "desde": "2026-11-20", "hasta": "2026-11-30", "abre": "15:00", "cierra": "19:30" }
+      ]
+    },
+    {
+      "clave": "ejemplo-franjas-por-rango",
+      "origen": { "pagina": 2, "nota": "Caso: franjas distintas según el rango de días" },
+      "revisado": false,
+      "titulo": "Instalación de ejemplo con horarios por rango",
+      "artistas": ["Artista Ficticia B"],
+      "categoria": "Exposición",
+      "etiqueta": "Evento Gratuito",
+      "franjas": [
+        { "sede": "Galería de Ejemplo", "desde": "2026-11-20", "hasta": "2026-11-24", "dias": [1, 2, 3, 4, 5], "abre": "09:00", "cierra": "17:00" },
+        { "sede": "Galería de Ejemplo", "desde": "2026-11-25", "hasta": "2026-11-30", "abre": "11:00", "cierra": "20:00" }
+      ]
+    },
+    {
+      "clave": "ejemplo-permanente-con-funcion",
+      "origen": { "pagina": 3, "nota": "Caso: permanente sin horario en su ficha, con una función puntual aparte" },
+      "revisado": true,
+      "titulo": "Muestra de ejemplo con inauguración",
+      "artistas": ["Taller Ficticio C"],
+      "categoria": "Exposición",
+      "funciones": [{ "fecha": "2026-11-21", "hora": "11:00", "sede": "Museo de Ejemplo" }]
+    },
+    {
+      "clave": "ejemplo-dos-funciones-mismo-dia",
+      "origen": { "pagina": 4, "nota": "Caso: dos funciones de la misma obra el mismo día y en la misma sede" },
+      "revisado": true,
+      "titulo": "Obra de ejemplo con doble función",
+      "artistas": ["Compañía Ficticia D"],
+      "categoria": "Teatro",
+      "duracionMin": 60,
+      "etiqueta": "Evento Pagado",
+      "precioUsd": 5,
+      "funciones": [
+        { "fecha": "2026-11-22", "hora": "17:00", "sede": "Teatro de Ejemplo" },
+        { "fecha": "2026-11-22", "hora": "20:00", "sede": "Teatro de Ejemplo" }
+      ]
+    },
+    {
+      "clave": "ejemplo-solo-hora-de-inicio",
+      "origen": { "pagina": 5, "nota": "Caso: función con solo hora de inicio" },
+      "revisado": true,
+      "titulo": "Concierto de ejemplo sin hora de fin",
+      "artistas": ["Ensamble Ficticio E"],
+      "categoria": "Música",
+      "funciones": [{ "fecha": "2026-11-21", "hora": "19:00", "sede": "Plaza de Ejemplo" }]
+    },
+    {
+      "clave": "ejemplo-pagada-sin-precio",
+      "origen": { "pagina": 6, "nota": "Caso: ficha de pago sin precio indicado" },
+      "revisado": true,
+      "titulo": "Espectáculo de ejemplo de pago sin precio",
+      "artistas": ["Grupo Ficticio F"],
+      "categoria": "Danza",
+      "etiqueta": "Evento Pagado",
+      "funciones": [{ "fecha": "2026-11-23", "hora": "20:00", "sede": "Teatro de Ejemplo" }]
+    },
+    {
+      "clave": "ejemplo-sede-recorrido",
+      "origen": { "pagina": 7, "nota": "Caso: sede descrita como recorrido o tramo de calle" },
+      "revisado": true,
+      "titulo": "Desfile de ejemplo",
+      "artistas": ["Comparsas ficticias"],
+      "categoria": "Calle",
+      "etiqueta": "Entrada Libre",
+      "funciones": [{ "fecha": "2026-11-20", "hora": "16:00", "sede": "Recorrido de Ejemplo" }]
+    }
+  ]
+}
