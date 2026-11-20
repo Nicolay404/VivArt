@@ -51,3 +51,5 @@ Todas las decisiones son **técnicas, reversibles y no cambian ningún requisito
 | SC-015 (registro no da permisos internos; sin credenciales predeterminadas) | Registrar con el correo designado no crea roles; búsqueda de credenciales en el repositorio | Integración y revisión |
 | SC-016 (demo sin correos reales) | Todo el flujo funciona con el buzón de pruebas | Integración |
 | SC-017 y SC-018 (revalidación, sin ejecutar pago ni canje, con motivo) | `resume` devuelve `executed=false` y el servicio dueño revalida; no existe ninguna ruta que pague o canjee | Integración |
+| SC-019 (flujos de identidad con teclado y a 360 px) | Recorrido manual de los flujos de FR-038 sin ratón y en modo dispositivo de 360 px | Manual (T067) |
+| SC-020 (registro neutro y límite de intentos) | Misma respuesta para correo nuevo y repetido; respuesta 429 al superar el límite en inicio de sesión, registro y recuperación | Integración |
