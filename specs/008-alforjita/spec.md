@@ -8,13 +8,20 @@
 
 **Input**: User description: "Spec 08 de 8 de VIVART: Alforjita, asistente del festival. Cubre RF-31 a RF-34, con RC-07. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Cómo se formulan las consultas? → A: Con preguntas rápidas y con texto libre acotado, interpretado con reglas simples y sin exigir IA generativa. Debe poder resolver casos como «¿Qué funciones gratuitas de danza hay después de las seis?», indicar qué día asumió cuando corresponda y, si no entiende, ofrecer preguntas guiadas o volver a la Agenda. Las respuestas consultan el catálogo público vigente.
+- Q: ¿Se pueden editar las preguntas rápidas? → A: No. En el MVP no hay un panel para editarlas: las preguntas rápidas son fijas, pero sus resultados cambian con la programación publicada.
+
 ## Alcance y límites
 
 Este spec define cómo Alforjita ayuda al visitante a encontrar un plan o aclarar dudas sin revisar toda la programación: cómo se abre, qué preguntas rápidas ofrece, qué consultas resuelve, qué respuestas distingue cuando falta un dato y qué no hace nunca.
 
 **Dentro de este spec:** RF-31, RF-32, RF-33 y RF-34; regla RC-07 (reloj de referencia); decisiones de fecha implícita («hoy» en hora de Loja), de las cuatro respuestas, del filtro de gratuitas confirmadas y del alcance sobre Pasaporte y rutas; verificaciones RNF-03, RNF-05, RNF-07 y RNF-10 en lo que toca al asistente.
 
-**Alcance inicial:** puede funcionar con preguntas guiadas y filtros; no exige IA generativa. El nombre del asistente es **Alforjita**.
+**Alcance inicial:** preguntas rápidas fijas y consultas de texto libre acotado, interpretadas con reglas simples y filtros; no exige IA generativa. El nombre del asistente es **Alforjita**.
 
 **Fuera de este spec** (solo son dependencias):
 
@@ -46,7 +53,7 @@ Un visitante, sin cuenta, abre «Pregúntale a Alforjita» desde la Agenda y eli
 
 ### User Story 2 - Consultar por fecha, horario, categoría, sede y modalidad (Priority: P1)
 
-El visitante pide funciones por fecha, horario, categoría, sede o modalidad de acceso. Alforjita consulta el catálogo vigente y muestra fichas que coinciden, con enlaces a cada una.
+El visitante pide funciones por fecha, horario, categoría, sede o modalidad de acceso, eligiendo una pregunta rápida o escribiendo texto libre. Alforjita lo interpreta con reglas simples, consulta el catálogo vigente y muestra fichas que coinciden, con enlaces a cada una.
 
 **Why this priority**: es el valor principal del asistente frente a navegar toda la Agenda.
 
@@ -60,6 +67,9 @@ El visitante pide funciones por fecha, horario, categoría, sede o modalidad de 
 4. **Given** una ficha en una respuesta, **When** el visitante la abre, **Then** llega a la ficha de la Agenda; **when** vuelve, **then** regresa a Agenda.
 5. **Given** la Agenda y Alforjita con la misma consulta, **When** se comparan, **Then** muestran los mismos resultados.
 6. **Given** una hora de referencia fijada en pruebas o demo, **When** se consulta, **Then** usa esa misma referencia que la Agenda (RC-07).
+7. **Given** el texto libre «¿Qué funciones gratuitas de danza hay después de las seis?», **When** se envía, **Then** Alforjita lo interpreta, indica que asumió hoy y muestra las funciones que coinciden.
+8. **Given** un texto libre que Alforjita no entiende, **When** se envía, **Then** ofrece preguntas guiadas o volver a la Agenda, sin inventar una respuesta.
+9. **Given** una consulta de texto libre, **When** se interpreta, **Then** no se exige IA generativa ni se piden datos personales.
 
 ---
 
@@ -102,19 +112,21 @@ Alforjita no consulta borradores ni información privada, no compra, no canjea s
 
 ---
 
-### User Story 5 - Preguntas rápidas editables (Priority: P3)
+### User Story 5 - Preguntas rápidas fijas (Priority: P3)
 
-Si el equipo habilita la edición de preguntas rápidas, solo el personal autorizado puede editarlas. Los horarios, precios y sedes se consultan en el catálogo y nunca se mantienen en respuestas manuales duplicadas.
+Las preguntas rápidas son fijas en el MVP: no hay un panel para editarlas, pero sus resultados cambian con la programación publicada. Los horarios, precios y sedes se consultan en el catálogo y nunca se mantienen en respuestas manuales duplicadas.
 
-**Why this priority**: es una opción de mantenimiento; el asistente funciona sin ella.
+**Why this priority**: simplifica el MVP y evita datos duplicados; el asistente funciona sin edición manual.
 
-**Independent Test**: se habilita la edición, se edita una pregunta como personal autorizado y se intenta como visitante.
+**Independent Test**: se cambia la programación publicada y se verifica que el resultado de la misma pregunta rápida cambia sin editar la pregunta.
 
 **Acceptance Scenarios**:
 
-1. **Given** la edición habilitada, **When** el personal autorizado edita una pregunta rápida, **Then** el cambio se aplica y queda en el historial.
-2. **Given** un usuario sin autorización, **When** intenta editarla, **Then** el sistema lo rechaza.
-3. **Given** una pregunta rápida editada, **When** responde sobre horarios, precios o sedes, **Then** los toma del catálogo y no de un texto manual.
+1. **Given** una pregunta rápida, **When** la programación publicada cambia, **Then** su resultado cambia sin editar la pregunta.
+2. **Given** el sistema, **When** se busca un panel para editar preguntas rápidas, **Then** no existe en el MVP.
+3. **Given** una pregunta rápida, **When** responde sobre horarios, precios o sedes, **Then** los toma del catálogo y no de un texto manual.
+
+### Edge Cases
 
 ### Edge Cases
 
@@ -125,6 +137,8 @@ Si el equipo habilita la edición de preguntas rápidas, solo el personal autori
 - Una consulta con varios criterios sin coincidencias.
 - Una consulta fuera del festival o sin relación con la programación.
 - Texto vacío, muy largo o con caracteres extraños.
+- Un texto libre ambiguo o que Alforjita no entiende: ofrece preguntas guiadas o volver a la Agenda.
+- Un texto libre con datos personales: no se piden ni se usan para responder sobre programación.
 - Una consulta que pide datos personales de otra persona.
 - El asistente falla pero la Agenda sigue disponible (RNF-07).
 - Una cancelación o reprogramación reciente: las respuestas reflejan el catálogo vigente.
@@ -142,7 +156,7 @@ Si el equipo habilita la edición de preguntas rápidas, solo el personal autori
 
 **Consultas**
 
-- **FR-005**: Alforjita DEBE resolver consultas admitidas por fecha, horario, categoría, sede y modalidad de acceso.
+- **FR-005**: Alforjita DEBE resolver consultas admitidas por fecha, horario, categoría, sede y modalidad de acceso, formuladas como preguntas rápidas o como texto libre acotado interpretado con reglas simples.
 - **FR-006**: Alforjita DEBE usar el mismo catálogo público vigente que la Agenda y enlazar a las fichas; NO DEBE mantener un catálogo propio.
 - **FR-007**: Si la consulta no indica día, Alforjita DEBE asumir hoy en hora de Loja e indicar esa suposición; para «después de las seis» DEBE sugerir solo funciones de hoy que aún no empiezan y, si no hay, ofrecer consultar otro día.
 - **FR-008**: El filtro de gratuitas DEBE incluir solo funciones con gratuidad confirmada.
@@ -164,20 +178,21 @@ Si el equipo habilita la edición de preguntas rápidas, solo el personal autori
 
 **Mantenimiento**
 
-- **FR-018**: Si se habilita la edición de preguntas rápidas, SOLO el personal autorizado DEBE poder editarlas.
+- **FR-018**: Las preguntas rápidas DEBEN ser fijas en el MVP, NO DEBE existir un panel para editarlas, y sus resultados DEBEN cambiar con la programación publicada.
 - **FR-019**: Los horarios, precios y sedes DEBEN consultarse en el catálogo y NO DEBEN mantenerse en respuestas manuales duplicadas.
 - **FR-020**: La ilustración de la mascota NO DEBE usarse como avatar sin autorización.
 
-**Decisiones pendientes**
+**Texto libre acotado y preguntas rápidas fijas** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-021**: Las consultas se formulan mediante [NEEDS CLARIFICATION: el contexto dice que puede funcionar con preguntas guiadas y filtros y no exige IA generativa, pero no define si el visitante escribe texto libre o solo elige opciones guiadas].
-- **FR-022**: La edición de preguntas rápidas [NEEDS CLARIFICATION: el contexto dice «si se habilita» pero no define si se habilita en el MVP ni qué rol se considera personal autorizado].
+- **FR-021**: Alforjita DEBE permitir preguntas rápidas y consultas de texto libre interpretadas con reglas simples, sin exigir IA generativa. DEBE poder resolver casos como «¿Qué funciones gratuitas de danza hay después de las seis?», indicar qué día asumió cuando corresponda y, si no entiende, ofrecer preguntas guiadas o volver a la Agenda. Las respuestas DEBEN consultar el catálogo público vigente.
+- **FR-022**: El sistema NO DEBE incluir en el MVP un panel para editar las preguntas rápidas.
 
 ### Key Entities
 
 - **Consulta**: pregunta del visitante con criterios de fecha, horario, categoría, sede y modalidad.
 - **Respuesta**: una de cuatro: coincidencias, sin coincidencias, dato no confirmado, fuera de alcance o falla del servicio.
-- **Pregunta rápida**: consulta predefinida ofrecida al abrir el asistente.
+- **Pregunta rápida**: consulta predefinida y fija ofrecida al abrir el asistente; su resultado cambia con la programación publicada.
+- **Texto libre acotado**: consulta escrita por el visitante, interpretada con reglas simples.
 - **Suposición de día**: «hoy» en hora de Loja cuando la consulta no indica día.
 - **Catálogo público vigente**: programación publicada compartida con la Agenda.
 
@@ -193,7 +208,8 @@ Si el equipo habilita la edición de preguntas rápidas, solo el personal autori
 - **SC-006**: 0 respuestas incluyen contenido de borradores, entradas, sellos o progreso personal.
 - **SC-007**: Alforjita se abre, usa y cierra con teclado en el 100 % de las pruebas de accesibilidad.
 - **SC-008**: Con Alforjita fallando, la Agenda se abre y consulta en el 100 % de las pruebas.
-- **SC-009**: 0 usuarios sin autorización consiguen editar preguntas rápidas, si la edición está habilitada.
+- **SC-009**: 0 pantallas del MVP permiten editar preguntas rápidas, y el 100 % de las preguntas rápidas refleja la programación publicada vigente.
+- **SC-011**: En el 100 % de las pruebas, las consultas de texto libre del tipo «¿Qué funciones gratuitas de danza hay después de las seis?» devuelven las funciones correctas e indican el día asumido, y las que no se entienden ofrecen preguntas guiadas o volver a la Agenda, sin inventar datos.
 - **SC-010**: El 100 % de las respuestas con una hora de referencia fijada usa esa misma referencia que la Agenda.
 
 ## Trazabilidad con el contexto
@@ -203,7 +219,8 @@ Si el equipo habilita la edición de preguntas rápidas, solo el personal autori
 | RF-31 | FR-001 a FR-004; Historia 1 |
 | RF-32, RC-07 | FR-005 a FR-010; Historia 2 |
 | RF-33, RC-03 | FR-011 a FR-017; Historias 3 y 4 |
-| RF-34 | FR-018, FR-019; Historia 5 |
+| RF-34, Q17 | FR-018, FR-019, FR-022; Historia 5 |
+| RF-32, Q16 | FR-005, FR-021; Historia 2 |
 | RNF-03, RNF-05 | FR-003, FR-004; SC-001, SC-007 |
 | RNF-07 | FR-014; SC-008 |
 | RNF-10 | FR-009; SC-010 |
