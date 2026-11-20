@@ -258,6 +258,21 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - **FR-029**: Al registrarse, el sistema DEBE enviar un enlace de verificación al correo. Pagar y canjear un sello DEBEN exigir una cuenta con correo verificado, mientras que Agenda, Mapa y Alforjita permanecen abiertos sin cuenta. Tras verificar el correo e iniciar sesión, el sistema DEBE permitir retomar la acción original y comprobar si sigue vigente. Para recuperar el acceso, el sistema DEBE enviar un enlace de un solo uso y con vencimiento, y DEBE mostrar el mismo mensaje tanto si el correo está registrado como si no.
 - **FR-030**: Para la demo DEBE poder comprobarse la verificación y la recuperación sin enviar correos reales, mediante un buzón de pruebas. La elección del proveedor de correo y los plazos exactos de los enlaces corresponden al plan técnico.
 
+**Retorno a la acción original** (contrato con los specs 05 y 06: este spec garantiza el regreso y la revalidación; cada spec dueño define sus comprobaciones y no se duplican aquí)
+
+- **FR-031**: Antes de pedir identificación por una compra o un canje, el sistema DEBE conservar la acción pendiente (su tipo y su referencia) para poder retomarla.
+- **FR-032**: Tras identificarse (iniciar sesión, o registrarse, verificar el correo e iniciar sesión), el sistema DEBE devolver a la persona al punto donde estaba: el carrito con su contenido en una compra, o el enlace del QR de la función en un canje.
+- **FR-033**: Al retomar la acción, el sistema DEBE volver a comprobar su vigencia con las reglas del spec dueño. Retomar la acción NO DEBE ejecutar automáticamente un pago ni un canje desde este spec: qué ocurre después de revalidar (por ejemplo, si se pide una confirmación) lo define el spec dueño de cada flujo (spec 05 para la compra y spec 06 para el canje).
+- **FR-034**: Si la comprobación falla, el sistema DEBE indicar el motivo y ofrecer volver a la ficha o al carrito, sin completar la acción.
+- **FR-035**: Si la cuenta no tiene el correo verificado, el sistema DEBE impedir completar la compra o el canje, indicarlo y ofrecer reenviar el enlace; la acción pendiente se retoma tras verificar el correo e iniciar sesión (FR-029).
+
+| Acción pendiente | Qué se conserva | Dónde se retoma | Qué se vuelve a comprobar y quién lo define |
+|---|---|---|---|
+| Compra (pagar) | El carrito y su contenido | El carrito, antes de pagar | Precio, vigencia y cupos (spec 05, FR-007) |
+| Canje de sello | La referencia al QR de la función | El enlace del QR, antes de reclamar | QR vigente, función habilitada y no cancelada y ventana de canje vigente (spec 06, FR-001) |
+
+Este spec **no** construye el carrito, el pago ni el canje de sellos: solo garantiza que la persona vuelva a esas acciones identificada y que se revaliden.
+
 ### Key Entities
 
 - **Cuenta de usuario**: persona identificada en VIVART. Atributos clave: correo electrónico único, contraseña, estado de verificación del correo y roles activos. No se guarda cédula, teléfono ni dirección.
@@ -265,7 +280,7 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - **Enlace de recuperación**: enlace de un solo uso y con vencimiento para restablecer la contraseña.
 - **Rol**: conjunto de acciones permitidas (visitante, usuario registrado, editor, publicador, administrador, personal de acceso).
 - **Asignación de rol**: vínculo entre una cuenta y un rol, con quién lo asignó y cuándo. Para el personal de acceso incluye las funciones que puede validar.
-- **Acción pendiente de identificación**: la compra o el canje que una persona había iniciado sin sesión y que se retoma al identificarse.
+- **Acción pendiente de identificación**: la compra (carrito) o el canje (referencia al QR de la función) que una persona había iniciado sin sesión; se conserva, se retoma tras identificarse y se revalida con las reglas del spec dueño.
 - **Borrador o propuesta**: contenido editorial con autor e historial; su ciclo de vida es del spec 02, pero su conservación al revocar roles se define aquí.
 - **Registro de historial**: constancia de una operación sensible (quién, cuándo, sobre qué registro).
 - **Mensaje de rechazo**: respuesta que indica el rol faltante sin revelar contenido protegido.
@@ -290,6 +305,8 @@ Un administrador autorizado consulta quién asignó, revocó o reasignó permiso
 - **SC-014**: Un enlace de recuperación o de verificación usado una vez o vencido se rechaza en el 100 % de los intentos posteriores.
 - **SC-015**: 0 cuentas obtienen permisos internos a través del registro público, y 0 credenciales predeterminadas de administrador existen en el repositorio.
 - **SC-016**: La verificación y la recuperación pueden comprobarse de principio a fin en la demo sin enviar ningún correo real.
+- **SC-017**: En el 100 % de los retornos tras identificarse, la vigencia de la compra o del canje se vuelve a comprobar, y 0 pagos o canjes se ejecutan automáticamente por el solo hecho de retomar la acción desde este spec.
+- **SC-018**: El 100 % de las acciones retomadas con una comprobación fallida muestra el motivo y ofrece volver a la ficha o al carrito.
 
 ## Anexo técnico y de arquitectura
 
@@ -336,6 +353,7 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 | RC-06 (permisos y reasignación) | FR-024, FR-025; Historia 8 |
 | Decisión Q1 (primer administrador) | FR-027; Historia 9; SC-015 |
 | Decisión Q2 (correo y contraseña) | FR-028; Historia 7; SC-010, SC-011 |
+| RF-03 (retorno y revalidación), contrato con specs 05 y 06 | FR-031 a FR-035; Historia 2; SC-017, SC-018 |
 | Decisión Q3 (verificación y recuperación) | FR-003, FR-007, FR-029, FR-030; Historias 2 y 7; SC-012 a SC-014, SC-016 |
 | RNF-02 (mensaje de rechazo) | FR-022, SC-006 |
 | RNF-04 (verificación en servidor) | FR-012, FR-017, SC-001 |
@@ -357,4 +375,5 @@ Este anexo fija las **restricciones** que este spec y los otros siete heredan. *
 - Qué ocurre si se revoca el último rol de administrador o si un administrador se revoca roles a sí mismo.
 - Si una persona puede auto-asignarse roles o solo los asigna el administrador (se asume lo segundo por RF-04).
 - Vigencia y cierre automático de una sesión inactiva.
-- Cuánto tiempo se conserva la acción original (compra o canje) mientras la persona verifica su correo, y si la activación por correo del primer administrador cuenta como verificación.
+- Cuánto tiempo se conserva la acción original (compra o canje) mientras la persona verifica su correo, y si la activación por correo del primer administrador cuenta como verificación (P-11 del contexto).
+- Qué ocurre tras revalidar la acción (por ejemplo, si se pide una confirmación antes de pagar o de reclamar) lo definen los specs 05 y 06; este spec solo garantiza el regreso y la revalidación.
