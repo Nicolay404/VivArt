@@ -10,10 +10,10 @@ function resultado(r) {
   return h(
     'div',
     { class: `acceso-resultado ${r.admitted ? 'acceso-admitida' : 'acceso-rechazada'}`, role: 'status', 'aria-live': 'assertive' },
-    icono(r.admitted ? 'check' : 'cerrar', 'icono'),
+    h('span', { class: 'acceso-resultado-icono', 'aria-hidden': 'true' }, icono(r.admitted ? 'check' : 'cerrar', 'icono-xl')),
     h('strong', {}, r.admitted ? 'Admitida' : 'Rechazada'),
-    h('span', {}, r.message),
-    r.ticket?.functionTitle ? h('span', { class: 'ayuda' }, r.ticket.functionTitle) : null,
+    h('span', { class: 'acceso-resultado-motivo' }, r.message),
+    r.ticket?.functionTitle ? h('span', { class: 'acceso-resultado-obra' }, r.ticket.functionTitle) : null,
   );
 }
 
@@ -63,13 +63,20 @@ function lectorQr(alLeer) {
     void buscar();
   }
 
-  const boton = h('button', { type: 'button', class: 'secundario', onclick: iniciar }, 'Escanear con la cámara');
+  const boton = h('button', { type: 'button', class: 'secundario boton-ancho', onclick: iniciar }, icono('camara', 'icono-sm'), 'Escanear con la cámara');
   return h('div', { class: 'pila' }, boton, video);
 }
 
 function controlFuncion(f, refrescar) {
   let zonaResultado = resultado(null);
-  const entrada = h('input', { id: `codigo-${f.functionId}`, name: 'codigo', autocomplete: 'off', autocapitalize: 'characters', placeholder: 'Ej.: K7M2P 9QXRT' });
+  const entrada = h('input', {
+    id: `codigo-${f.functionId}`,
+    name: 'codigo',
+    class: 'acceso-input-codigo',
+    autocomplete: 'off',
+    autocapitalize: 'characters',
+    placeholder: 'Ej.: K7M2P 9QXRT',
+  });
 
   async function validar(codigo) {
     const r = await apiParticipacion('POST', `/access/functions/${encodeURIComponent(f.functionId)}/validate`, { code: codigo });
@@ -94,31 +101,31 @@ function controlFuncion(f, refrescar) {
       'div',
       { class: 'entrada-cabecera' },
       h('h2', {}, f.title ?? 'Función'),
-      h('span', { class: `insignia-estado ${f.open ? 'acceso-abierto' : ''}` }, f.open ? 'Abierto' : 'Cerrado'),
+      h('span', { class: `insignia-estado ${f.open ? 'acceso-abierto' : 'venta-cerrada'}` }, f.open ? 'Abierto' : 'Cerrado'),
     ),
-    f.date ? h('p', { class: 'ayuda' }, `${formatoFecha(f.date)} · ${f.startTime}${f.venueName ? ` · ${f.venueName}` : ''}`) : null,
+    f.date ? h('p', { class: 'entrada-meta' }, icono('calendario', 'icono-xs'), `${formatoFecha(f.date)} · ${f.startTime}`, f.venueName ? [' · ', icono('sede', 'icono-xs'), f.venueName] : null) : null,
     f.cancelled ? h('p', { class: 'aviso error-caja' }, 'Función cancelada: sus entradas se rechazan.') : null,
     h(
       'div',
       { class: 'fila-acciones' },
       f.open
-        ? h('button', { type: 'button', class: 'secundario', onclick: () => cambiar(false) }, 'Cerrar el control')
-        : h('button', { type: 'button', onclick: () => cambiar(true) }, 'Abrir el control'),
+        ? h('button', { type: 'button', class: 'secundario boton-ancho', onclick: () => cambiar(false) }, 'Cerrar el control')
+        : h('button', { type: 'button', class: 'boton-ancho', onclick: () => cambiar(true) }, icono('escudo', 'icono-sm'), 'Abrir el control'),
     ),
     f.open
       ? h(
           'form',
           {
-            class: 'pila',
+            class: 'pila acceso-form',
             onsubmit: (ev) => {
               ev.preventDefault();
               if (entrada.value.trim()) validar(entrada.value.trim()).catch(() => aviso('No se pudo validar.', 'error'));
             },
           },
+          zonaResultado,
           lectorQr((codigo) => validar(codigo)),
           h('div', { class: 'campo' }, h('label', { for: entrada.id }, 'Código de la entrada'), entrada),
-          h('button', { type: 'submit' }, 'Validar'),
-          zonaResultado,
+          h('button', { type: 'submit', class: 'boton-ancho boton-validar-acceso' }, icono('check', 'icono-sm'), 'Validar'),
         )
       : null,
   );
