@@ -33,7 +33,7 @@ function normalizarFuncion(f = {}) {
 
 function normalizarFranja(s = {}) {
   const fechas = Array.isArray(s.dates) ? s.dates.map(texto).filter(Boolean).slice(0, 400) : null;
-  const dias = Array.isArray(s.weekdays) ? [...new Set(s.weekdays.filter((d) => Number.isInteger(d) && d >= 1 && d <= 7))].sort() : null;
+  const dias = Array.isArray(s.weekdays) ? [...new Set(s.weekdays.filter((d) => Number.isInteger(d) && d >= 1 && d <= 7))].sort((x, y) => x - y) : null;
   return {
     id: typeof s.id === 'string' && ID_RE.test(s.id) ? s.id : nuevoId('fr'),
     venueId: texto(s.venueId),

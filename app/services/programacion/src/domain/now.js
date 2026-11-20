@@ -63,5 +63,5 @@ export function queHayAhora(actividades, ahora) {
     }
   }
   const porHora = (x, y) => x.function.startTime.localeCompare(y.function.startTime);
-  return { openSlots, upcoming: upcoming.sort(porHora), inProgress: inProgress.sort(porHora), startPassed: startPassed.sort(porHora) };
+  return { openSlots, upcoming: upcoming.toSorted(porHora), inProgress: inProgress.toSorted(porHora), startPassed: startPassed.toSorted(porHora) };
 }

@@ -27,7 +27,8 @@ function filaDesde(tabla, cuerpo) {
     fila.address = textoONulo(cuerpo.address, 500);
     fila.route_description = textoONulo(cuerpo.routeDescription, 2000);
     const m = cuerpo.marker;
-    fila.marker = m && typeof m === 'object' && !Array.isArray(m) ? JSON.stringify(m).length <= 2000 ? JSON.stringify(m) : null : null;
+    const esObjeto = m && typeof m === 'object' && !Array.isArray(m);
+    fila.marker = esObjeto && JSON.stringify(m).length <= 2000 ? JSON.stringify(m) : null;
   }
   return fila;
 }

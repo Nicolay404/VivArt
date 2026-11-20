@@ -16,7 +16,7 @@ export function pendientes(contenido, funciones) {
   if (!contenido.description) p.push('description');
   if (!contenido.organization) p.push('organization');
   if (!contenido.categoryId) p.push('category');
-  const algunaSinFin = funciones.length > 0 && funciones.some((f) => !finConocido(f, contenido.durationMinutes));
+  const algunaSinFin = funciones.some((f) => !finConocido(f, contenido.durationMinutes));
   if (!contenido.durationMinutes && (funciones.length === 0 || algunaSinFin)) p.push('duration');
   if (contenido.access.mode === 'unconfirmed') p.push('access');
   if (contenido.access.mode === 'paid' && contenido.access.priceUsd === null) p.push('price');

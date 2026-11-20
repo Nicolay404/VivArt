@@ -74,11 +74,9 @@ export function createEditorial({ db, crearRepos, permisos, catalogs, clock }) {
       await r.published.replaceSlots(id, contenido.slots, momento);
 
       if (cambios.length) {
-        const kind = cambios.some((c) => c.type === 'function_rescheduled')
-          ? 'rescheduled'
-          : cambios.every((c) => c.type === 'function_removed')
-            ? 'cancelled'
-            : 'changed';
+        let kind = 'changed';
+        if (cambios.some((c) => c.type === 'function_rescheduled')) kind = 'rescheduled';
+        else if (cambios.every((c) => c.type === 'function_removed')) kind = 'cancelled';
         await r.published.addNotice({ activityId: id, kind, text: aviso, reason: motivo, actorId, at: momento });
       }
       await r.activities.update(
