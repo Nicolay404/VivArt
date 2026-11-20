@@ -4,26 +4,44 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>VIVART · Festival Internacional de Artes Vivas de Loja</title>
-    <meta name="description" content="Cuenta, sesión y permisos de VIVART." />
+    <meta name="description" content="Agenda cultural, fichas de actividades, ¿Qué hay ahora? y panel editorial de VIVART." />
+    <meta name="theme-color" content="#3b0f66" />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
     <a class="saltar" href="#contenido">Saltar al contenido</a>
+
     <header class="cabecera">
       <div class="cabecera-interior">
-        <a class="marca" href="/" data-enlace>VIVART</a>
+        <a class="marca" href="/" data-enlace aria-label="VIVART, ir a la Agenda">
+          <span class="marca-nombre">VIVART</span>
+          <span class="marca-lema">Artes Vivas Loja</span>
+        </a>
         <button type="button" class="boton-menu" id="boton-menu" aria-controls="navegacion" aria-expanded="false">
-          <span class="icono-menu" aria-hidden="true"></span>Menú
+          <span class="icono-menu" aria-hidden="true"></span>
+          <span>Menú</span>
         </button>
-        <nav aria-label="Principal" id="navegacion"></nav>
+        <nav aria-label="Principal" id="navegacion" class="navegacion-principal"></nav>
       </div>
     </header>
+
     <output id="avisos" aria-live="polite" class="avisos"></output>
+
     <main id="contenido" tabindex="-1"></main>
+
     <footer class="pie">
-      <p>Entorno de demostración: no se envían correos reales ni se procesan pagos.</p>
+      <div class="pie-interior">
+        <p class="pie-marca"><strong>VIVART</strong> · Festival Internacional de Artes Vivas de Loja</p>
+        <p class="pie-nota">Entorno de demostración: horarios en hora local de Loja, sin cobros reales ni envío de correos reales.</p>
+      </div>
     </footer>
-    <noscript><p class="aviso">Esta página necesita JavaScript para funcionar.</p></noscript>
+
+    <nav class="barra-movil" id="barra-movil" aria-label="Navegación principal móvil"></nav>
+    <div id="modal-raiz" class="modal-raiz"></div>
+
+    <noscript>
+      <p class="aviso">Esta aplicación necesita JavaScript para mostrar la programación de VIVART.</p>
+    </noscript>
     <script type="module" src="/app.js"></script>
   </body>
 </html>
