@@ -86,7 +86,7 @@ Alforjita responde de forma distinta cuando no hay coincidencias, cuando el dato
 1. **Given** una consulta sin resultados, **When** se responde, **Then** indica los criterios aplicados y ofrece relajar uno o abrir la Agenda.
 2. **Given** una función sin precio confirmado, **When** se pregunta por su precio, **Then** dice que el precio aún no está confirmado, sin decir que es gratuita ni inventar uno.
 3. **Given** una función sin hora de fin o sin duración, **When** se pregunta cuándo termina, **Then** dice que ese dato no está confirmado.
-4. **Given** una sede sin accesibilidad confirmada, **When** se pregunta por su accesibilidad, **Then** dice «Accesibilidad por confirmar».
+4. **Given** una sede con «acceso sin escalones» o «baño accesible» sin confirmar, **When** se pregunta por su accesibilidad, **Then** dice que esa característica está por confirmar y no la da por disponible.
 5. **Given** una consulta fuera de alcance (comprar, canjear, modificar), **When** se pide, **Then** explica que no puede hacerlo y a qué pantalla acudir.
 6. **Given** que el catálogo no responde, **When** se consulta, **Then** dice que no pudo consultar la programación y remite a la Agenda.
 7. **Given** una pregunta con un dato no confirmado, **When** se responde, **Then** nunca lo completa ni lo deduce.
