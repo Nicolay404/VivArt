@@ -65,38 +65,45 @@ specs/001-identidad-y-permisos/
 ### Source Code (repository root)
 
 ```text
-services/
-└── identidad/
-    ├── package.json
-    ├── bin/
-    │   └── crear-primer-administrador.js
-    ├── src/
-    │   ├── server.js            # arranque
-    │   ├── app.js               # fábrica de la aplicación Fastify
-    │   ├── config.js            # variables de entorno y valores por defecto
-    │   ├── db.js                # conexión y esquema
-    │   ├── repositories/        # acceso a datos (reemplazable)
-    │   ├── domain/              # contraseñas, tokens, sesiones, política de permisos, cuentas, roles, acciones pendientes
-    │   ├── mail/                # puerto de correo, buzón de pruebas y consola
-    │   └── http/                # rutas, seguridad (CSRF, límites) y errores
+app/                                   # todo el código del producto
+├── package.json                       # scripts de conveniencia (npm test)
+├── docker-compose.yml                 # demo local: identidad + entrada común
+├── services/
+│   └── identidad/
+│       ├── package.json
+│       ├── Dockerfile
+│       ├── bin/
+│       │   └── crear-primer-administrador.js
+│       ├── src/
+│       │   ├── server.js              # arranque
+│       │   ├── app.js                 # fábrica de la aplicación Fastify
+│       │   ├── services.js            # ensambla repositorios y dominio
+│       │   ├── config.js              # variables de entorno y valores por defecto
+│       │   ├── db.js                  # conexión y esquema
+│       │   ├── repositories/          # acceso a datos (reemplazable)
+│       │   ├── domain/                # contraseñas, tokens, política, cuentas, roles, acciones pendientes
+│       │   ├── mail/                  # puerto de correo, buzón de pruebas y consola
+│       │   └── http/                  # rutas, guardas, seguridad y errores
+│       └── test/
+│           ├── unit/
+│           └── integration/
+├── web/                               # interfaz estática
+│   ├── index.html
+│   ├── app.js
+│   └── styles.css
+└── edge/                              # entrada HTTP común
+    ├── server.js                      # sirve web/ y enruta /api/identidad
+    ├── Dockerfile
     └── test/
-        ├── unit/
-        └── integration/
-web/
-├── index.html
-├── app.js
-└── styles.css
-edge/
-├── server.js                    # sirve web/ y enruta /api/identidad
-└── test/
-package.json                     # scripts de conveniencia del repositorio
 ```
 
-**Structure Decision**: un solo repositorio con una carpeta por servicio (`services/identidad/`), la web (`web/`) y la entrada común (`edge/`), como fija la arquitectura. Los otros servicios (`programacion`, `participacion`) no se crean en esta rama.
+Fuera de `app/` quedan la documentación (`context/`, `specs/`, `docs/`), las herramientas de agentes (`.agents/`, `.claude/`, `.specify/`) y la integración continua (`.github/`).
+
+**Structure Decision**: un solo repositorio. Todo el código vive bajo `app/`, con una carpeta por servicio (`app/services/identidad/`), la web (`app/web/`) y la entrada común (`app/edge/`), como fija la arquitectura; así no se mezcla con la documentación ni con las herramientas de agentes. Los otros servicios (`programacion`, `participacion`) no se crean en esta rama.
 
 ## Complexity Tracking
 
 | Desviación | Por qué hace falta | Alternativa más simple descartada |
 |---|---|---|
 | Rama `001-identidad-implementacion` además de `001-identidad-y-permisos` | Mantener el PR #5 (solo spec) separado de la implementación | Implementar sobre la rama del PR #5: mezclaría spec y código en una revisión |
-| Entrada HTTP común propia (`edge/`) | La arquitectura exige una entrada común con enrutamiento por prefijo | Exponer el servicio directamente: la web y los futuros servicios no compartirían origen ni prefijos |
+| Entrada HTTP común propia (`app/edge/`) | La arquitectura exige una entrada común con enrutamiento por prefijo | Exponer el servicio directamente: la web y los futuros servicios no compartirían origen ni prefijos |

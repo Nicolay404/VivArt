@@ -12,7 +12,7 @@
 
 - **[P]**: se puede ejecutar en paralelo (archivos distintos, sin dependencia pendiente)
 - **[Story]**: historia del spec (US1 a US9)
-- Rutas relativas a la raíz del repositorio
+- Rutas relativas a la raíz del repositorio. **Todo el código vive bajo `app/`** (servicios, web y entrada común); la documentación y las herramientas de agentes quedan fuera de esa carpeta
 
 ## Alcance
 
@@ -22,39 +22,39 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 ## Phase 1: Setup
 
-- [ ] T001 Crear `package.json` en la raíz con el script `test` que ejecuta `npm --prefix services/identidad test` y `node --test edge/test/`
-- [ ] T002 Crear `services/identidad/package.json` (`"type": "module"`, `engines.node >= 24`, dependencias `fastify` ^5 y `@fastify/cookie`, scripts `test` con `node --test test/` y `start`)
-- [ ] T003 [P] Actualizar `.gitignore` con `node_modules/`, `services/identidad/data/` y `*.sqlite`
-- [ ] T004 [P] Crear `services/identidad/.env.example` con los nombres de las variables (sin valores secretos) descritas en `research.md`
-- [ ] T005 Ejecutar `npm install` en `services/identidad` y confirmar `package-lock.json`
+- [x] T001 Crear `app/package.json` con el script `test` que ejecuta `npm --prefix services/identidad test` y `node --test "edge/test/**/*.test.js"`
+- [x] T002 Crear `app/services/identidad/package.json` (`"type": "module"`, `engines.node >= 24`, dependencias `fastify` ^5 y `@fastify/cookie`, scripts `test` con `node --test test/` y `start`)
+- [x] T003 [P] Actualizar `.gitignore` con `node_modules/`, `app/services/identidad/data/` y `*.sqlite`
+- [x] T004 [P] Crear `app/services/identidad/.env.example` con los nombres de las variables (sin valores secretos) descritas en `research.md`
+- [x] T005 Ejecutar `npm install` en `app/services/identidad` y confirmar `package-lock.json`
 
 ---
 
 ## Phase 2: Foundational (bloquea todas las historias)
 
-- [ ] T006 Crear `services/identidad/src/config.js`: lee variables de entorno con valores por defecto técnicos (sesión 168 h, verificación 24 h, recuperación 1 h, activación 72 h, acción pendiente 24 h, parámetros de scrypt, `ALLOWED_ORIGINS`, `SERVICE_KEYS`, `MAIL_TRANSPORT`, `PUBLIC_BASE_URL`, `DB_FILE`); sin ningún secreto por defecto
-- [ ] T007 Crear `services/identidad/src/db.js` con el esquema de `data-model.md`: `users` (`email` **único**, guardado en minúsculas y sin espacios; `password_hash` vacío mientras la cuenta está pendiente de activación; `status` en `pending_activation` o `active`; `email_verified_at` opcional), `role_assignments` (único por `user_id` y `role`; `role` en editor, publicador, administrador o personal_acceso), `function_assignments` (único por `user_id` y `function_id`), `sessions` (`id` = hash SHA-256 del token), `email_tokens` (`token_hash` clave; `purpose` en verify, reset o activate; `used_at` opcional), `pending_actions` (`type` en compra o canje; `ref` con patrón `^[A-Za-z0-9_-]{1,64}$`) y `audit_log` (solo anexar)
-- [ ] T008 [P] Crear `services/identidad/src/repositories/users.js`
-- [ ] T009 [P] Crear `services/identidad/src/repositories/roles.js` (asignaciones de rol y de función)
-- [ ] T010 [P] Crear `services/identidad/src/repositories/sessions.js`
-- [ ] T011 [P] Crear `services/identidad/src/repositories/tokens.js`
-- [ ] T012 [P] Crear `services/identidad/src/repositories/pending.js`
-- [ ] T013 [P] Crear `services/identidad/src/repositories/audit.js` (nunca guarda contraseñas ni tokens)
-- [ ] T014 [P] Crear `services/identidad/src/domain/passwords.js`: validación de 15 a 128 caracteres con normalización NFKC, espacios permitidos y sin reglas de composición; hash y comprobación con scrypt (`scrypt$N$r$p$sal$hash`)
-- [ ] T015 [P] Crear `services/identidad/src/domain/tokens.js`: tokens de 32 bytes aleatorios, hash SHA-256 y vencimiento
-- [ ] T016 Crear `services/identidad/src/mail/index.js` (puerto de correo y selección del transporte por `MAIL_TRANSPORT`)
-- [ ] T017 [P] Crear `services/identidad/src/mail/test-transport.js` (buzón de pruebas en memoria; no envía correos reales)
-- [ ] T018 [P] Crear `services/identidad/src/mail/console-transport.js` (imprime el enlace; uso del procedimiento interno)
-- [ ] T019 [P] Crear `services/identidad/src/http/errors.js`: errores con forma uniforme; el 403 indica `missingRole` y `acceptedRoles` y nunca contenido protegido
-- [ ] T020 [P] Crear `services/identidad/src/http/security.js`: comprobación de `Origin` y de `Content-Type: application/json` en métodos que cambian estado, y limitador de intentos en memoria (inicio de sesión 10 por 15 min; registro y recuperación 5 por hora)
-- [ ] T021 Crear `services/identidad/src/domain/policy.js`: tabla de acciones y roles de `data-model.md` (permisos como suma de roles activos; `draft.edit_own` exige `ownerId` propio; `access.validate` exige función asignada)
-- [ ] T022 Crear `services/identidad/src/app.js`: fábrica de Fastify con cookies, seguridad, manejo de errores, registro de rutas, `GET /health` y registro de logs que no incluye contraseñas ni tokens
-- [ ] T023 Crear `services/identidad/src/server.js` (arranque en el puerto 3001)
-- [ ] T024 [P] Crear `services/identidad/test/helpers.js` (construye la app con base en memoria, scrypt rápido y buzón de pruebas)
-- [ ] T025 [P] Crear `services/identidad/test/unit/passwords.test.js`: 14 caracteres se rechazan; 15, 64 y 128 con espacios y sin mayúsculas, números ni símbolos se aceptan; 129 se rechaza; el hash no contiene la contraseña (SC-011)
-- [ ] T026 [P] Crear `services/identidad/test/unit/tokens.test.js`: aleatoriedad, hash y vencimiento (SC-014)
-- [ ] T027 [P] Crear `services/identidad/test/unit/policy.test.js`: matriz rol por acción, suma de varios roles, `draft.edit_own` con dueño ajeno, `access.validate` con y sin función, `publish` no concede `sales.configure` (SC-001, SC-004, SC-006, SC-009)
-- [ ] T028 [P] Crear `services/identidad/test/unit/security.test.js`: límite de intentos y rechazo de `Origin` no permitido y de contenido no JSON
+- [x] T006 Crear `app/services/identidad/src/config.js`: lee variables de entorno con valores por defecto técnicos (sesión 168 h, verificación 24 h, recuperación 1 h, activación 72 h, acción pendiente 24 h, parámetros de scrypt, `ALLOWED_ORIGINS`, `SERVICE_KEYS`, `MAIL_TRANSPORT`, `PUBLIC_BASE_URL`, `DB_FILE`); sin ningún secreto por defecto
+- [x] T007 Crear `app/services/identidad/src/db.js` con el esquema de `data-model.md`: `users` (`email` **único**, guardado en minúsculas y sin espacios; `password_hash` vacío mientras la cuenta está pendiente de activación; `status` en `pending_activation` o `active`; `email_verified_at` opcional), `role_assignments` (único por `user_id` y `role`; `role` en editor, publicador, administrador o personal_acceso), `function_assignments` (único por `user_id` y `function_id`), `sessions` (`id` = hash SHA-256 del token), `email_tokens` (`token_hash` clave; `purpose` en verify, reset o activate; `used_at` opcional), `pending_actions` (`type` en compra o canje; `ref` con patrón `^[A-Za-z0-9_-]{1,64}$`) y `audit_log` (solo anexar)
+- [x] T008 [P] Crear `app/services/identidad/src/repositories/users.js`
+- [x] T009 [P] Crear `app/services/identidad/src/repositories/roles.js` (asignaciones de rol y de función)
+- [x] T010 [P] Crear `app/services/identidad/src/repositories/sessions.js`
+- [x] T011 [P] Crear `app/services/identidad/src/repositories/tokens.js`
+- [x] T012 [P] Crear `app/services/identidad/src/repositories/pending.js`
+- [x] T013 [P] Crear `app/services/identidad/src/repositories/audit.js` (nunca guarda contraseñas ni tokens)
+- [x] T014 [P] Crear `app/services/identidad/src/domain/passwords.js`: validación de 15 a 128 caracteres con normalización NFKC, espacios permitidos y sin reglas de composición; hash y comprobación con scrypt (`scrypt$N$r$p$sal$hash`)
+- [x] T015 [P] Crear `app/services/identidad/src/domain/tokens.js`: tokens de 32 bytes aleatorios, hash SHA-256 y vencimiento
+- [x] T016 Crear `app/services/identidad/src/mail/index.js` (puerto de correo y selección del transporte por `MAIL_TRANSPORT`)
+- [x] T017 [P] Crear `app/services/identidad/src/mail/test-transport.js` (buzón de pruebas en memoria; no envía correos reales)
+- [x] T018 [P] Crear `app/services/identidad/src/mail/console-transport.js` (imprime el enlace; uso del procedimiento interno)
+- [x] T019 [P] Crear `app/services/identidad/src/http/errors.js`: errores con forma uniforme; el 403 indica `missingRole` y `acceptedRoles` y nunca contenido protegido
+- [x] T020 [P] Crear `app/services/identidad/src/http/security.js`: comprobación de `Origin` y de `Content-Type: application/json` en métodos que cambian estado, y limitador de intentos en memoria (inicio de sesión 10 por 15 min; registro y recuperación 5 por hora)
+- [x] T021 Crear `app/services/identidad/src/domain/policy.js`: tabla de acciones y roles de `data-model.md` (permisos como suma de roles activos; `draft.edit_own` exige `ownerId` propio; `access.validate` exige función asignada)
+- [x] T022 Crear `app/services/identidad/src/app.js`: fábrica de Fastify con cookies, seguridad, manejo de errores, registro de rutas, `GET /health` y registro de logs que no incluye contraseñas ni tokens
+- [x] T023 Crear `app/services/identidad/src/server.js` (arranque en el puerto 3001)
+- [x] T024 [P] Crear `app/services/identidad/test/helpers.js` (construye la app con base en memoria, scrypt rápido y buzón de pruebas)
+- [x] T025 [P] Crear `app/services/identidad/test/unit/passwords.test.js`: 14 caracteres se rechazan; 15, 64 y 128 con espacios y sin mayúsculas, números ni símbolos se aceptan; 129 se rechaza; el hash no contiene la contraseña (SC-011)
+- [x] T026 [P] Crear `app/services/identidad/test/unit/tokens.test.js`: aleatoriedad, hash y vencimiento (SC-014)
+- [x] T027 [P] Crear `app/services/identidad/test/unit/policy.test.js`: matriz rol por acción, suma de varios roles, `draft.edit_own` con dueño ajeno, `access.validate` con y sin función, `publish` no concede `sales.configure` (SC-001, SC-004, SC-006, SC-009)
+- [x] T028 [P] Crear `app/services/identidad/test/unit/security.test.js`: límite de intentos y rechazo de `Origin` no permitido y de contenido no JSON
 
 **Checkpoint**: la base está lista; las historias pueden empezar.
 
@@ -66,12 +66,12 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: sin sesión, la entrada sirve la web y el servicio responde a rutas públicas; las rutas protegidas devuelven 401; la web no usa geolocalización.
 
-- [ ] T029 [P] [US1] Crear `edge/server.js`: sirve `web/` y enruta `/api/identidad/*` al servicio quitando el prefijo; sin dependencias
-- [ ] T030 [P] [US1] Crear `web/index.html` con estructura accesible (etiquetas, regiones, foco visible)
-- [ ] T031 [P] [US1] Crear `web/styles.css` (contraste legible, foco visible, estados no solo por color, sin desbordamiento horizontal en celular)
-- [ ] T032 [US1] Crear `web/app.js` con el enrutamiento básico y el ayudante de formularios con errores junto al campo; sin `geolocation`
-- [ ] T033 [US1] Crear `edge/test/edge.test.js`: sirve la web, enruta el prefijo, no solicita ubicación y no exige sesión para lo público (SC-002)
-- [ ] T034 [P] [US1] Crear `services/identidad/test/integration/public-access.test.js`: `GET /health` sin sesión; `GET /me` sin sesión da 401; las rutas protegidas piden identificarse solo cuando corresponde (FR-001, FR-003)
+- [x] T029 [P] [US1] Crear `app/edge/server.js`: sirve `app/web/` y enruta `/api/identidad/*` al servicio quitando el prefijo; sin dependencias
+- [x] T030 [P] [US1] Crear `app/web/index.html` con estructura accesible (etiquetas, regiones, foco visible)
+- [x] T031 [P] [US1] Crear `app/web/styles.css` (contraste legible, foco visible, estados no solo por color, sin desbordamiento horizontal en celular)
+- [x] T032 [US1] Crear `app/web/app.js` con el enrutamiento básico y el ayudante de formularios con errores junto al campo; sin `geolocation`
+- [x] T033 [US1] Crear `app/edge/test/edge.test.js`: sirve la web, enruta el prefijo, no solicita ubicación y no exige sesión para lo público (SC-002)
+- [x] T034 [P] [US1] Crear `app/services/identidad/test/integration/public-access.test.js`: `GET /health` sin sesión; `GET /me` sin sesión da 401; las rutas protegidas piden identificarse solo cuando corresponde (FR-001, FR-003)
 
 ---
 
@@ -81,12 +81,12 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: registrar, verificar con el buzón de pruebas, iniciar y cerrar sesión, recuperar con un enlace de un solo uso.
 
-- [ ] T035 [P] [US7] Crear `services/identidad/test/integration/register-verify.test.js`: registro con solo correo y contraseña (rechaza datos extra como cédula); respuesta neutra para correo nuevo y repetido; enlace de verificación de un solo uso y con vencimiento; el registro nunca otorga roles (FR-004, FR-028, FR-029, FR-030; SC-010, SC-013, SC-014, SC-016)
-- [ ] T036 [P] [US7] Crear `services/identidad/test/integration/session.test.js`: inicio de sesión con cookie `HttpOnly`, `GET /me`, cierre de sesión, error genérico para credenciales inválidas y límite de intentos (FR-004, FR-006; SC-008)
-- [ ] T037 [P] [US7] Crear `services/identidad/test/integration/password-reset.test.js`: mismo mensaje exista o no el correo, enlace de un solo uso y con vencimiento, cierre de las demás sesiones al restablecer (FR-005, FR-029; SC-013, SC-014, SC-016)
-- [ ] T038 [US7] Crear `services/identidad/src/domain/accounts.js`: registro, verificación, reenvío, inicio y cierre de sesión (hash ficticio si el correo no existe), recuperación y restablecimiento
-- [ ] T039 [US7] Crear `services/identidad/src/http/routes-auth.js` con `/auth/register`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/logout`, `/auth/password-reset/request`, `/auth/password-reset/confirm` y `/me` según `contracts/identidad.openapi.yaml`
-- [ ] T040 [US7] Añadir en `web/app.js` las pantallas de registro, inicio de sesión, verificación y recuperación
+- [x] T035 [P] [US7] Crear `app/services/identidad/test/integration/register-verify.test.js`: registro con solo correo y contraseña (rechaza datos extra como cédula); respuesta neutra para correo nuevo y repetido; enlace de verificación de un solo uso y con vencimiento; el registro nunca otorga roles (FR-004, FR-028, FR-029, FR-030; SC-010, SC-013, SC-014, SC-016)
+- [x] T036 [P] [US7] Crear `app/services/identidad/test/integration/session.test.js`: inicio de sesión con cookie `HttpOnly`, `GET /me`, cierre de sesión, error genérico para credenciales inválidas y límite de intentos (FR-004, FR-006; SC-008)
+- [x] T037 [P] [US7] Crear `app/services/identidad/test/integration/password-reset.test.js`: mismo mensaje exista o no el correo, enlace de un solo uso y con vencimiento, cierre de las demás sesiones al restablecer (FR-005, FR-029; SC-013, SC-014, SC-016)
+- [x] T038 [US7] Crear `app/services/identidad/src/domain/accounts.js`: registro, verificación, reenvío, inicio y cierre de sesión (hash ficticio si el correo no existe), recuperación y restablecimiento
+- [x] T039 [US7] Crear `app/services/identidad/src/http/routes-auth.js` con `/auth/register`, `/auth/verify-email`, `/auth/resend-verification`, `/auth/login`, `/auth/logout`, `/auth/password-reset/request`, `/auth/password-reset/confirm` y `/me` según `contracts/identidad.openapi.yaml`
+- [x] T040 [US7] Añadir en `app/web/app.js` las pantallas de registro, inicio de sesión, verificación y recuperación
 
 ---
 
@@ -96,10 +96,10 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: ejecutar el script, activar con el enlace, establecer la contraseña y asignar un rol a otra cuenta.
 
-- [ ] T041 [P] [US9] Crear `services/identidad/test/integration/first-admin.test.js`: activación con el enlace establece la contraseña y el rol de administrador; registrarse públicamente con el mismo correo no otorga rol; el enlace es de un solo uso (FR-027, FR-028; SC-015)
-- [ ] T042 [US9] Añadir `activate` a `services/identidad/src/domain/accounts.js` y `/auth/activate` a `services/identidad/src/http/routes-auth.js`
-- [ ] T043 [US9] Crear `services/identidad/bin/crear-primer-administrador.js --email`: crea la cuenta pendiente de activación con rol administrador y emite el enlace por el transporte configurado; no define contraseña ni credenciales predeterminadas
-- [ ] T044 [US9] Añadir en `web/app.js` la pantalla de activación
+- [x] T041 [P] [US9] Crear `app/services/identidad/test/integration/first-admin.test.js`: activación con el enlace establece la contraseña y el rol de administrador; registrarse públicamente con el mismo correo no otorga rol; el enlace es de un solo uso (FR-027, FR-028; SC-015)
+- [x] T042 [US9] Añadir `activate` a `app/services/identidad/src/domain/accounts.js` y `/auth/activate` a `app/services/identidad/src/http/routes-auth.js`
+- [x] T043 [US9] Crear `app/services/identidad/bin/crear-primer-administrador.js --email`: crea la cuenta pendiente de activación con rol administrador y emite el enlace por el transporte configurado; no define contraseña ni credenciales predeterminadas
+- [x] T044 [US9] Añadir en `app/web/app.js` la pantalla de activación
 
 ---
 
@@ -109,11 +109,11 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: guardar una acción `canje` sin sesión, iniciar sesión, llamar a `resume` y obtener el destino con `executed=false`.
 
-- [ ] T045 [P] [US2] Crear `services/identidad/test/integration/pending-resume.test.js`: conservar tipo y referencia (FR-031); destino fijado por el servicio, nunca por la persona, con referencias inválidas rechazadas (FR-032); `executed=false` siempre (FR-033); cuenta sin correo verificado queda bloqueada con `blockedReason=email_not_verified` (FR-035); acción vencida y descartada (FR-034); retomar tras verificar e iniciar sesión (SC-003, SC-012, SC-017, SC-018)
-- [ ] T046 [P] [US2] Crear `services/identidad/test/integration/no-payment-routes.test.js`: recorre las rutas registradas y comprueba que **no existe** ninguna ruta de pago, carrito, canje, sello o Pasaporte (SC-017)
-- [ ] T047 [US2] Crear `services/identidad/src/domain/pending.js`: conservar, retomar y descartar; destino `compra → /carrito` y `canje → /pasaporte/canje/{ref}`
-- [ ] T048 [US2] Crear `services/identidad/src/http/routes-pending.js` con `POST /auth/pending-actions`, `GET /auth/resume` y `DELETE /auth/pending-actions/current` según el contrato
-- [ ] T049 [US2] Añadir en `web/app.js` el flujo de retorno: conserva la acción antes de pedir identificación y vuelve al destino mostrando el resultado, sin ejecutar nada
+- [x] T045 [P] [US2] Crear `app/services/identidad/test/integration/pending-resume.test.js`: conservar tipo y referencia (FR-031); destino fijado por el servicio, nunca por la persona, con referencias inválidas rechazadas (FR-032); `executed=false` siempre (FR-033); cuenta sin correo verificado queda bloqueada con `blockedReason=email_not_verified` (FR-035); acción vencida y descartada (FR-034); retomar tras verificar e iniciar sesión (SC-003, SC-012, SC-017, SC-018)
+- [x] T046 [P] [US2] Crear `app/services/identidad/test/integration/no-payment-routes.test.js`: recorre las rutas registradas y comprueba que **no existe** ninguna ruta de pago, carrito, canje, sello o Pasaporte (SC-017)
+- [x] T047 [US2] Crear `app/services/identidad/src/domain/pending.js`: conservar, retomar y descartar; destino `compra → /carrito` y `canje → /pasaporte/canje/{ref}`
+- [x] T048 [US2] Crear `app/services/identidad/src/http/routes-pending.js` con `POST /auth/pending-actions`, `GET /auth/resume` y `DELETE /auth/pending-actions/current` según el contrato
+- [x] T049 [US2] Añadir en `app/web/app.js` el flujo de retorno: conserva la acción antes de pedir identificación y vuelve al destino mostrando el resultado, sin ejecutar nada
 
 ---
 
@@ -123,9 +123,9 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: una cuenta por rol y una matriz de acciones, incluidas solicitudes directas sin pasar por la web.
 
-- [ ] T050 [P] [US3] Crear `services/identidad/test/integration/internal-authz.test.js`: `introspect` y `authorize` rechazan credencial de servicio inválida; la matriz por rol; editor no publica ni edita borradores ajenos aunque la solicitud sea directa; publicador y administrador editan propuestas ajenas y publican las propias; publicar no concede `sales.configure`; personal de acceso solo valida funciones asignadas (FR-009 a FR-017; SC-001, SC-009)
-- [ ] T051 [US3] Crear `services/identidad/src/http/guards.js`: exige sesión y acción en las rutas públicas protegidas
-- [ ] T052 [US3] Crear `services/identidad/src/http/routes-internal.js` con `/internal/introspect` y `/internal/authorize` según `contracts/introspeccion.openapi.yaml`, con credencial de servicio por consumidor y fallo cerrado ante sesión inactiva
+- [x] T050 [P] [US3] Crear `app/services/identidad/test/integration/internal-authz.test.js`: `introspect` y `authorize` rechazan credencial de servicio inválida; la matriz por rol; editor no publica ni edita borradores ajenos aunque la solicitud sea directa; publicador y administrador editan propuestas ajenas y publican las propias; publicar no concede `sales.configure`; personal de acceso solo valida funciones asignadas (FR-009 a FR-017; SC-001, SC-009)
+- [x] T051 [US3] Crear `app/services/identidad/src/http/guards.js`: exige sesión y acción en las rutas públicas protegidas
+- [x] T052 [US3] Crear `app/services/identidad/src/http/routes-internal.js` con `/internal/introspect` y `/internal/authorize` según `contracts/introspeccion.openapi.yaml`, con credencial de servicio por consumidor y fallo cerrado ante sesión inactiva
 
 ---
 
@@ -135,10 +135,10 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: asignar uno y varios roles y comprobar que los permisos son la suma.
 
-- [ ] T053 [P] [US4] Crear `services/identidad/test/integration/roles-admin.test.js`: solo el administrador asigna y revoca; varios roles suman permisos; el personal de acceso recibe funciones solo con ese rol; no hay alcance por organización; la asignación queda en el historial (FR-009 a FR-011, FR-016; SC-004)
-- [ ] T054 [US4] Crear `services/identidad/src/domain/roles.js` (asignar y revocar roles y funciones, con historial en cada cambio)
-- [ ] T055 [US4] Crear `services/identidad/src/http/routes-roles.js` con `GET /users`, `GET /users/{id}`, `PUT` y `DELETE /users/{id}/roles/{role}` y `PUT` y `DELETE /users/{id}/functions/{functionId}`
-- [ ] T056 [US4] Añadir en `web/app.js` el panel de roles con etiquetas y errores junto al campo, y confirmación al revocar
+- [x] T053 [P] [US4] Crear `app/services/identidad/test/integration/roles-admin.test.js`: solo el administrador asigna y revoca; varios roles suman permisos; el personal de acceso recibe funciones solo con ese rol; no hay alcance por organización; la asignación queda en el historial (FR-009 a FR-011, FR-016; SC-004)
+- [x] T054 [US4] Crear `app/services/identidad/src/domain/roles.js` (asignar y revocar roles y funciones, con historial en cada cambio)
+- [x] T055 [US4] Crear `app/services/identidad/src/http/routes-roles.js` con `GET /users`, `GET /users/{id}`, `PUT` y `DELETE /users/{id}/roles/{role}` y `PUT` y `DELETE /users/{id}/functions/{functionId}`
+- [x] T056 [US4] Añadir en `app/web/app.js` el panel de roles con etiquetas y errores junto al campo, y confirmación al revocar
 
 ---
 
@@ -148,8 +148,8 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: asignar editor y publicador, revocar uno y comprobar la siguiente introspección.
 
-- [ ] T057 [P] [US5] Crear `services/identidad/test/integration/revocation.test.js`: revocar un rol conserva los demás, la siguiente `introspect` ya no lo incluye, revocar `personal_acceso` quita sus funciones, la sesión no se cierra y el servicio no modifica nada fuera de sus propias tablas (FR-018 a FR-021; SC-004, SC-005)
-- [ ] T058 [P] [US5] Documentar en `specs/001-identidad-y-permisos/contracts/introspeccion.openapi.yaml` que los consumidores no deben guardar en caché los permisos
+- [x] T057 [P] [US5] Crear `app/services/identidad/test/integration/revocation.test.js`: revocar un rol conserva los demás, la siguiente `introspect` ya no lo incluye, revocar `personal_acceso` quita sus funciones, la sesión no se cierra y el servicio no modifica nada fuera de sus propias tablas (FR-018 a FR-021; SC-004, SC-005)
+- [x] T058 [P] [US5] Documentar en `specs/001-identidad-y-permisos/contracts/introspeccion.openapi.yaml` que los consumidores no deben guardar en caché los permisos
 
 ---
 
@@ -159,8 +159,8 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: acciones no concedidas con cada rol y revisión del mensaje.
 
-- [ ] T059 [P] [US6] Crear `services/identidad/test/integration/rejections.test.js`: el 403 trae `missingRole` y `acceptedRoles`, y no incluye título, texto ni autor; un borrador ajeno responde sin datos del borrador (FR-022, FR-023; SC-006)
-- [ ] T060 [US6] Añadir en `web/app.js` el mensaje de rechazo junto a la acción que lo originó
+- [x] T059 [P] [US6] Crear `app/services/identidad/test/integration/rejections.test.js`: el 403 trae `missingRole` y `acceptedRoles`, y no incluye título, texto ni autor; un borrador ajeno responde sin datos del borrador (FR-022, FR-023; SC-006)
+- [x] T060 [US6] Añadir en `app/web/app.js` el mensaje de rechazo junto a la acción que lo originó
 
 ---
 
@@ -170,20 +170,23 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 
 **Independent Test**: asignar, revocar y consultar el historial.
 
-- [ ] T061 [P] [US8] Crear `services/identidad/test/integration/audit.test.js`: cada asignación, revocación y activación queda registrada con quién, cuándo y sobre qué; solo el administrador la consulta; no contiene contraseñas ni tokens (FR-024, FR-025, FR-026; SC-007)
-- [ ] T062 [US8] Crear `services/identidad/src/http/routes-audit.js` con `GET /audit`
-- [ ] T063 [US8] Añadir en `web/app.js` la consulta del historial
+- [x] T061 [P] [US8] Crear `app/services/identidad/test/integration/audit.test.js`: cada asignación, revocación y activación queda registrada con quién, cuándo y sobre qué; solo el administrador la consulta; no contiene contraseñas ni tokens (FR-024, FR-025, FR-026; SC-007)
+- [x] T062 [US8] Crear `app/services/identidad/src/http/routes-audit.js` con `GET /audit`
+- [x] T063 [US8] Añadir en `app/web/app.js` la consulta del historial
 
 ---
 
 ## Phase 12: Polish y verificaciones transversales
 
-- [ ] T064 [P] Crear `services/identidad/test/unit/no-secrets.test.js`: recorre los archivos versionables y falla si encuentra credenciales, contraseñas o claves de servicio fijas (FR-026, FR-027; SC-015)
-- [ ] T065 Ejecutar `npm test` desde la raíz y comprobar que pasan todas las pruebas del servicio y de la entrada común
-- [ ] T066 Recorrer el `quickstart.md` de principio a fin con el buzón de pruebas y anotar el resultado
+- [x] T064 [P] Crear `app/services/identidad/test/unit/no-secrets.test.js`: recorre los archivos versionables y falla si encuentra credenciales, contraseñas o claves de servicio fijas (FR-026, FR-027; SC-015)
+- [x] T065 Ejecutar `npm test` desde la raíz y comprobar que pasan todas las pruebas del servicio y de la entrada común
+- [x] T066 Recorrer el `quickstart.md` de principio a fin con el buzón de pruebas y anotar el resultado (hecho con contenedores reales: construcción, salud, usuario no root y recorrido completo; ver resultado en el informe)
 - [ ] T067 Comprobar la web con teclado y a ancho de celular (RNF-01, RNF-03) y anotar el resultado
-- [ ] T068 Revisar que el repositorio no contenga secretos, que `.specify/integration.json` no esté en los commits y que no existan rutas ni código de carrito, pago, canje o Pasaporte
-- [ ] T069 Marcar las tareas completadas en este archivo y registrar los pendientes (P-10, P-11)
+- [x] T068 Revisar que el repositorio no contenga secretos, que `.specify/integration.json` no esté en los commits y que no existan rutas ni código de carrito, pago, canje o Pasaporte
+- [x] T069 Marcar las tareas completadas en este archivo y registrar los pendientes (P-10, P-11)
+- [x] T070 [P] Crear `app/services/identidad/Dockerfile` y `.dockerignore` (imagen mínima, sin root, con comprobación de salud y sin secretos)
+- [x] T071 [P] Crear `app/edge/Dockerfile` y `app/docker-compose.yml` para la demo (el servicio no publica puertos; solo la entrada común)
+- [x] T072 Crear `app/edge/test/e2e.test.js`: recorrido real por la entrada común y el buzón de pruebas hasta el retorno a la acción, sin ejecutarla (SC-003, SC-016, SC-017)
 
 ---
 
@@ -192,7 +195,7 @@ Solo el spec 001. **No se incluyen** carrito, pago, canje, Pasaporte ni nada de 
 - Fase 1 → Fase 2 → historias. Dentro de las pruebas de cada historia, escribirlas primero y comprobar que fallan antes de implementar.
 - **US1** (web y entrada) no depende de cuentas. **US7** depende de la Fase 2 y es base de **US9**, **US2**, **US3**, **US4**, **US5**, **US6** y **US8**.
 - **US9** depende de US7 (cuentas y tokens). **US2** depende de US7 (sesión). **US3** depende de US7 y de la política. **US4** depende de US3 (guardas) y de US9 (un administrador). **US5** depende de US4. **US6** depende de US3. **US8** depende de US4 (cambios que registrar).
-- `web/app.js` se edita en varias historias: esas tareas son secuenciales entre sí.
+- `app/web/app.js` se edita en varias historias: esas tareas son secuenciales entre sí.
 
 ### Parallel Opportunities
 

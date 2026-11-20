@@ -1,0 +1,10 @@
+node_modules
+data
+test
+.env
+.env.*
+*.sqlite
+*.sqlite-journal
+npm-debug.log
+Dockerfile
+.dockerignore

@@ -25,7 +25,7 @@ Todas las decisiones son **técnicas, reversibles y no cambian ningún requisito
 | 17 | Roles | Roles guardados: editor, publicador, administrador y personal de acceso. «Usuario registrado» es implícito para toda cuenta activa y «visitante» para quien no tiene sesión | RC-01: permisos como suma de roles activos | Guardar también los roles implícitos (redundante) |
 | 18 | Política de permisos | Tabla de acciones declarada en código (`domain/policy`) con los roles que las conceden; `authorize` devuelve `allowed` o el rol que falta sin revelar contenido | FR-009 a FR-017, FR-022 y FR-023 | — |
 | 19 | Interfaz | Web estática con JavaScript sin dependencias: etiquetas, errores junto al campo, foco visible y teclado | RNF-02, RNF-03 | Un framework (innecesario para pocas pantallas) |
-| 20 | Entrada común | Servidor Node mínimo que sirve `web/` y enruta `/api/identidad` al servicio, quitando el prefijo | La arquitectura pide enrutamiento simple, no gateway dedicado | Nginx u otro proxy (infraestructura extra) |
+| 20 | Entrada común | Servidor Node mínimo que sirve `app/web/` y enruta `/api/identidad` al servicio, quitando el prefijo | La arquitectura pide enrutamiento simple, no gateway dedicado | Nginx u otro proxy (infraestructura extra) |
 
 ## Pendientes de producto que el plan no resuelve
 

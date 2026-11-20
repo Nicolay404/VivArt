@@ -7,6 +7,8 @@ info:
     No se expone por la entrada común. Cada servicio consumidor tiene su propia credencial en
     la cabecera X-Service-Key. Lee el estado actual, por lo que un rol revocado deja de autorizar
     en la siguiente consulta. Si este servicio no responde, el consumidor debe fallar cerrado.
+    Los consumidores NO deben guardar en caché los permisos más allá de la solicitud en curso:
+    una copia desactualizada seguiría autorizando a un rol revocado.
 components:
   securitySchemes:
     servicio:
