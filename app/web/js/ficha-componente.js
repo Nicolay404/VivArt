@@ -47,9 +47,9 @@ function renderVenta(estado, alAgregar) {
   return h(
     'div',
     { class: 'horario-venta' },
-    h('span', { class: `insignia-estado ${e.clase}` }, e.texto),
+    h('span', { class: `insignia-estado ${e.clase}` }, icono('entrada', 'icono-xs'), e.texto),
     estado === 'available' && alAgregar
-      ? h('button', { type: 'button', class: 'boton-sm', onclick: alAgregar }, 'Agregar al carrito')
+      ? h('button', { type: 'button', class: 'boton-sm boton-agregar-carrito', onclick: alAgregar }, icono('carrito', 'icono-sm'), 'Agregar al carrito')
       : null,
   );
 }

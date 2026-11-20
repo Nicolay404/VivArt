@@ -61,7 +61,13 @@ export async function pantallaCarrito({ persona, navegar }) {
   if (items.length === 0) {
     caja.replaceChildren(
       h('h1', {}, 'Tu carrito'),
-      h('div', { class: 'estado-vacio' }, h('p', {}, 'Tu carrito está vacío.'), h('a', { href: '/', 'data-enlace': true, class: 'boton' }, 'Explorar la Agenda')),
+      h(
+        'div',
+        { class: 'estado-vacio' },
+        h('span', { class: 'estado-vacio-icono', 'aria-hidden': 'true' }, icono('carrito', 'icono-lg')),
+        h('p', {}, 'Tu carrito está vacío.'),
+        h('a', { href: '/', 'data-enlace': true, class: 'boton' }, 'Explorar la Agenda'),
+      ),
     );
     return caja;
   }
@@ -150,22 +156,37 @@ export async function pantallaCarrito({ persona, navegar }) {
 
   caja.replaceChildren(
     ...[
-    h('h1', {}, 'Tu carrito'),
-    h('p', { class: 'ayuda' }, `Máximo ${LIMITE} entradas por pedido. Los precios se confirman al pagar.`),
-    h('ul', { class: 'lista-carrito' }, filas),
-    cruces,
-    h(
-      'div',
-      { class: 'carrito-total' },
-      h('span', {}, 'Total'),
-      h('strong', { class: 'carrito-total-valor' }, usd(cot.totalCents)),
-    ),
-    h(
-      'div',
-      { class: 'fila-acciones' },
-      h('button', { type: 'button', onclick: pagar, disabled: cot.totalUnits === 0 }, icono('check', 'icono-sm'), 'Ir a pagar'),
-      h('button', { type: 'button', class: 'secundario', onclick: () => { guardarCarrito([]); navegar('/carrito', false, false); } }, 'Vaciar carrito'),
-    ),
+      h(
+        'div',
+        { class: 'carrito-cabecera' },
+        h('h1', {}, 'Tu carrito'),
+        h('span', { class: 'chip-sutil' }, `${cot.totalUnits} / ${LIMITE} entradas`),
+      ),
+      h('p', { class: 'ayuda' }, `Máximo ${LIMITE} entradas por pedido. Los precios se confirman al pagar.`),
+      cruces,
+      h(
+        'div',
+        { class: 'carrito-layout' },
+        h('ul', { class: 'lista-carrito' }, filas),
+        h(
+          'aside',
+          { class: 'tarjeta pila carrito-resumen', 'aria-label': 'Resumen del pedido' },
+          h('h2', {}, 'Resumen'),
+          h(
+            'div',
+            { class: 'carrito-total' },
+            h('span', {}, 'Total'),
+            h('strong', { class: 'carrito-total-valor' }, usd(cot.totalCents)),
+          ),
+          h('p', { class: 'ayuda carrito-nota-prueba' }, 'Pago de prueba: no se cobra dinero ni se piden datos de tarjeta.'),
+          h(
+            'div',
+            { class: 'carrito-acciones' },
+            h('button', { type: 'button', class: 'boton-ancho', onclick: pagar, disabled: cot.totalUnits === 0 }, icono('check', 'icono-sm'), 'Ir a pagar'),
+            h('button', { type: 'button', class: 'secundario boton-ancho', onclick: () => { guardarCarrito([]); navegar('/carrito', false, false); } }, 'Vaciar carrito'),
+          ),
+        ),
+      ),
     ].filter(Boolean),
   );
   return caja;
@@ -218,27 +239,53 @@ export async function pantallaPedido({ id, persona, navegar }) {
   return h(
     'section',
     { class: 'pila pedido' },
-    h('h1', {}, 'Tu pedido'),
-    h('p', {}, h('span', { class: `insignia-estado pedido-${p.status}` }, etiquetaPedido(p.status))),
+    h(
+      'div',
+      { class: 'carrito-cabecera' },
+      h('h1', {}, 'Tu pedido'),
+      h('span', { class: `insignia-estado pedido-${p.status}` }, etiquetaPedido(p.status)),
+    ),
     h(
       'ul',
       { class: 'lista-carrito' },
-      p.items.map((i) => h('li', { class: 'carrito-item' }, h('div', { class: 'carrito-item-datos' }, h('strong', {}, i.title), h('span', { class: 'ayuda' }, `${formatoFecha(i.date)} · ${i.startTime}`)), h('span', {}, `${i.quantity} × ${usd(i.unitPriceCents)}`))),
+      p.items.map((i) =>
+        h(
+          'li',
+          { class: 'carrito-item' },
+          h(
+            'div',
+            { class: 'carrito-item-datos' },
+            h('strong', {}, i.title),
+            h('span', { class: 'ayuda' }, `${formatoFecha(i.date)} · ${i.startTime}`),
+          ),
+          h('span', { class: 'pedido-item-monto' }, `${i.quantity} × ${usd(i.unitPriceCents)}`),
+        ),
+      ),
     ),
-    h('div', { class: 'carrito-total' }, h('span', {}, 'Total'), h('strong', { class: 'carrito-total-valor' }, usd(p.totalCents))),
+    h(
+      'div',
+      { class: 'tarjeta carrito-total pedido-total' },
+      h('span', {}, 'Total'),
+      h('strong', { class: 'carrito-total-valor' }, usd(p.totalCents)),
+    ),
     p.status === 'pending'
       ? h(
           'div',
-          { class: 'tarjeta pila' },
-          h('p', {}, 'Tus entradas están apartadas. Tiempo restante: ', reloj),
+          { class: 'tarjeta pila pedido-simulador' },
+          h(
+            'div',
+            { class: 'pedido-retencion' },
+            icono('reloj', 'icono'),
+            h('p', {}, 'Tus entradas están apartadas. Tiempo restante: ', reloj),
+          ),
           p.simulatorAvailable
             ? [
-                h('h2', {}, 'Pago de prueba'),
+                h('div', { class: 'pedido-simulador-cabecera' }, h('h2', {}, 'Pago de prueba'), h('span', { class: 'chip-sutil' }, 'Entorno de demostración')),
                 h('p', { class: 'ayuda' }, 'Entorno de demostración: elige el resultado. No se cobra dinero ni se piden datos de tarjeta.'),
                 h(
                   'div',
-                  { class: 'fila-acciones' },
-                  h('button', { type: 'button', onclick: () => simular('confirmed') }, 'Pago confirmado'),
+                  { class: 'pedido-simulador-botones' },
+                  h('button', { type: 'button', class: 'boton-exito', onclick: () => simular('confirmed') }, icono('check', 'icono-sm'), 'Pago confirmado'),
                   h('button', { type: 'button', class: 'secundario', onclick: () => simular('failed') }, 'Pago fallido'),
                   h('button', { type: 'button', class: 'secundario', onclick: () => simular('confirmed_late') }, 'Confirmado después de vencer'),
                 ),
@@ -246,6 +293,6 @@ export async function pantallaPedido({ id, persona, navegar }) {
             : h('p', { class: 'aviso alerta-caja' }, 'El pago no está disponible en este entorno.'),
         )
       : null,
-    h('p', {}, h('a', { href: '/mis-entradas', 'data-enlace': true }, 'Ver Mis entradas y pedidos')),
+    h('p', {}, h('a', { href: '/mis-entradas', 'data-enlace': true, class: 'enlace-volver' }, icono('entrada', 'icono-sm'), 'Ver Mis entradas y pedidos')),
   );
 }

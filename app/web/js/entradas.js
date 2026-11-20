@@ -83,26 +83,34 @@ function tarjetaEntrada(t, sinConexion) {
     { class: `tarjeta entrada ${estado.clase}` },
     h(
       'div',
-      { class: 'entrada-cabecera' },
-      h('h2', { class: 'entrada-titulo' }, t.title),
-      h('span', { class: 'insignia-estado' }, estado.texto),
+      { class: 'entrada-cuerpo' },
+      h(
+        'div',
+        { class: 'entrada-cabecera' },
+        h('h2', { class: 'entrada-titulo' }, t.title),
+        h('span', { class: 'insignia-estado' }, estado.texto),
+      ),
+      h(
+        'p',
+        { class: 'entrada-meta' },
+        icono('calendario', 'icono-xs'),
+        `${formatoFecha(t.date)} · ${t.startTime} (hora de Loja)`,
+        t.venueName ? [' · ', icono('sede', 'icono-xs'), t.venueName] : null,
+      ),
+      t.notice ? h('p', { class: 'aviso alerta-caja' }, h('strong', {}, `${etiquetaAviso(t.notice.kind)}: `), t.notice.text) : null,
+      t.state === 'invalidated' && t.invalidationReason ? h('p', { class: 'ayuda entrada-detalle' }, `Motivo: ${t.invalidationReason}`) : null,
+      t.state === 'used' && t.usedAt ? h('p', { class: 'ayuda entrada-detalle' }, `Usada el ${formatoFechaHoraIso(t.usedAt)}.`) : null,
     ),
-    h(
-      'p',
-      { class: 'entrada-meta' },
-      icono('calendario', 'icono-xs'),
-      `${formatoFecha(t.date)} · ${t.startTime} (hora de Loja)`,
-      t.venueName ? [' · ', icono('sede', 'icono-xs'), t.venueName] : null,
-    ),
-    t.notice ? h('p', { class: 'aviso alerta-caja' }, h('strong', {}, `${etiquetaAviso(t.notice.kind)}: `), t.notice.text) : null,
-    t.state === 'invalidated' && t.invalidationReason ? h('p', { class: 'ayuda' }, `Motivo: ${t.invalidationReason}`) : null,
-    t.state === 'used' && t.usedAt ? h('p', { class: 'ayuda' }, `Usada el ${formatoFechaHoraIso(t.usedAt)}.`) : null,
     mostrarCodigo
       ? h(
           'div',
-          { class: 'entrada-codigos' },
-          nodoQr(t.qrSvg),
-          h('p', { class: 'entrada-codigo' }, h('span', { class: 'ayuda' }, 'Código alternativo'), h('strong', {}, t.code.replace(/(.{5})/, '$1 '))),
+          { class: 'entrada-talon' },
+          h(
+            'div',
+            { class: 'entrada-codigos' },
+            nodoQr(t.qrSvg),
+            h('p', { class: 'entrada-codigo' }, h('span', { class: 'ayuda' }, 'Código alternativo'), h('strong', {}, t.code.replace(/(.{5})/, '$1 '))),
+          ),
         )
       : null,
   );

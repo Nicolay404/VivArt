@@ -1,5 +1,5 @@
 // Panel de ventas del administrador (spec 005: FR-012, FR-019 a FR-022, FR-033, FR-037, FR-039). Escritorio primero.
-import { h, aviso, campo, formulario, abrirDialogo, campoTextarea } from './dom.js';
+import { h, icono, aviso, campo, formulario, abrirDialogo, campoTextarea } from './dom.js';
 import { apiParticipacion, apiProgramacion } from './api.js';
 import { formatoFecha, formatoFechaHoraIso } from './format.js';
 import { usd, etiquetaPedido } from './carrito.js';
@@ -134,13 +134,22 @@ function bloqueFuncion(fn, resumen, refrescar) {
 
   return h(
     'article',
-    { class: 'tarjeta pila' },
-    h('h2', {}, `${formatoFecha(fn.date)} · ${fn.startTime}`),
+    { class: 'tarjeta pila venta-funcion-card' },
+    h(
+      'div',
+      { class: 'venta-funcion-cabecera' },
+      h('h2', {}, `${formatoFecha(fn.date)} · ${fn.startTime}`),
+      h(
+        'span',
+        { class: `insignia-estado ${resumen.cancelled ? 'venta-agotada' : resumen.enabled ? 'venta-disponible' : 'venta-cerrada'}` },
+        resumen.cancelled ? 'Cancelada' : resumen.enabled ? 'Venta habilitada' : 'Sin habilitar',
+      ),
+    ),
     resumen.cancelled ? h('p', { class: 'aviso error-caja' }, 'Función cancelada.') : null,
     !resumen.sellable ? h('p', { class: 'aviso alerta-caja' }, 'La actividad no tiene precio confirmado: no se puede vender.') : null,
     h(
       'dl',
-      { class: 'ficha-datos-clave' },
+      { class: 'ficha-datos-clave venta-kpis' },
       [
         ['Precio', resumen.priceUsd === null ? 'Por confirmar' : usd(Math.round(resumen.priceUsd * 100))],
         ['Vendidas', resumen.sold],
@@ -151,18 +160,18 @@ function bloqueFuncion(fn, resumen, refrescar) {
     ),
     h(
       'form',
-      { class: 'fila-acciones', onsubmit: guardar },
+      { class: 'venta-form', onsubmit: guardar },
       capacidad.el,
       h('label', { class: 'casilla', for: habilitar.id }, habilitar, ' Venta habilitada'),
       h('button', { type: 'submit' }, 'Guardar venta'),
     ),
     resumen.orders.length
-      ? h('details', {}, h('summary', {}, `Pedidos (${resumen.orders.length})`), h('ul', { class: 'lista-simple' }, resumen.orders.map((o) => h('li', {}, `${etiquetaPedido(o.status)} · ${o.quantity} entradas · ${formatoFechaHoraIso(o.createdAt)}`))))
+      ? h('details', { class: 'venta-acordeon' }, h('summary', {}, `Pedidos (${resumen.orders.length})`), h('ul', { class: 'lista-simple' }, resumen.orders.map((o) => h('li', {}, `${etiquetaPedido(o.status)} · ${o.quantity} entradas · ${formatoFechaHoraIso(o.createdAt)}`))))
       : null,
     resumen.tickets.length
       ? h(
           'details',
-          {},
+          { class: 'venta-acordeon' },
           h('summary', {}, `Entradas (${resumen.tickets.length})`),
           h(
             'ul',
@@ -191,7 +200,7 @@ export async function pantallaVentasActividad({ id, persona, barraPanel, navegar
   const refrescar = () => navegar(`/panel/ventas/actividad/${encodeURIComponent(id)}`, false, false);
   return [
     barraPanel('/panel/ventas'),
-    h('p', { class: 'migas' }, h('a', { href: '/panel/ventas', 'data-enlace': true }, 'Volver a Ventas')),
+    h('p', { class: 'migas' }, h('a', { href: '/panel/ventas', 'data-enlace': true, class: 'enlace-volver' }, icono('volver', 'icono-sm'), 'Volver a Ventas')),
     h('h1', {}, a.title),
     a.functions.length
       ? h(

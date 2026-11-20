@@ -135,6 +135,23 @@ export function icono(nombre, clase = 'icono') {
       trazo('line', { x1: 19, y1: 12, x2: 5, y2: 12 });
       trazo('polyline', { points: '12 19 5 12 12 5' });
       break;
+    case 'carrito':
+      trazo('circle', { cx: 9, cy: 20, r: 1.5 });
+      trazo('circle', { cx: 18, cy: 20, r: 1.5 });
+      trazo('path', { d: 'M2.5 4h2.5l2.2 11.2a1.5 1.5 0 0 0 1.5 1.2h9.4a1.5 1.5 0 0 0 1.5-1.1L21 7.5H6' });
+      break;
+    case 'entrada':
+      trazo('path', { d: 'M3 8a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4V8z' });
+      trazo('line', { x1: 14, y1: 6, x2: 14, y2: 18 });
+      break;
+    case 'camara':
+      trazo('path', { d: 'M4 8h3l1.5-2h7L17 8h3a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 20 20H4a1.5 1.5 0 0 1-1.5-1.5v-9A1.5 1.5 0 0 1 4 8z' });
+      trazo('circle', { cx: 12, cy: 13.5, r: 3.5 });
+      break;
+    case 'escudo':
+      trazo('path', { d: 'M12 3 4.5 6.2v5.6c0 4.6 3.2 8.2 7.5 9.2 4.3-1 7.5-4.6 7.5-9.2V6.2L12 3z' });
+      trazo('polyline', { points: '9 12 11 14 15.5 9.5' });
+      break;
     default:
       trazo('circle', { cx: 12, cy: 12, r: 8 });
       break;
