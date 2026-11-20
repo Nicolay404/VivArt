@@ -31,7 +31,7 @@ Reglas de contenido:
 | `docs/` | Arquitectura común y otras decisiones compartidas | Sí |
 | `.specify/` | Base neutra de Spec Kit (plantillas, scripts, constitución) | Sí |
 | `.github/` | Integración y entrega continuas (GitHub Actions) y Dependabot | Sí |
-| `.claude/`, `.agents/` | Skills y ajustes locales de cada agente | No (solo locales) |
+| `.claude/`, `.agents/` | Skills y ajustes locales de cada agente (la lista común de skills está en `skills-lock.json`) | No (solo locales) |
 
 El código no se mezcla con la documentación ni con las herramientas de agentes: si es código, va bajo `app/`.
 
@@ -77,6 +77,19 @@ El código no se mezcla con la documentación ni con las herramientas de agentes
 
 - Se versiona: `AGENTS.md`, `.gitignore`, `context/` (incluidos los mockups y el afiche, pero **no** el PDF de programación) y la base compartida de Spec Kit (`.specify/` y los specs que genere).
 - No se versiona por defecto: skills o comandos generados para un agente (`.claude/skills/speckit-*`, `.agents/skills/speckit-*`), preferencias o permisos locales (`.claude/settings.local.json`), credenciales, `.env` y datos personales.
+
+## Skills del equipo
+
+Todo el equipo usa las mismas skills, aunque cada persona trabaje con un agente distinto. Se versiona solo la lista (`skills-lock.json`, con la versión exacta de cada skill); los archivos de cada skill **no** se versionan, porque cada agente los lee de su propia carpeta (`.claude/skills/` en Claude Code, `.agents/skills/` en Codex y Antigravity).
+
+| Skill | Para qué | Instalación |
+|---|---|---|
+| `design-taste-frontend` (taste-skill) | Criterio visual para la interfaz de `app/web` | `npx skills add Leonxlnx/taste-skill` y elegir tu agente |
+
+- Instala solo para el agente que usas y no subas sus carpetas (están en `.gitignore`).
+- Si añades o actualizas una skill, acuérdalo antes con el equipo: cambia `skills-lock.json` para todos.
+- **taste-skill se usa como guía, no al pie de la letra.** Está pensada para páginas de empresa y choca con VIVART: prohíbe el violeta (es el color del festival), pide fotos de stock (no se usan: no se hacen pasar fotos ajenas por obras del festival) y exige una sección por pantalla (VIVART es una aplicación). Prevalecen los mockups de `context/assets/mockups/` y el sistema visual de `app/web/styles.css`: modo claro, paleta violeta y atardecer, Bricolage Grotesque y Figtree.
+- En Claude Code, taste-skill añade un *hook* que, al terminar cada respuesta, revisa la página con Chrome sin ventana. Si te estorba o falla, avísalo; no edites los archivos de la skill.
 
 ## Compatibilidad entre agentes
 
