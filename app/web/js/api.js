@@ -1,9 +1,34 @@
 // Clientes HTTP para /api/identidad y /api/programacion.
 // Todas las peticiones viajan con cookie de sesión same-origin; las que cambian estado envían JSON.
 
+const BASES_PERMITIDAS = new Set(['/api/identidad', '/api/programacion']);
+
+function construirUrlSegura(base, ruta) {
+  if (!BASES_PERMITIDAS.has(base)) throw new Error('Base de API no permitida.');
+  const texto = String(ruta ?? '');
+  if (!texto.startsWith('/') || texto.startsWith('//') || texto.includes('\\')) {
+    throw new Error('Ruta de API inválida.');
+  }
+  const url = new URL(base + texto, location.origin);
+  if (url.origin !== location.origin || !url.pathname.startsWith(`${base}/`)) {
+    throw new Error('Destino de API fuera de origen.');
+  }
+  return url.pathname + url.search;
+}
+
 async function llamar(base, metodo, ruta, cuerpo) {
+  let destino;
   try {
-    const respuesta = await fetch(base + ruta, {
+    destino = construirUrlSegura(base, ruta);
+  } catch {
+    return {
+      ok: false,
+      status: 400,
+      datos: { error: 'invalid_request', message: 'La solicitud no es válida.' },
+    };
+  }
+  try {
+    const respuesta = await fetch(destino, {
       method: metodo,
       credentials: 'same-origin',
       headers: cuerpo !== undefined ? { 'content-type': 'application/json' } : {},

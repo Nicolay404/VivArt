@@ -43,7 +43,7 @@ export async function pantallaCatalogos({ persona }) {
             onclick: () => {
               pestana = d.id;
               pintarTabs();
-              pintarContenido();
+              void pintarContenido();
             },
           },
           d.label,

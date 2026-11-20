@@ -205,7 +205,7 @@ export async function pantallaAgenda() {
     estado.access = '';
     sincronizarUrl();
     pintarFiltros();
-    cargarAgenda();
+    void cargarAgenda();
   }
 
   function pintarFiltros() {
@@ -222,7 +222,7 @@ export async function pantallaAgenda() {
       clearTimeout(temporizador);
       temporizador = setTimeout(() => {
         sincronizarUrl();
-        cargarAgenda();
+        void cargarAgenda();
       }, 240);
     });
 
@@ -234,7 +234,7 @@ export async function pantallaAgenda() {
       onchange: () => {
         estado.date = inputFecha.value;
         sincronizarUrl();
-        cargarAgenda();
+        void cargarAgenda();
       },
     });
 
@@ -246,7 +246,7 @@ export async function pantallaAgenda() {
         onchange: () => {
           estado.venueId = selectSede.value;
           sincronizarUrl();
-          cargarAgenda();
+          void cargarAgenda();
         },
       },
       h('option', { value: '', selected: !estado.venueId }, 'Todas las sedes'),
@@ -261,7 +261,7 @@ export async function pantallaAgenda() {
         onchange: () => {
           estado.access = selectAcceso.value;
           sincronizarUrl();
-          cargarAgenda();
+          void cargarAgenda();
         },
       },
       [
@@ -285,7 +285,7 @@ export async function pantallaAgenda() {
             estado.categoryId = '';
             sincronizarUrl();
             pintarFiltros();
-            cargarAgenda();
+            void cargarAgenda();
           },
         },
         'Todas',
@@ -301,7 +301,7 @@ export async function pantallaAgenda() {
               estado.categoryId = estado.categoryId === c.id ? '' : c.id;
               sincronizarUrl();
               pintarFiltros();
-              cargarAgenda();
+              void cargarAgenda();
             },
           },
           icono(iconoParaCategoria(c.name), 'icono-xs'),

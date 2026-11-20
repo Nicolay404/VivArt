@@ -47,7 +47,9 @@ export async function pantallaBandeja({ persona, navegar }) {
     const p = new URLSearchParams();
     if (estado.state) p.set('state', estado.state);
     if (estado.mine) p.set('mine', 'true');
-    const r = await apiProgramacion('GET', `/panel/activities${p.toString() ? `?${p.toString()}` : ''}`);
+    const consulta = p.toString();
+    const sufijo = consulta ? `?${consulta}` : '';
+    const r = await apiProgramacion('GET', `/panel/activities${sufijo}`);
     if (!r.ok) {
       zonaTabla.replaceChildren(
         h(
@@ -144,7 +146,7 @@ export async function pantallaBandeja({ persona, navegar }) {
       'aria-label': 'Filtrar por estado editorial',
       onchange: () => {
         estado.state = selectEstado.value;
-        cargar();
+        void cargar();
       },
     },
     [
@@ -165,7 +167,7 @@ export async function pantallaBandeja({ persona, navegar }) {
           type: 'checkbox',
           onchange: (ev) => {
             estado.mine = ev.target.checked;
-            cargar();
+            void cargar();
           },
         }),
         'Solo las mías',
