@@ -115,7 +115,7 @@ si responde 403, muestra su `message` junto a la acción (dice el rol que falta)
 
 ## 5. Calidad visual y accesibilidad
 - Diseño 10/10: identidad visual propia de un festival de artes vivas (color con carácter, tipografía expresiva pero
-  legible, buena jerarquía, ritmo y espacio, microinteracciones sobrias). Modo claro y oscuro (prefers-color-scheme).
+  legible, buena jerarquía, ritmo y espacio, microinteracciones sobrias). Modo claro siempre, como en los mockups (se descartó el modo oscuro automático por decisión del equipo el 2026-11-20).
   Respeta prefers-reduced-motion. Usa variables CSS (tokens) para color, espacio, radio y tipografía.
 - Responsivo y adaptativo de verdad: celular (360 px) sin desplazamiento horizontal y con zonas táctiles de al menos
   44 px; tableta; escritorio que aprovecha el ancho (Agenda en cuadrícula, panel con columnas). Tablas que en celular se

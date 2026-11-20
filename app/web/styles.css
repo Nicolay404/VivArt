@@ -3,27 +3,43 @@
    Tokens, modo claro/oscuro, celular primero (360 px+), accesible (RNF-03).
    ========================================================================== */
 
+@font-face {
+  font-family: "Bricolage Grotesque";
+  src: url("/fonts/bricolage-grotesque.woff2") format("woff2");
+  font-weight: 200 800;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Figtree";
+  src: url("/fonts/figtree.woff2") format("woff2");
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+html { color-scheme: light; }
+
 :root {
   /* Colores de marca (inspirados en los mockups de Loja al atardecer) */
-  --marca-oscuro: #2c0b4e;
-  --marca-primario: #5a177a;
+  --marca-oscuro: #3a1460;
+  --marca-primario: #6a2499;
   --marca-magenta: #a52862;
   --marca-calido: #e65a28;
   --marca-ambar: #f59e2d;
 
   /* Superficies y texto (modo claro) */
-  --fondo: #f7f4fb;
+  --fondo: #fbf9fd;
   --superficie: #ffffff;
-  --superficie-suave: #f2edf8;
+  --superficie-suave: #f4eefa;
   --texto: #19102b;
   --suave: #564b6e;
-  --borde: #dfd6ec;
+  --borde: #ece4f4;
   --borde-fuerte: #c4b5d9;
 
   /* Acciones y estados */
-  --acento: #5a177a;
-  --acento-hover: #461062;
-  --acento-suave: #efe6fa;
+  --acento: #6a2499;
+  --acento-hover: #521a78;
+  --acento-suave: #f1e6fb;
   --acento-texto: #ffffff;
   --foco: #ff9d00;
 
@@ -44,11 +60,12 @@
   --error-borde: #f3b5bc;
 
   /* Tipografía, radios, ritmo y sombras */
-  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fuente: "Figtree", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fuente-titulos: "Bricolage Grotesque", "Figtree", system-ui, sans-serif;
   --fuente-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --radio-sm: 0.5rem;
-  --radio: 0.85rem;
-  --radio-lg: 1.25rem;
+  --radio: 1.1rem;
+  --radio-lg: 1.6rem;
   --radio-pill: 999px;
   --toque: 2.75rem;
   --ancho-max: 74rem;
@@ -58,42 +75,7 @@
   --sombra-lg: 0 18px 44px rgb(25 16 43 / 18%);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #110c1c;
-    --superficie: #1a132a;
-    --superficie-suave: #241b38;
-    --texto: #f5f1fc;
-    --suave: #bfb4d6;
-    --borde: #34294c;
-    --borde-fuerte: #4b3d6b;
 
-    --acento: #caa6f7;
-    --acento-hover: #dcc2ff;
-    --acento-suave: #2e2047;
-    --acento-texto: #19102b;
-
-    --ok: #79e2a9;
-    --ok-fondo: #123322;
-    --ok-borde: #246341;
-
-    --pago: #ffd089;
-    --pago-fondo: #3a260a;
-    --pago-borde: #6e4a16;
-
-    --alerta: #ffd584;
-    --alerta-fondo: #38280b;
-    --alerta-borde: #6c4d18;
-
-    --error: #ff949e;
-    --error-fondo: #3a141a;
-    --error-borde: #732732;
-
-    --sombra-sm: 0 1px 2px rgb(0 0 0 / 30%);
-    --sombra: 0 6px 20px rgb(0 0 0 / 40%);
-    --sombra-lg: 0 20px 50px rgb(0 0 0 / 60%);
-  }
-}
 
 /* ---------- Base y accesibilidad ---------- */
 
@@ -217,13 +199,7 @@ code {
   color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  .marca-nombre {
-    background: linear-gradient(110deg, #e2c8ff, #ff99b6, #ffb866);
-    -webkit-background-clip: text;
-    background-clip: text;
-  }
-}
+
 
 .marca-lema {
   font-size: 0.78rem;
@@ -563,11 +539,11 @@ textarea[aria-invalid="true"] {
 .hero-festival {
   position: relative;
   background-color: var(--marca-oscuro);
-  background-image: linear-gradient(100deg, rgb(28 8 52 / 84%) 0%, rgb(44 11 78 / 64%) 55%, rgb(44 11 78 / 28%) 100%), url("/img/loja-silueta.svg");
+  background-image: linear-gradient(100deg, rgb(58 20 96 / 62%) 0%, rgb(58 20 96 / 22%) 55%, rgb(58 20 96 / 0%) 100%), url("/img/loja-silueta.svg");
   background-size: cover;
   background-position: right bottom;
   color: #ffffff;
-  padding: 1.75rem 1rem 3.25rem;
+  padding: 1.9rem 1rem 3.4rem;
 }
 
 .hero-contenido {
@@ -610,7 +586,7 @@ textarea[aria-invalid="true"] {
 }
 
 .pestana-hero {
-  background: rgb(44 11 78 / 76%);
+  background: rgb(255 255 255 / 10%);
   border: 1.5px solid rgb(255 255 255 / 45%);
   color: #ffffff;
   backdrop-filter: blur(8px);
@@ -1550,4 +1526,32 @@ th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ---------- Tipografía de títulos (Bricolage Grotesque) ---------- */
+
+h1, h2, h3,
+.hero-titulo,
+.marca-nombre,
+.ficha-titulo,
+.tarjeta-agenda-titulo,
+.tarjeta-ahora-titulo {
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.hero-titulo { letter-spacing: -0.03em; }
+.marca-nombre { letter-spacing: 0.01em; }
+
+/* Tarjetas: se elevan un poco al pasar el cursor */
+.tarjeta-agenda,
+.tarjeta-ahora { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
+.tarjeta-agenda:hover,
+.tarjeta-ahora:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -18px rgb(91 31 134 / 55%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta-agenda:hover,
+  .tarjeta-ahora:hover { transform: none; }
 }

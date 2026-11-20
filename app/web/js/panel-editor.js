@@ -754,7 +754,7 @@ export async function pantallaEditor({ id, persona, navegar }) {
             { class: 'tarjeta-faltantes', 'aria-label': 'Requisitos pendientes para enviar a revisión' },
             h('h2', {}, 'Pendiente para poder enviar a revisión'),
             h('p', { class: 'ayuda' }, 'Puedes guardar el borrador incompleto ahora y completarlo después.'),
-            h('ul', { class: 'lista-simple' }, faltantes.map(([k, msg]) => h('li', {}, msg, ' ', h('code', { class: 'clave-sutil' }, k)))),
+            h('ul', { class: 'lista-simple' }, faltantes.map(([k, msg]) => h('li', { 'data-campo': k }, msg))),
           )
         : null;
 
