@@ -14,6 +14,11 @@
 
 - Q: ¿Cómo se simula el pago de prueba? → A: Solo en demo o pruebas se puede simular un pago confirmado, fallido o confirmado después de vencer la retención. No se procesa dinero ni se piden datos de tarjeta. El pago tardío pasa a revisión sin emitir entradas ni recuperar cupos ya liberados.
 - Q: ¿Quién puede invalidar una entrada? → A: Solo el administrador, sobre una entrada confirmada y todavía no usada, y debe registrar el motivo. La entrada permanece visible en el historial y deja de permitir el ingreso. La invalidación manual no reembolsa ni repone cupo automáticamente. La cancelación de una función se rige por su propia regla, cuyo dueño es este spec.
+- Q: ¿Hasta cuándo se pueden comprar entradas de una función? → A: La venta se cierra 30 minutos antes de la hora de inicio (hora de Loja). Es un plazo único para todas las funciones que solo el administrador puede cambiar, y el cambio aplica desde ese momento. Un pedido pendiente creado antes del cierre puede terminar su pago dentro de su retención.
+- Q: ¿El precio de venta es el de la actividad en la programación o uno propio por función? → A: Se usa el precio de la actividad del spec 02 (una sola fuente). El administrador configura solo el cupo y la habilitación de la venta de cada función; sin precio no hay venta.
+- Q: ¿La entrada con su QR debe poder mostrarse sin conexión en la sede? → A: Sí. Las entradas que el usuario ya abrió quedan guardadas en su navegador y su QR se puede mostrar sin conexión, con un aviso de que su estado puede estar desactualizado. La validación ocurre siempre en el servidor.
+- Q: ¿Qué disponibilidad ve el público de una función con venta? → A: Solo un estado, sin el número de cupos: «Disponible», «Agotada» o «Venta cerrada». Los cupos retenidos por pedidos pendientes cuentan como no disponibles, así que una función puede verse «Agotada» y volver a «Disponible» si una retención se libera. Este estado es el que usa Mi recorrido (spec 04).
+- Q: ¿Qué datos de venta recibe el aviso de impacto al reprogramar o cancelar desde el panel de programación (spec 02)? → A: El número de entradas vendidas no usadas y de pedidos pendientes de esa función. Mientras este spec no responda, el panel sigue mostrando «no disponible», nunca 0.
 - Q: ¿Cuántas entradas se pueden comprar por pedido? → A: Un máximo de seis por pedido, contando todas las unidades del carrito aunque sean de funciones distintas. También aplica el cupo disponible de cada función. El límite no se configura por función en el MVP.
 
 ## Alcance y límites
@@ -52,6 +57,9 @@ Un visitante agrega entradas de una o varias funciones con venta interna, ajusta
 7. **Given** una función con «Evento Pagado» y sin precio, **When** se consulta, **Then** no entra al carrito.
 8. **Given** un carrito con seis unidades en total (aunque sean de funciones distintas), **When** el visitante intenta agregar otra unidad, **Then** el sistema no la agrega e indica el máximo de seis entradas por pedido.
 9. **Given** una función con menos cupo disponible que la cantidad pedida, **When** se ajusta la cantidad, **Then** también se aplica el cupo disponible.
+10. **Given** una función con venta interna, **When** se muestra en la Agenda o en su ficha, **Then** se ve su estado de venta («Disponible», «Agotada» o «Venta cerrada») sin el número de cupos.
+11. **Given** una función cuyo cupo restante está todo retenido por pedidos pendientes, **When** se consulta, **Then** se ve «Agotada»; **when** una retención se libera, **then** vuelve a «Disponible».
+12. **Given** un carrito armado sin sesión, **When** el visitante se identifica para pagar, **Then** vuelve al mismo carrito (spec 001), que se revalida.
 
 ---
 
@@ -73,6 +81,9 @@ Al iniciar el pago, el sistema exige sesión con correo verificado, verifica pre
 6. **Given** una retención vencida, **When** el usuario vuelve a pagar, **Then** debe revisar y aceptar el precio vigente.
 7. **Given** un último cupo, **When** dos usuarios inician el pago a la vez, **Then** solo uno lo retiene (RC-05).
 8. **Given** que el administrador cambia el plazo de retención, **When** se crean pedidos nuevos, **Then** se aplica el plazo nuevo y las retenciones ya iniciadas no cambian.
+9. **Given** una función a menos de 30 minutos de su inicio (cierre de venta), **When** alguien intenta agregarla al carrito o iniciar un pago con ella, **Then** el sistema lo rechaza indicando que la venta está cerrada.
+10. **Given** un pedido pendiente creado antes del cierre de venta, **When** se paga dentro de su retención, **Then** se confirma normalmente.
+11. **Given** que el administrador cambia el plazo de cierre de venta, **When** se guarda, **Then** solo el administrador puede hacerlo y el nuevo plazo aplica desde ese momento.
 
 ---
 
@@ -95,12 +106,13 @@ Tras confirmarse el pago de prueba, el usuario recibe una entrada individual con
 7. **Given** el simulador, **When** se usa, **Then** no se procesa dinero ni se piden datos de tarjeta.
 8. **Given** un pago simulado como confirmado después de vencer la retención, **When** llega, **Then** pasa a revisión sin emitir entradas ni recuperar cupos ya liberados.
 9. **Given** un entorno que no es de demo ni de pruebas, **When** se inicia un pago, **Then** no se ofrece la opción de elegir el resultado.
+10. **Given** una entrada que el usuario ya abrió, **When** vuelve a abrir Mis entradas sin conexión, **Then** ve su QR y su código alternativo con el aviso de que el estado puede estar desactualizado.
 
 ---
 
 ### User Story 4 - El administrador configura la venta (Priority: P2)
 
-El administrador configura precio, cupo y habilitación de venta por función, consulta pedidos, cupos retenidos y vendidos, entradas usadas e incidencias, y resuelve las incidencias de pago tardío en el entorno de prueba.
+El administrador configura el cupo y la habilitación de venta de cada función (el precio es el de la actividad, spec 02), consulta pedidos, cupos retenidos y vendidos, entradas usadas e incidencias, y resuelve las incidencias de pago tardío en el entorno de prueba.
 
 **Why this priority**: sin esta configuración no hay funciones vendibles; pero depende de que las funciones existan (spec 02).
 
@@ -108,7 +120,7 @@ El administrador configura precio, cupo y habilitación de venta por función, c
 
 **Acceptance Scenarios**:
 
-1. **Given** una función, **When** el administrador configura precio, cupo y venta, **Then** queda disponible para el carrito.
+1. **Given** una función de una actividad de pago con precio, **When** el administrador configura su cupo y habilita la venta, **Then** queda disponible para el carrito con el precio de la actividad.
 2. **Given** una función con cupo vendido y retenido, **When** el administrador intenta reducir el cupo por debajo de la suma, **Then** el sistema lo rechaza.
 3. **Given** un editor o un publicador sin rol de administrador, **When** intenta activar ventas, **Then** el sistema lo rechaza (publicar no activa ventas).
 4. **Given** una incidencia de pago tardío, **When** el administrador la revisa, **Then** registra su resolución en el entorno de prueba, sin emitir entradas, sin recuperar cupos ya liberados y sin reembolsos.
@@ -117,6 +129,7 @@ El administrador configura precio, cupo y habilitación de venta por función, c
 7. **Given** una entrada confirmada y no usada, **When** el administrador la invalida e indica el motivo, **Then** deja de permitir el ingreso, permanece visible en el historial y no se reembolsa ni se repone cupo automáticamente.
 8. **Given** una entrada ya usada, **When** el administrador intenta invalidarla, **Then** el sistema lo rechaza.
 9. **Given** un usuario sin rol de administrador, **When** intenta invalidar una entrada, **Then** el sistema lo rechaza.
+10. **Given** una función de una actividad sin precio o gratuita, **When** el administrador intenta habilitar la venta, **Then** el sistema lo rechaza.
 
 ---
 
@@ -159,6 +172,7 @@ Solo el administrador puede cancelar una función con entradas vendidas; sin ven
 5. **Given** una entrada ya emitida, **When** se cancela la función, **Then** Mis entradas la muestra como «función cancelada» con el aviso público y el acceso la rechaza.
 6. **Given** el administrador, **When** consulta la función cancelada, **Then** identifica los pedidos afectados.
 7. **Given** una cancelación con entradas vendidas, **When** se completa, **Then** no se inicia ningún reembolso automático ni manual dentro de VIVART.
+8. **Given** el panel de programación (spec 02), **When** prepara una reprogramación o cancelación, **Then** muestra el número de entradas vendidas no usadas y de pedidos pendientes de la función antes de confirmar.
 
 ---
 
@@ -192,7 +206,10 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - Un carrito con funciones de venta habilitada y otras agotadas.
 - Un carrito de más de seis unidades en total, repartidas en funciones distintas.
 - Una entrada invalidada que el usuario sigue viendo en Mis entradas.
-- Una función que ya empezó: el contexto no define si se sigue vendiendo.
+- Una entrada mostrada sin conexión que ya fue usada o invalidada: la pantalla avisa que el estado puede estar desactualizado y el servidor rechaza su ingreso.
+- Una función que se ve «Agotada» solo por retenciones pendientes y vuelve a «Disponible» al liberarse.
+- El servicio de venta no responde al preparar una cancelación en el panel: el impacto se muestra «no disponible», nunca 0.
+- Una función a menos de 30 minutos de su inicio, o ya empezada: la venta está cerrada (FR-039); un pedido pendiente anterior al cierre puede terminar su pago dentro de su retención.
 
 ## Requirements *(mandatory)*
 
@@ -205,7 +222,7 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **FR-003**: Las funciones gratuitas NO DEBEN mostrar «Agregar al carrito».
 - **FR-004**: Si la venta es externa, la ficha PUEDE mostrar un enlace verificado.
 - **FR-005**: El carrito DEBE advertir cruces de horario sin bloquear la compra (RC-02).
-- **FR-006**: El carrito DEBE poder prepararse sin cuenta.
+- **FR-006**: El carrito DEBE poder prepararse sin cuenta, y conservarse en el navegador cuando el visitante se identifica para pagar (RF-03), revalidándose al volver.
 
 **Pago y retención**
 
@@ -227,7 +244,7 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 
 **Configuración de la venta**
 
-- **FR-019**: El administrador DEBE configurar precio, cupo y habilitación de venta por función; publicar NO DEBE activar ventas.
+- **FR-019**: El administrador DEBE configurar el cupo y la habilitación de venta de cada función; publicar NO DEBE activar ventas. El precio NO se configura aquí: es el de la actividad, mantenido en la programación (spec 02), y el sistema NO DEBE habilitar la venta de una función cuya actividad no sea de pago con precio.
 - **FR-020**: El administrador DEBE poder consultar pedidos, cupos retenidos y vendidos, entradas usadas e incidencias.
 - **FR-021**: El sistema NO DEBE permitir reducir el cupo por debajo de lo vendido más lo retenido.
 - **FR-022**: El administrador DEBE revisar las incidencias de pago tardío y registrar su resolución en el entorno de prueba; la resolución NO DEBE emitir entradas automáticamente, recuperar cupos ya liberados ni ejecutar reembolsos dentro de VIVART.
@@ -256,6 +273,10 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **FR-036**: Solo en demo o pruebas, el sistema DEBE permitir simular un pago confirmado, fallido o confirmado después de vencer la retención. NO DEBE procesar dinero ni pedir datos de tarjeta. Un pago confirmado tardío DEBE pasar a revisión sin emitir entradas ni recuperar cupos ya liberados.
 - **FR-037**: Solo el administrador DEBE poder invalidar una entrada confirmada y todavía no usada, y DEBE registrar el motivo. La entrada invalidada DEBE permanecer visible en el historial y dejar de permitir el ingreso. La invalidación manual NO DEBE reembolsar ni reponer cupo automáticamente. La cancelación de una función se rige por FR-030, no por esta invalidación.
 - **FR-038**: El sistema DEBE permitir un máximo de seis entradas por pedido, contando todas las unidades del carrito aunque sean de funciones distintas, y DEBE aplicar además el cupo disponible de cada función. El límite NO DEBE configurarse por función en el MVP.
+- **FR-039**: La venta de una función DEBE cerrarse 30 minutos antes de su hora de inicio, en hora de Loja: desde ese momento NO DEBE poder agregarse al carrito ni iniciarse un pago con ella. El plazo es único para todas las funciones y solo el administrador DEBE poder cambiarlo; el cambio aplica desde que se guarda. Un pedido pendiente creado antes del cierre DEBE poder confirmarse dentro de su retención.
+- **FR-040**: Las entradas que el usuario ya abrió DEBEN poder mostrarse sin conexión (QR y código alternativo) con el aviso de que su estado puede estar desactualizado. La admisión DEBE decidirse siempre en el servidor (FR-025).
+- **FR-041**: El sistema DEBE publicar para cada función con venta interna un estado de venta («Disponible», «Agotada» o «Venta cerrada») sin revelar el número de cupos. Los cupos retenidos cuentan como no disponibles. Este estado es la fuente de «agotada» para Mi recorrido (spec 04).
+- **FR-042**: El sistema DEBE ofrecer al panel de programación (spec 02) el número de entradas vendidas no usadas y de pedidos pendientes de una función, para el aviso de impacto antes de reprogramar o cancelar. Si no puede obtenerse, el panel DEBE mostrar «no disponible», nunca 0.
 
 ### Key Entities
 
@@ -264,7 +285,7 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **Retención de cupo**: cupos apartados por un pedido durante 10 minutos.
 - **Entrada**: unidad comprada, con QR único y estado (confirmada, usada, invalidada, función cancelada). Una entrada invalidada conserva el motivo y quién la invalidó.
 - **Simulador de pago de prueba**: opción disponible solo en demo o pruebas para elegir el resultado del pago.
-- **Configuración de venta**: precio, cupo y habilitación por función.
+- **Configuración de venta**: cupo y habilitación por función (el precio es el de la actividad, spec 02); además, el plazo global de retención (10 minutos) y el de cierre de venta antes del inicio (30 minutos), que solo cambia el administrador.
 - **Incidencia de pago**: confirmación tardía pendiente de resolución del administrador.
 - **Control de acceso**: apertura y cierre de la validación de una función por el personal asignado.
 - **Motivo de rechazo**: razón por la que una validación no se admite.
@@ -288,18 +309,24 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **SC-013**: El simulador ofrece los tres resultados solo en demo o pruebas; en el 100 % de los casos un pago confirmado tardío pasa a revisión sin entradas ni cupos recuperados, y 0 datos de tarjeta se piden.
 - **SC-014**: 0 usuarios sin rol de administrador consiguen invalidar una entrada; el 100 % de las invalidaciones registra el motivo, deja de permitir el ingreso y 0 reembolsos o reposiciones de cupo ocurren automáticamente.
 - **SC-015**: 0 pedidos superan las seis entradas en total, y el cupo disponible de cada función se respeta en el 100 % de los casos.
+- **SC-016**: El 100 % de las entradas ya abiertas se muestra sin conexión con su aviso, y 0 entradas usadas o invalidadas se admiten por haberse mostrado sin conexión.
+- **SC-017**: El 100 % de las funciones con venta muestra uno de los tres estados y 0 muestran el número de cupos al público; una función con todo su cupo vendido o retenido se ve «Agotada» en el 100 % de las pruebas.
+- **SC-018**: El 100 % de los avisos de impacto del panel muestra el número real de entradas vendidas y pedidos pendientes, o «no disponible» si no se pudo obtener; nunca 0 por error.
 
 ## Trazabilidad con el contexto
 
 | Contexto | Cubierto por |
 |---|---|
 | RF-19, RC-02, Q11 | FR-001 a FR-006, FR-038; Historia 1 |
-| RF-20, P-04, P-07 | FR-007 a FR-013; Historia 2 |
+| RF-20, P-04, P-07 | FR-007 a FR-013, FR-039; Historia 2 |
 | RF-21, Q9 | FR-014 a FR-018, FR-036; Historia 3 |
 | RF-22, P-02, Q10 | FR-019 a FR-022, FR-037; Historia 4 |
 | RF-23, RC-04 | FR-023 a FR-029; Historia 5 |
 | RF-24 | FR-030 a FR-034; Historia 6 |
 | RF-36 | FR-035; Historia 7 |
+| RF-18 (estado «agotada» que usa el spec 04) | FR-041; Historia 1 |
+| RF-24 (aviso de impacto del spec 02) | FR-042; Historia 6 |
+| RNF-07 (entrada sin conexión) | FR-040; Historia 3 |
 | RC-05, RNF-06 | FR-015, FR-028, FR-029; SC-002, SC-004, SC-006 |
 | RNF-04 | FR-017, FR-019, FR-030; SC-010, SC-012 |
 | RNF-05 | FR-013; SC-011 |
@@ -310,5 +337,5 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - El spec 001 aporta la sesión, el correo verificado y los permisos; el spec 02, las funciones y los avisos públicos; el spec 06, el QR de Pasaporte.
 - La demo usa pagos de prueba; los cobros reales y los reembolsos están fuera del MVP.
 - Una función cuya venta externa se muestra con enlace verificado no pasa por el carrito.
-- Qué ocurre con la venta cuando una función ya empezó, y cuánto tiempo se conserva una entrada, no están definidos en el contexto y se llevan a clarificación.
+- Cuánto tiempo se conserva una entrada no está definido en el contexto y se lleva a clarificación.
 - Las pantallas de carrito, pago, Mis entradas y control de acceso no tienen mockup; la Agenda solo ilustra el botón de carrito.
