@@ -38,6 +38,21 @@ jobs:
     name: Pruebas de la aplicación
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      # Base efímera del propio trabajo de CI, sin datos ni contraseña reales.
+      TEST_DATABASE_URL: postgres://postgres@localhost:5432/postgres
     steps:
       - uses: actions/checkout@v4
       - name: ¿Existe código en app/?
@@ -81,10 +96,17 @@ jobs:
         id: demo
         run: |
           if [ -f app/docker-compose.yml ]; then echo "existe=true" >> "$GITHUB_OUTPUT"; else echo "existe=false" >> "$GITHUB_OUTPUT"; fi
+      - uses: actions/setup-node@v4
+        if: steps.demo.outputs.existe == 'true'
+        with:
+          node-version: 24
       - name: Construir e iniciar la demo
         if: steps.demo.outputs.existe == 'true'
         working-directory: app
-        run: docker compose up -d --build --wait
+        run: |
+          # Contraseñas aleatorias de un solo uso para esta ejecución (app/.env no se versiona).
+          if [ -f preparar-entorno.mjs ]; then node preparar-entorno.mjs; fi
+          docker compose up -d --build --wait
       - name: Comprobar que los contenedores no corren como root
         if: steps.demo.outputs.existe == 'true'
         working-directory: app
@@ -109,6 +131,21 @@ jobs:
     name: Análisis en SonarCloud
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      # Base efímera del propio trabajo de CI, sin datos ni contraseña reales.
+      TEST_DATABASE_URL: postgres://postgres@localhost:5432/postgres
     # Los PR desde forks no reciben secretos: en ese caso el análisis se omite sin fallar.
     steps:
       - uses: actions/checkout@v4
