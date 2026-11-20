@@ -44,7 +44,7 @@ export function registerAuthRoutes(app, { accounts, limiter, config, guards }) {
   });
 
   app.post('/auth/logout', async (request, reply) => {
-    accounts.logout(request.cookies?.[SESSION_COOKIE]);
+    await accounts.logout(request.cookies?.[SESSION_COOKIE]);
     reply.clearCookie(SESSION_COOKIE, { path: '/' });
     return reply.code(204).send();
   });
@@ -67,6 +67,6 @@ export function registerAuthRoutes(app, { accounts, limiter, config, guards }) {
   });
 
   app.get('/me', async (request, reply) => {
-    return reply.code(200).send(publicPerson(guards.requireSession(request)));
+    return reply.code(200).send(publicPerson(await guards.requireSession(request)));
   });
 }

@@ -1,18 +1,14 @@
 // Acciones pendientes de identificación. Solo conservan tipo y referencia: nunca ejecutan nada.
 export function pendingRepo(db) {
-  const crear = db.prepare(
-    'INSERT INTO pending_actions (id, type, ref, user_id, created_at, expires_at) VALUES (?, ?, ?, NULL, ?, ?)',
-  );
-  const buscar = db.prepare('SELECT * FROM pending_actions WHERE id = ?');
-  const asociar = db.prepare('UPDATE pending_actions SET user_id = ? WHERE id = ? AND user_id IS NULL');
-  const borrar = db.prepare('DELETE FROM pending_actions WHERE id = ?');
-  const borrarVencidas = db.prepare('DELETE FROM pending_actions WHERE expires_at <= ?');
-
   return {
-    create: ({ id, type, ref, now, expiresAt }) => crear.run(id, type, ref ?? null, now, expiresAt),
-    find: (id) => buscar.get(id),
-    attachUser: (id, userId) => asociar.run(userId, id),
-    delete: (id) => borrar.run(id),
-    deleteExpired: (now) => Number(borrarVencidas.run(now).changes),
+    create: ({ id, type, ref, now, expiresAt }) =>
+      db.run(
+        'INSERT INTO pending_actions (id, type, ref, user_id, created_at, expires_at) VALUES ($1, $2, $3, NULL, $4, $5)',
+        [id, type, ref ?? null, now, expiresAt],
+      ),
+    find: async (id) => (await db.query('SELECT * FROM pending_actions WHERE id = $1', [id]))[0],
+    attachUser: (id, userId) => db.run('UPDATE pending_actions SET user_id = $1 WHERE id = $2 AND user_id IS NULL', [userId, id]),
+    delete: (id) => db.run('DELETE FROM pending_actions WHERE id = $1', [id]),
+    deleteExpired: (now) => db.run('DELETE FROM pending_actions WHERE expires_at <= $1', [now]),
   };
 }

@@ -21,7 +21,7 @@ export function registerInternalRoutes(app, { accounts, config }) {
 
   app.post('/internal/introspect', async (request, reply) => {
     servicioAutenticado(request);
-    const persona = accounts.getContext(cuerpo(request).sessionToken);
+    const persona = await accounts.getContext(cuerpo(request).sessionToken);
     if (!persona) return reply.code(200).send({ active: false });
     return reply.code(200).send({
       active: true,
@@ -37,7 +37,7 @@ export function registerInternalRoutes(app, { accounts, config }) {
     servicioAutenticado(request);
     const { sessionToken, action, context } = cuerpo(request);
     if (!ACTION_NAMES.includes(action)) throw validation('action', 'La acción no existe.');
-    const persona = accounts.getContext(sessionToken);
+    const persona = await accounts.getContext(sessionToken);
     const resultado = authorize(persona, action, context && typeof context === 'object' ? context : {});
     return reply.code(200).send(resultado.allowed ? { allowed: true } : resultado);
   });

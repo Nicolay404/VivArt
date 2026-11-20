@@ -27,7 +27,7 @@ test('la cookie de sesión es HttpOnly y SameSite=Lax, y la base solo guarda su 
   const cookie = r.cookies.find((x) => x.name === 'vivart_sid');
   assert.equal(cookie.httpOnly, true);
   assert.equal(cookie.sameSite, 'Lax');
-  const ids = ctx.deps.db.prepare('SELECT id FROM sessions').all().map((f) => f.id);
+  const ids = (await ctx.deps.db.query('SELECT id FROM sessions')).map((f) => f.id);
   assert.ok(!ids.includes(cookie.value));
 });
 

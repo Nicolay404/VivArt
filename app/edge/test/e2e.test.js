@@ -1,7 +1,6 @@
 import { test, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { loadConfig } from '../../services/identidad/src/config.js';
-import { buildApp } from '../../services/identidad/src/app.js';
+import { configPrueba, abrirApp } from '../../services/identidad/test/helpers.js';
 import { createEdge } from '../server.js';
 
 // Recorrido real por HTTP: entrada común -> servicio de identidad -> buzón de pruebas.
@@ -37,19 +36,15 @@ function nuevoNavegador() {
 }
 
 before(async () => {
-  const config = loadConfig(
-    { MAIL_TRANSPORT: 'test', DB_FILE: ':memory:' },
-    { scrypt: { N: 1024, r: 8, p: 1 }, allowedOrigins: [ORIGEN] },
-  );
-  ({ app } = await buildApp({ config }));
+  // Servicio de identidad real con su base PostgreSQL de pruebas (esquema propio, se borra al terminar).
+  ({ app } = await abrirApp(configPrueba({}, { allowedOrigins: [ORIGEN] })));
   const puertoServicio = await app.listen({ port: 0, host: '127.0.0.1' }).then(() => app.server.address().port);
   edge = createEdge({ routes: [{ prefix: '/api/identidad', target: `http://127.0.0.1:${puertoServicio}` }] });
   base = `http://127.0.0.1:${await escuchar(edge)}`;
 });
 
-after(async () => {
+after(() => {
   edge.close();
-  await app.close();
 });
 
 test('de punta a punta: registro, buzón de pruebas, verificación, sesión y retorno a la acción sin ejecutar nada', async () => {

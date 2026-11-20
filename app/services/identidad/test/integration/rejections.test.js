@@ -52,7 +52,7 @@ test('un usuario registrado sin roles internos recibe el rol que falta, no un er
 
 test('los errores 500 no filtran detalles internos', async () => {
   const ctx = await crearApp();
-  ctx.deps.repos.users.findByEmail = () => { throw new Error('detalle interno secreto de la base de datos'); };
+  ctx.deps.repos.users.findByEmail = async () => { throw new Error('detalle interno secreto de la base de datos'); };
   const r = await ctx.app.inject(json('POST', '/auth/login', { email: 'a@b.co', password: 'una clave larga de prueba' }));
   assert.equal(r.statusCode, 500);
   assert.ok(!/secreto|base de datos/.test(r.body));

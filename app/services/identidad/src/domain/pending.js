@@ -14,7 +14,7 @@ export function createPending({ repos, config, clock }) {
   }
 
   return {
-    create({ type, ref }) {
+    async create({ type, ref }) {
       if (!TIPOS.has(type)) throw validation('type', 'La acción debe ser una compra o un canje.');
       if (ref !== undefined && ref !== null && !REF_RE.test(String(ref))) {
         throw validation('ref', 'La referencia solo admite letras, números, guiones y guiones bajos (hasta 64).');
@@ -25,21 +25,21 @@ export function createPending({ repos, config, clock }) {
       const now = clock();
       const id = newShortId();
       const vence = expiresAt(now, config.ttl.pending);
-      repos.pending.create({ id, type, ref: ref ?? null, now: iso(now), expiresAt: vence });
+      await repos.pending.create({ id, type, ref: ref ?? null, now: iso(now), expiresAt: vence });
       return { id, expiresAt: vence };
     },
 
     /** Devuelve a la persona al punto de origen. Siempre `executed: false`. */
-    resume(pendingId, persona) {
-      const fila = pendingId ? repos.pending.find(pendingId) : undefined;
+    async resume(pendingId, persona) {
+      const fila = pendingId ? await repos.pending.find(pendingId) : undefined;
       const noEncontrada = { found: false, executed: false };
       if (!fila) return noEncontrada;
       if (fila.expires_at <= iso(clock())) {
-        repos.pending.delete(fila.id);
+        await repos.pending.delete(fila.id);
         return noEncontrada;
       }
       if (fila.user_id && fila.user_id !== persona.userId) return noEncontrada;
-      if (!fila.user_id) repos.pending.attachUser(fila.id, persona.userId);
+      if (!fila.user_id) await repos.pending.attachUser(fila.id, persona.userId);
 
       const canProceed = persona.emailVerified;
       return {
@@ -58,8 +58,8 @@ export function createPending({ repos, config, clock }) {
       };
     },
 
-    discard(pendingId) {
-      if (pendingId) repos.pending.delete(pendingId);
+    async discard(pendingId) {
+      if (pendingId) await repos.pending.delete(pendingId);
     },
   };
 }

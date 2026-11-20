@@ -24,14 +24,14 @@ export function createGuards({ accounts }) {
     return accounts.getContext(request.cookies?.[SESSION_COOKIE]);
   }
 
-  function requireSession(request) {
-    const persona = optionalSession(request);
+  async function requireSession(request) {
+    const persona = await optionalSession(request);
     if (!persona) throw unauthenticated();
     return persona;
   }
 
-  function requireAction(request, action, context = {}) {
-    const persona = requireSession(request);
+  async function requireAction(request, action, context = {}) {
+    const persona = await requireSession(request);
     const resultado = authorize(persona, action, context);
     if (!resultado.allowed) throw forbidden(resultado.acceptedRoles, resultado.reason);
     return persona;

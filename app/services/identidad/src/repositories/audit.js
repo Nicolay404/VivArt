@@ -11,17 +11,17 @@ function limpiar(detalles) {
 }
 
 export function auditRepo(db) {
-  const anexar = db.prepare(
-    'INSERT INTO audit_log (at, actor_id, action, target_type, target_id, details) VALUES (?, ?, ?, ?, ?, ?)',
-  );
-  const listar = db.prepare('SELECT * FROM audit_log ORDER BY id DESC LIMIT ?');
-
   return {
     add: ({ at, actorId, action, targetType, targetId, details }) =>
-      anexar.run(at, actorId, action, targetType, targetId, limpiar(details)),
-    list(limit = 50) {
+      db.run(
+        'INSERT INTO audit_log (at, actor_id, action, target_type, target_id, details) VALUES ($1, $2, $3, $4, $5, $6)',
+        [at, actorId, action, targetType, targetId, limpiar(details)],
+      ),
+    async list(limit = 50) {
       const n = Math.min(Math.max(Number(limit) || 50, 1), 200);
-      return listar.all(n).map((f) => ({ ...f, details: f.details ? JSON.parse(f.details) : null }));
+      const filas = await db.query('SELECT * FROM audit_log ORDER BY id DESC LIMIT $1', [n]);
+      // El identificador se entrega como número, igual que antes (BIGINT llega como texto desde el driver).
+      return filas.map((f) => ({ ...f, id: Number(f.id), details: f.details ?? null }));
     },
   };
 }

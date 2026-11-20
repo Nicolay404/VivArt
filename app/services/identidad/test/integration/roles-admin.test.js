@@ -81,7 +81,7 @@ test('FR-016: no hay alcance por organización; el cuerpo no cambia el rol asign
   await ctx.app.inject(json('PUT', `/users/${u.id}/roles/editor`, { organizacion: 'Teatro Bolívar' }, admin.cookie));
   const cuenta = (await get(ctx, `/users/${u.id}`, admin.cookie)).json();
   assert.deepEqual(cuenta.roles, ['usuario_registrado', 'editor']);
-  const columnas = ctx.deps.db.prepare("SELECT name FROM pragma_table_info('role_assignments')").all().map((c) => c.name);
+  const columnas = (await ctx.deps.db.query("SELECT column_name AS name FROM information_schema.columns WHERE table_schema = current_schema() AND table_name = 'role_assignments'")).map((c) => c.name);
   assert.ok(!columnas.some((c) => /org/i.test(c)));
 });
 
@@ -91,6 +91,6 @@ test('asignar el mismo rol dos veces es idempotente y no duplica el historial', 
   const u = await crearUsuario(ctx, 'idem@vivart.test');
   await ctx.app.inject(json('PUT', `/users/${u.id}/roles/editor`, undefined, admin.cookie));
   await ctx.app.inject(json('PUT', `/users/${u.id}/roles/editor`, undefined, admin.cookie));
-  const asignaciones = ctx.deps.repos.audit.list().filter((e) => e.action === 'role.assigned' && e.target_id === u.id);
+  const asignaciones = (await ctx.deps.repos.audit.list()).filter((e) => e.action === 'role.assigned' && e.target_id === u.id);
   assert.equal(asignaciones.length, 1);
 });
