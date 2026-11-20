@@ -16,9 +16,11 @@ const VARIABLES = [
   ['POSTGRES_PASSWORD', 'Superusuario del contenedor de PostgreSQL (solo lo usa el script que prepara las bases).', aleatorio],
   ['IDENTIDAD_DB_PASSWORD', 'Usuario propio del servicio de identidad: solo entra a sus bases (identidad e identidad_pruebas).', aleatorio],
   ['PROGRAMACION_DB_PASSWORD', 'Usuario propio del servicio de programación: solo entra a sus bases (programacion y programacion_pruebas).', aleatorio],
+  ['PARTICIPACION_DB_PASSWORD', 'Usuario propio del servicio de participación: solo entra a sus bases (participacion y participacion_pruebas).', aleatorio],
   ['DB_PUERTO_LOCAL', 'Puerto local de PostgreSQL (solo en 127.0.0.1), para las pruebas y para conectar un cliente como DBeaver.', () => '55432'],
   ['PROGRAMACION_SERVICE_KEY', 'Credencial del servicio de programación ante identidad (introspección y permisos).', () => aleatorio(16)],
   ['PARTICIPACION_SERVICE_KEY', 'Credencial del servicio de participación (spec 05) ante identidad y programación.', () => aleatorio(16)],
+  ['TICKET_KEY', 'Clave del servicio de participación para derivar el QR y el código de cada entrada (spec 05).', () => aleatorio(32)],
 ];
 
 const actual = existsSync(destino) ? readFileSync(destino, 'utf8') : '';

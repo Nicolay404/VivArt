@@ -88,6 +88,11 @@ export function registerRoutes(app, servicios, config) {
     }
     throw new AppError(401, 'invalid_service_key', 'Credencial de servicio inválida.');
   }
+  app.get('/internal/functions', async (request) => {
+    servicioAutenticado(request);
+    const ids = String(request.query?.ids ?? '').split(',').map((s) => s.trim()).filter((s) => s && s.length <= 100);
+    return changes.funcionesInternas(ids);
+  });
   app.get('/internal/functions/:id', async (request) => {
     servicioAutenticado(request);
     return changes.funcionInterna(request.params.id);

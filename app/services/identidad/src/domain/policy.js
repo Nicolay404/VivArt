@@ -20,6 +20,8 @@ const ACCIONES = {
   'schedule.change': { roles: ['publicador', 'administrador'] },
   'catalog.manage': { roles: ['administrador'] },
   'activity.archive': { roles: ['administrador'] },
+  // Spec 005: cancelar una función con entradas vendidas es solo del administrador (FR-030).
+  'schedule.cancel_with_sales': { roles: ['administrador'] },
   // Publicar no concede activar ventas: solo el administrador (RF-04, RF-22).
   'sales.configure': { roles: ['administrador'] },
   'access.validate': { roles: ['personal_acceso'], needsFunction: true },

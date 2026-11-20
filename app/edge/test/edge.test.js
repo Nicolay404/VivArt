@@ -48,6 +48,7 @@ test('SC-002: sirve la web y las pantallas de la aplicación sin exigir sesión'
 test('SC-002: las cabeceras impiden pedir la ubicación y limitan el origen del contenido', async () => {
   const r = await fetch(`${urlEdge}/`);
   assert.match(r.headers.get('permissions-policy'), /geolocation=\(\)/);
+  assert.match(r.headers.get('permissions-policy'), /camera=\(self\)/);
   assert.match(r.headers.get('content-security-policy'), /default-src 'self'/);
   assert.equal(r.headers.get('x-content-type-options'), 'nosniff');
 });

@@ -94,6 +94,11 @@ export function createChanges({ db, crearRepos, permisos, participacion, clock }
       await permisos.permitir(sesion, 'schedule.change');
       const { reason, notice } = motivoYAviso(cuerpo);
       const impacto = await participacion.impact(id);
+      // Regla del spec 005 (FR-030): con entradas vendidas solo cancela el administrador. Si no se puede saber
+      // si hay ventas, se trata como si las hubiera (fallo cerrado).
+      if (!impacto.available || impacto.issuedTickets > 0 || impacto.soldTickets > 0) {
+        await permisos.permitir(sesion, 'schedule.cancel_with_sales');
+      }
       return db.transaction(`funcion:${id}`, async (tx) => {
         const r = crearRepos(tx);
         const { f, a } = await funcionPublicada(id, r);
@@ -115,9 +120,29 @@ export function createChanges({ db, crearRepos, permisos, participacion, clock }
 
     /** Para participación (spec 05 y 06): estado publicado de una función. */
     async funcionInterna(id) {
+      const datos = await interna(id);
+      if (!datos) throw notFound();
+      return datos;
+    },
+
+    /** Varias funciones a la vez; las que no existen o no están publicadas se omiten (spec 005). */
+    async funcionesInternas(ids) {
+      const items = [];
+      for (const id of [...new Set(ids)].slice(0, 100)) {
+        const datos = await interna(id);
+        if (datos) items.push(datos);
+      }
+      return { items };
+    },
+  };
+
+  async function interna(id) {
       const f = await repos.published.findFunction(id);
       const a = f && (await repos.activities.find(f.activityId));
-      if (!f || !a || !a.publishedAt) throw notFound();
+      if (!f || !a || !a.publishedAt) return null;
+      const sede = await repos.catalogs.find('venues', f.venueId);
+      const aviso = (await repos.published.noticesOf(a.id)).find((n) => n.functionId === id) ?? null;
+      const acceso = a.publishedContent.access ?? {};
       return {
         id: f.id,
         activityId: a.id,
@@ -129,7 +154,10 @@ export function createChanges({ db, crearRepos, permisos, participacion, clock }
         venueId: f.venueId,
         status: f.status,
         activityStatus: a.status,
+        venueName: sede?.name ?? null,
+        // Acceso y precio de la actividad: la única fuente del precio de venta (spec 005, FR-019).
+        access: { mode: acceso.mode ?? 'unconfirmed', priceUsd: typeof acceso.priceUsd === 'number' ? acceso.priceUsd : null },
+        latestNotice: aviso ? { kind: aviso.kind, text: aviso.text, at: aviso.at } : null,
       };
-    },
-  };
+  }
 }

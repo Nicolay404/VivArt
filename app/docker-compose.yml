@@ -33,6 +33,7 @@ services:
       PGPASSWORD: ${POSTGRES_PASSWORD}
       IDENTIDAD_DB_PASSWORD: ${IDENTIDAD_DB_PASSWORD:?Falta IDENTIDAD_DB_PASSWORD en app/.env}
       PROGRAMACION_DB_PASSWORD: ${PROGRAMACION_DB_PASSWORD:?Falta PROGRAMACION_DB_PASSWORD en app/.env. Ejecuta node preparar-entorno.mjs}
+      PARTICIPACION_DB_PASSWORD: ${PARTICIPACION_DB_PASSWORD:?Falta PARTICIPACION_DB_PASSWORD en app/.env. Ejecuta node preparar-entorno.mjs}
     volumes:
       - ./db/init:/scripts:ro
     entrypoint: ["sh", "/scripts/01-bases-por-servicio.sh"]
@@ -69,6 +70,8 @@ services:
       IDENTIDAD_SERVICE_KEY: ${PROGRAMACION_SERVICE_KEY}
       # Quién puede consultar su API interna (participación, spec 05).
       SERVICE_KEYS: participacion:${PARTICIPACION_SERVICE_KEY:?Falta PARTICIPACION_SERVICE_KEY en app/.env. Ejecuta node preparar-entorno.mjs}
+      # Servicio de participación (spec 05): cuántas entradas y pedidos hay antes de reprogramar o cancelar.
+      PARTICIPACION_URL: http://participacion:3003
       # Reloj fijo opcional para la demo (se ignora con NODE_ENV=production).
       CLOCK_FIXED: ${CLOCK_FIXED:-}
     depends_on:
@@ -80,6 +83,32 @@ services:
       - "3002"
     restart: unless-stopped
 
+  participacion:
+    build: ./services/participacion
+    environment:
+      ALLOWED_ORIGINS: http://localhost:8080
+      DATABASE_URL: postgres://participacion:${PARTICIPACION_DB_PASSWORD}@db:5432/participacion
+      IDENTIDAD_URL: http://identidad:3001
+      PROGRAMACION_URL: http://programacion:3002
+      # La misma credencial sirve ante identidad y ante programación.
+      IDENTIDAD_SERVICE_KEY: ${PARTICIPACION_SERVICE_KEY}
+      # Quién puede consultar su API interna (programación pide el impacto).
+      SERVICE_KEYS: programacion:${PROGRAMACION_SERVICE_KEY}
+      TICKET_KEY: ${TICKET_KEY:?Falta TICKET_KEY en app/.env. Ejecuta node preparar-entorno.mjs}
+      # Simulador de pago de prueba: solo en la demo; nunca procesa dinero (FR-036).
+      PAYMENT_SIMULATOR: "on"
+      CLOCK_FIXED: ${CLOCK_FIXED:-}
+    depends_on:
+      db-preparar:
+        condition: service_completed_successfully
+      identidad:
+        condition: service_healthy
+      programacion:
+        condition: service_healthy
+    expose:
+      - "3003"
+    restart: unless-stopped
+
   entrada:
     build:
       context: .
@@ -87,12 +116,15 @@ services:
     environment:
       IDENTIDAD_URL: http://identidad:3001
       PROGRAMACION_URL: http://programacion:3002
+      PARTICIPACION_URL: http://participacion:3003
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:
       identidad:
         condition: service_healthy
       programacion:
+        condition: service_healthy
+      participacion:
         condition: service_healthy
     restart: unless-stopped
 

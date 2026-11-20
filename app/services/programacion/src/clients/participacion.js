@@ -5,7 +5,7 @@
  * ceros (RNF-08). La operación no se bloquea, pero la respuesta lo dice para que la persona lo sepa.
  */
 export function createParticipacionClient({ url, serviceKey, timeoutMs = 3000, fetchImpl = fetch }) {
-  const noDisponible = (message) => ({ available: false, soldTickets: null, pendingOrders: null, message });
+  const noDisponible = (message) => ({ available: false, soldTickets: null, pendingOrders: null, issuedTickets: null, message });
 
   return {
     async impact(functionId) {
@@ -21,6 +21,7 @@ export function createParticipacionClient({ url, serviceKey, timeoutMs = 3000, f
           available: true,
           soldTickets: Number(datos.soldTickets ?? 0),
           pendingOrders: Number(datos.pendingOrders ?? 0),
+          issuedTickets: Number(datos.issuedTickets ?? datos.soldTickets ?? 0),
           message: 'Datos del servicio de entradas.',
         };
       } catch {

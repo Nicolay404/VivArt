@@ -90,8 +90,13 @@ export async function abrirApp(config) {
   return resultado;
 }
 
-/** Aplicación de pruebas con base propia, identidad simulada y reloj opcional. */
-export async function crearApp({ reloj, participacion, variables = {} } = {}) {
+/** Participación simulada sin ventas: la función no tiene entradas ni pedidos (spec 005). */
+export const participacionSinVentas = () => ({
+  impact: async () => ({ available: true, soldTickets: 0, pendingOrders: 0, issuedTickets: 0, message: 'Datos del servicio de entradas.' }),
+});
+
+/** Aplicación de pruebas con base propia, identidad simulada y reloj opcional. Por defecto, participación sin ventas. */
+export async function crearApp({ reloj, participacion = participacionSinVentas(), variables = {} } = {}) {
   const config = configPrueba(variables, reloj ? { clock: reloj, clockFixed: true } : {});
   const identidad = identidadSimulada();
   const services = await createServices({ config, identidad, participacion });
