@@ -8,6 +8,14 @@
 
 **Input**: User description: "Spec 02 de 8 de VIVART: programación, agenda y publicación. Cubre RF-05 a RF-11 y RF-35, con RC-03, RC-06 y RC-07. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Qué campos son obligatorios para enviar a revisión? → A: Título, categoría y al menos una función o franja con sede y programación válida. Una función necesita fecha y hora de inicio; una franja necesita días o fechas y horario de apertura. El borrador puede guardarse incompleto. La duración, la descripción y el precio pueden quedar pendientes si no se conocen o no aplican; la falta de precio no habilita la venta ni convierte la función en gratuita.
+- Q: ¿Quién prepara la carga desde el PDF y en qué formato llega? → A: El equipo prepara y revisa los datos del PDF fuera de VIVART y el administrador sube un archivo estructurado. El sistema muestra una vista previa con referencias de origen, posibles duplicados y errores; los registros aceptados se cargan como borradores sin publicación automática. Se mantiene la creación manual. El formato concreto del archivo se define en el plan técnico de este spec.
+- Q: ¿Cómo se avisa al editor de una devolución? → A: La propuesta queda como «Devuelta» y el editor lee las observaciones dentro del panel, la corrige y la reenvía. No hay correos de avisos editoriales en el MVP.
+
 ## Alcance y límites
 
 Este spec define cómo el equipo mantiene una **programación vigente** y cómo el público la encuentra desde el celular: la Agenda, las fichas, «¿Qué hay ahora?», el flujo editorial (borrador, revisión, publicación), los cambios con aviso público, la carga inicial desde el PDF y el archivo de actividades.
@@ -75,6 +83,11 @@ Un editor crea un borrador de una actividad, añade funciones o franjas, previsu
 4. **Given** una ficha ya publicada, **When** el editor la edita, **Then** se crea una versión pendiente de revisión y la última versión publicada sigue visible.
 5. **Given** una actividad permanente, **When** el editor añade franjas de apertura (con varios días y más de una franja por día), **Then** se registran como franjas, no como funciones.
 6. **Given** una actividad permanente con una visita guiada o inauguración de fecha y hora conocidas, **When** el editor la registra, **Then** queda como función puntual de esa actividad.
+7. **Given** un borrador incompleto, **When** el editor lo guarda, **Then** el sistema lo guarda sin exigir los campos obligatorios de envío.
+8. **Given** un borrador sin título, sin categoría o sin ninguna función o franja con sede y programación válida, **When** el editor intenta enviarlo, **Then** el sistema no lo envía y señala junto a cada campo qué falta.
+9. **Given** una función sin fecha u hora de inicio, o una franja sin días o fechas o sin horario de apertura, **When** el editor intenta enviar, **Then** el sistema la considera inválida y no envía la propuesta.
+10. **Given** un borrador con duración, descripción o precio pendientes, **When** el editor lo envía, **Then** el sistema lo acepta y la ficha muestra esos datos como pendientes.
+11. **Given** una función sin precio, **When** se envía, **Then** no se habilita la venta ni se convierte en gratuita.
 
 ---
 
@@ -89,11 +102,12 @@ Un publicador o un administrador consulta las propuestas, edita las ajenas si ha
 **Acceptance Scenarios**:
 
 1. **Given** propuestas pendientes, **When** un publicador las consulta, **Then** ve las de todos los editores.
-2. **Given** una propuesta, **When** el publicador la devuelve con observaciones, **Then** el editor puede corregirla de nuevo.
-3. **Given** una propuesta aprobada, **When** se publica, **Then** la ficha aparece en la Agenda.
-4. **Given** una ficha que el propio publicador editó, **When** la aprueba y publica, **Then** el sistema lo permite sin exigir una segunda persona.
-5. **Given** una revisión pendiente de una ficha publicada, **When** el público consulta la Agenda, **Then** sigue viendo la última versión publicada.
-6. **Given** publicar una ficha, **When** la función tiene venta, **Then** publicar no activa ventas (spec 05).
+2. **Given** una propuesta, **When** el publicador la devuelve con observaciones, **Then** queda en estado «Devuelta» y el editor lee las observaciones dentro del panel, la corrige y la reenvía.
+3. **Given** una propuesta devuelta, **When** se produce la devolución, **Then** el sistema no envía correos de avisos editoriales.
+4. **Given** una propuesta aprobada, **When** se publica, **Then** la ficha aparece en la Agenda.
+5. **Given** una ficha que el propio publicador editó, **When** la aprueba y publica, **Then** el sistema lo permite sin exigir una segunda persona.
+6. **Given** una revisión pendiente de una ficha publicada, **When** el público consulta la Agenda, **Then** sigue viendo la última versión publicada.
+7. **Given** publicar una ficha, **When** la función tiene venta, **Then** publicar no activa ventas (spec 05).
 
 ---
 
@@ -118,7 +132,7 @@ Un publicador autorizado reprograma o cancela una función con un motivo interno
 
 ### User Story 6 - Cargar la programación desde el PDF (Priority: P2)
 
-El administrador revisa una carga preparada a partir del PDF, con páginas de origen, posibles duplicados y datos pendientes, acepta los registros y los carga como borradores. Después confirma explícitamente cuáles se publican.
+El equipo prepara y revisa los datos del PDF fuera de VIVART y el administrador sube un archivo estructurado. El sistema muestra una vista previa con referencias de origen, posibles duplicados y errores; el administrador acepta registros, que se cargan como borradores, y después confirma explícitamente cuáles se publican. La creación manual se mantiene.
 
 **Why this priority**: sin carga inicial no hay programación; el PDF trae decenas de actividades.
 
@@ -126,12 +140,14 @@ El administrador revisa una carga preparada a partir del PDF, con páginas de or
 
 **Acceptance Scenarios**:
 
-1. **Given** una carga preparada, **When** el administrador la revisa, **Then** ve para cada registro su página de origen, los posibles duplicados y los datos pendientes.
+1. **Given** un archivo estructurado subido por el administrador, **When** el sistema lo procesa, **Then** muestra una vista previa con la referencia de origen de cada registro, los posibles duplicados y los errores.
 2. **Given** registros aceptados, **When** se cargan, **Then** quedan como borradores sin publicar.
 3. **Given** un lote cargado, **When** el administrador no confirma, **Then** ningún registro se publica.
 4. **Given** registros con correcciones ya revisadas, **When** se vuelve a cargar el mismo lote, **Then** las correcciones no se sobrescriben.
 5. **Given** una etiqueta «Evento Pagado» sin precio, **When** se carga, **Then** el registro queda como de pago sin precio confirmado y no habilita el carrito.
 6. **Given** una etiqueta «Entrada Libre» o «Evento Gratuito», **When** la etiqueta se asocia claramente a la ficha y el registro fue revisado, **Then** se registra como gratuita confirmada; si no, queda por confirmar.
+7. **Given** un registro con errores en la vista previa, **When** el administrador acepta el lote, **Then** el registro con errores no se carga como borrador hasta corregirse.
+8. **Given** el administrador, **When** prefiere crear una actividad sin archivo, **Then** puede hacerlo manualmente.
 
 ---
 
@@ -178,6 +194,8 @@ El administrador archiva una actividad que ya no forma parte de la programación
 - Una sede descrita como recorrido o tramo de calle (el desfile inaugural, pág. 8).
 - La Agenda sin ninguna actividad publicada, o una búsqueda sin coincidencias.
 - Un editor que intenta modificar una propuesta ya enviada.
+- Un borrador guardado incompleto que nunca se envía.
+- Un archivo estructurado con errores, vacío o con registros duplicados.
 - Dos personas editando el mismo borrador a la vez: el contexto no lo define.
 - Una revisión pendiente de una ficha publicada que el publicador descarta.
 - La nota «Programación sujeta a cambios» del PDF (pág. 3): cualquier ficha puede cambiar y debe mostrarlo con aviso.
@@ -216,7 +234,7 @@ El administrador archiva una actividad que ya no forma parte de la programación
 
 **Carga y catálogos**
 
-- **FR-020**: El administrador DEBE poder revisar una carga preparada a partir del PDF con las páginas de origen, los posibles duplicados y los datos pendientes.
+- **FR-020**: El administrador DEBE poder subir un archivo estructurado y revisar una vista previa con las referencias de origen, los posibles duplicados y los errores de cada registro.
 - **FR-021**: Los registros aceptados DEBEN cargarse como borradores, y el sistema NO DEBE publicar un lote automáticamente: el administrador DEBE confirmar explícitamente qué registros se publican.
 - **FR-022**: La carga NO DEBE sobrescribir correcciones ya revisadas.
 - **FR-023**: El sistema DEBE conservar la página de origen de cada dato importado (RNF-09).
@@ -230,11 +248,12 @@ El administrador archiva una actividad que ya no forma parte de la programación
 - **FR-028**: Solo el administrador DEBE poder archivar una actividad; archivar la retira de la programación activa y NO DEBE borrar pedidos, entradas, sellos ni historial.
 - **FR-029**: El sistema NO DEBE eliminar definitivamente una actividad con ventas o sellos.
 
-**Decisiones pendientes**
+**Campos obligatorios, carga estructurada y devolución** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-030**: Para enviar una propuesta a revisión, el sistema DEBE exigir como mínimo [NEEDS CLARIFICATION: el contexto no define qué campos de la ficha son obligatorios para enviar a revisión ni para publicar].
-- **FR-031**: La carga preparada a partir del PDF DEBE entregarse al administrador en [NEEDS CLARIFICATION: el contexto no define quién prepara esa carga ni en qué formato llega al sistema (por ejemplo, un archivo estructurado o captura manual)].
-- **FR-032**: Cuando una propuesta se devuelve con observaciones, el editor DEBE enterarse mediante [NEEDS CLARIFICATION: el contexto no define cómo se avisa al editor de una devolución: aviso dentro del panel, correo u otro canal].
+- **FR-030**: El sistema DEBE permitir guardar un borrador incompleto, y DEBE exigir para enviarlo a revisión título, categoría y al menos una función o franja con sede y programación válida. Una función DEBE tener fecha y hora de inicio; una franja DEBE tener días o fechas y horario de apertura. La duración, la descripción y el precio PUEDEN quedar pendientes. La falta de precio NO DEBE habilitar la venta ni convertir la función en gratuita.
+- **FR-031**: El equipo prepara y revisa los datos del PDF fuera de VIVART. El sistema DEBE permitir que el administrador suba un archivo estructurado y mostrar una vista previa antes de cargarlo; los registros aceptados DEBEN cargarse como borradores sin publicación automática, y el sistema DEBE mantener la creación manual. El formato concreto del archivo corresponde al plan técnico de este spec.
+- **FR-032**: Una propuesta devuelta DEBE quedar en estado «Devuelta», y el editor DEBE poder leer las observaciones dentro del panel, corregirla y reenviarla. El sistema NO DEBE enviar correos de avisos editoriales en el MVP.
+- **FR-033**: Un registro con errores en la vista previa NO DEBE cargarse como borrador hasta que se corrija.
 
 ### Key Entities
 
@@ -244,7 +263,8 @@ El administrador archiva una actividad que ya no forma parte de la programación
 - **Ficha**: vista pública de una actividad, con enlace compartible y avisos.
 - **Borrador, propuesta y versión pendiente**: estados editoriales con autor, historial y observaciones.
 - **Aviso público**: mensaje visible sobre un cambio de asistencia o acceso.
-- **Lote de carga**: conjunto de registros preparados desde el PDF, con página de origen, duplicados y pendientes.
+- **Lote de carga**: archivo estructurado subido por el administrador con registros preparados desde el PDF, con su referencia de origen, duplicados y errores en una vista previa.
+- **Observaciones de devolución**: texto del publicador o administrador asociado a una propuesta en estado «Devuelta».
 - **Categoría, sede y edición**: catálogos gestionados por el administrador.
 - **Registro de historial**: quién, cuándo y sobre qué registro.
 
@@ -262,6 +282,10 @@ El administrador archiva una actividad que ya no forma parte de la programación
 - **SC-008**: 0 registros de un lote se publican sin confirmación explícita del administrador, y 0 correcciones revisadas se sobrescriben al recargar.
 - **SC-009**: El 100 % de los registros importados conserva su página de origen.
 - **SC-010**: Los siete casos de referencia del PDF (horario partido, franjas por rango de días, permanente con función puntual, dos funciones de la misma obra, solo hora de inicio, pagadas sin precio y sede como recorrido) se representan sin inventar datos ausentes.
+- **SC-012**: El 100 % de los intentos de enviar una propuesta sin título, sin categoría o sin una función o franja válida es rechazado y señala el campo que falta; el 100 % de los borradores incompletos puede guardarse.
+- **SC-013**: El 100 % de las funciones sin precio queda sin venta habilitada y sin marca de gratuita.
+- **SC-014**: El 100 % de las cargas muestra una vista previa con referencia de origen, duplicados y errores antes de crear borradores, y 0 registros con errores se cargan.
+- **SC-015**: El 100 % de las propuestas devueltas queda en «Devuelta» con sus observaciones visibles en el panel y 0 correos editoriales se envían.
 - **SC-011**: 0 actividades con ventas o sellos pueden eliminarse definitivamente; el 100 % de las archivadas conserva pedidos, entradas, sellos e historial.
 
 ## Trazabilidad con el contexto
@@ -271,10 +295,10 @@ El administrador archiva una actividad que ya no forma parte de la programación
 | RF-05 | FR-001, FR-002; Historia 1 |
 | RF-06 | FR-003, FR-004; Historia 1 |
 | RF-07, RC-03, RC-07 | FR-005, FR-006, FR-007; Historia 2 |
-| RF-08 | FR-008, FR-009, FR-010, FR-011, FR-013; Historia 3 |
-| RF-09 | FR-011, FR-012, FR-014; Historia 4 |
+| RF-08, Q1 | FR-008 a FR-011, FR-013, FR-030; Historia 3 |
+| RF-09, Q3 | FR-011, FR-012, FR-014, FR-032; Historia 4 |
 | RF-10, RC-06 | FR-015 a FR-019; Historia 5 |
-| RF-11 | FR-020 a FR-026; Historias 6 y 7 |
+| RF-11, Q2 | FR-020 a FR-026, FR-031, FR-033; Historias 6 y 7 |
 | RF-35 | FR-027 a FR-029; Historia 8 |
 | RNF-08 | FR-004, FR-006, SC-003, SC-004, SC-010 |
 | RNF-09 | FR-013, FR-023, SC-009 |
@@ -286,5 +310,6 @@ El administrador archiva una actividad que ya no forma parte de la programación
 - Las pantallas del panel interno y la ficha de actividad no tienen mockup; la Agenda sí (`context/assets/mockups/`), solo como referencia visual.
 - La programación vigente del sistema es la que consultan la Agenda, el Mapa y Alforjita, una vez publicada.
 - Las funciones y franjas se publican en hora de Loja.
-- Dos personas editando un mismo borrador a la vez y la vigencia de una propuesta sin revisar no están definidas en el contexto y se llevan a clarificación.
-- El PDF de programación no viene con el clon (`context/assets/README.md`); la carga inicial lo necesita.
+- Dos personas editando un mismo borrador a la vez y la vigencia de una propuesta sin revisar no están definidas en el contexto y se llevan a clarificación posterior.
+- El PDF de programación no viene con el clon (`context/assets/README.md`); el equipo lo prepara y revisa fuera de VIVART antes de subir el archivo estructurado.
+- El formato concreto del archivo estructurado se define en el plan técnico de este spec.

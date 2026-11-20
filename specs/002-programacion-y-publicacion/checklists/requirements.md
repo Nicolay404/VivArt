@@ -13,7 +13,7 @@
 
 ## Requirement Completeness
 
-- [ ] No [NEEDS CLARIFICATION] markers remain
+- [x] No [NEEDS CLARIFICATION] markers remain
 - [x] Requirements are testable and unambiguous
 - [x] Success criteria are measurable
 - [x] Success criteria are technology-agnostic (no implementation details)
@@ -31,6 +31,6 @@
 
 ## Notes
 
-- Marcadores [NEEDS CLARIFICATION] abiertos: 3. Pendientes explícitos: campos obligatorios para enviar a revisión (FR-030), formato y responsable de la carga desde el PDF (FR-031) y canal para avisar al editor de una devolución (FR-032). Se cierran con /speckit-clarify.
+- Los 3 marcadores [NEEDS CLARIFICATION] originales (FR-030, FR-031, FR-032) se cerraron el 2026-11-20; constan en «Clarifications» del spec.
 - No se inventaron métricas de tiempo ni de volumen; los criterios se expresan como porcentajes y conteos verificables sobre las reglas del contexto.
 - No se eligió arquitectura ni tecnología. Los permisos y la identidad dependen del spec 001.
