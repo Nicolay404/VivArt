@@ -8,6 +8,14 @@
 
 **Input**: User description: "Spec 03 de 8 de VIVART: mapa isométrico de sedes. Cubre RF-12 a RF-15. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Quién entrega la ilustración isométrica de Loja y cómo se ubican los marcadores? → A: El equipo prepara y entrega una ilustración isométrica del circuito de Loja. El mockup define el estilo, no la geografía. El administrador ubica los marcadores sobre la ilustración; una sede fuera del plano o sin marcador sigue disponible en la lista.
+- Q: ¿Cuándo es verificado un destino de «Cómo llegar»? → A: Cuando el administrador comprueba que el destino corresponde a la sede y registra la fuente y la fecha de verificación. «Cómo llegar» aparece solo con un destino verificado y abre una aplicación externa. La posición del marcador ilustrado no se usa como coordenada real.
+- Q: ¿Qué características de accesibilidad se filtran? → A: Para el MVP, «acceso sin escalones» y «baño accesible». Cada característica se verifica por separado con los estados confirmada, no disponible o por confirmar. El filtro solo devuelve sedes con la característica confirmada; las observaciones de texto son complementarias y no controlan el filtro.
+
 ## Alcance y límites
 
 Este spec define cómo el visitante reconoce el circuito del festival y decide a qué sede ir: la vista isométrica con sedes seleccionables, la búsqueda y los filtros, la ficha de cada sede con sus funciones, la lista equivalente y el mantenimiento de los datos de las sedes por el administrador.
@@ -54,7 +62,7 @@ Al seleccionar una sede, el visitante ve su nombre, su dirección o referencia, 
 2. **Given** una función en la lista de la sede, **When** se selecciona, **Then** se abre su ficha.
 3. **Given** una sede con destino verificado, **When** el visitante elige «Cómo llegar», **Then** se abre ese destino en una aplicación externa.
 4. **Given** una sede sin destino verificado (por ejemplo, un recorrido), **When** se selecciona, **Then** no se ofrece «Cómo llegar».
-5. **Given** una sede sin accesibilidad confirmada, **When** se muestra, **Then** aparece «Accesibilidad por confirmar».
+5. **Given** una sede con una característica de accesibilidad sin confirmar, **When** se muestra, **Then** esa característica aparece como «por confirmar»; una confirmada aparece como confirmada y una no disponible, como no disponible.
 6. **Given** una sede sin funciones publicadas, **When** se selecciona, **Then** se indica que no hay funciones, sin error.
 
 ---
@@ -91,7 +99,7 @@ El visitante filtra el mapa por «Funciones del día», que muestra las sedes co
 2. **Given** el filtro, **When** el visitante elige otro día de la edición, **Then** muestra las sedes de ese día.
 3. **Given** una función cancelada, **When** se aplica el filtro, **Then** no hace aparecer a su sede.
 4. **Given** el mapa, **When** se busca qué hay ahora, **Then** no hay otro filtro temporal: «¿Qué hay ahora?» está en la Agenda.
-5. **Given** el filtro de accesibilidad, **When** se activa, **Then** solo muestra sedes con esa característica verificada, y una sede sin verificación no aparece.
+5. **Given** el filtro de accesibilidad con «acceso sin escalones» o «baño accesible», **When** se activa, **Then** solo muestra sedes con esa característica confirmada, y una sede con la característica no disponible o por confirmar no aparece.
 
 ---
 
@@ -123,11 +131,13 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 **Acceptance Scenarios**:
 
 1. **Given** un administrador, **When** corrige una dirección o un marcador, **Then** se actualizan los datos de la sede sin aviso público y queda en el historial.
-2. **Given** un administrador, **When** registra la accesibilidad de una sede, **Then** guarda la fuente y la fecha de verificación.
-3. **Given** una sede sin confirmación de accesibilidad, **When** se muestra, **Then** aparece «Accesibilidad por confirmar» y no entra en el filtro.
-4. **Given** una función que cambia de sede, **When** se confirma, **Then** es una reprogramación con aviso público (spec 02), no una corrección de la sede.
-5. **Given** un usuario sin rol de administrador, **When** intenta modificar una sede, **Then** el sistema lo rechaza.
-6. **Given** una sede nueva sin marcador, **When** el administrador la registra, **Then** aparece en la lista y en la búsqueda aunque no tenga marcador.
+2. **Given** un administrador, **When** registra «acceso sin escalones» o «baño accesible» de una sede, **Then** verifica cada característica por separado con el estado confirmada, no disponible o por confirmar, y guarda la fuente y la fecha de verificación.
+3. **Given** un administrador con una ilustración entregada por el equipo, **When** ubica el marcador de una sede, **Then** el marcador queda sobre la ilustración y no se usa como coordenada real.
+4. **Given** un administrador, **When** registra el destino de una sede, **Then** comprueba que corresponde a la sede y guarda la fuente y la fecha de verificación; mientras no lo haga, «Cómo llegar» no aparece.
+5. **Given** una sede con una característica por confirmar, **When** se muestra, **Then** aparece «por confirmar» y la sede no entra en el filtro de esa característica; una observación de texto no cambia el filtro.
+6. **Given** una función que cambia de sede, **When** se confirma, **Then** es una reprogramación con aviso público (spec 02), no una corrección de la sede.
+7. **Given** un usuario sin rol de administrador, **When** intenta modificar una sede, **Then** el sistema lo rechaza.
+8. **Given** una sede nueva sin marcador, **When** el administrador la registra, **Then** aparece en la lista y en la búsqueda aunque no tenga marcador.
 
 ### Edge Cases
 
@@ -136,7 +146,9 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 - Un día sin funciones publicadas: el filtro no muestra sedes y se indica.
 - Una sede registrada sin dirección: se muestra su referencia o «Dirección por confirmar», sin inventarla.
 - El mapa no carga o tarda: la Agenda y las fichas siguen disponibles, y la lista de sedes puede consultarse.
-- Una sede con funciones publicadas pero sin marcador.
+- Una sede con funciones publicadas pero sin marcador, o fuera del plano de la ilustración: sigue en la lista.
+- Una sede con una característica de accesibilidad confirmada y otra por confirmar.
+- Una observación de texto sobre accesibilidad que contradice el estado verificado: prevalece el estado.
 - Dos sedes con nombres parecidos en la búsqueda.
 - Un dispositivo sin soporte para zoom táctil.
 
@@ -158,13 +170,13 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 - **FR-007**: El Mapa DEBE ofrecer el filtro «Funciones del día», que muestra las sedes con funciones publicadas y no canceladas para el día consultado, aunque todavía no hayan empezado.
 - **FR-008**: El filtro «Funciones del día» DEBE consultar hoy por defecto, en hora de Loja, y permitir elegir otro día de la edición.
 - **FR-009**: El Mapa NO DEBE ofrecer otro filtro temporal; «¿Qué hay ahora?» pertenece a la Agenda.
-- **FR-010**: El Mapa DEBE permitir filtrar por características de accesibilidad verificadas, y una sede sin verificación NO DEBE aparecer en ese filtro.
+- **FR-010**: El Mapa DEBE permitir filtrar por «acceso sin escalones» y «baño accesible», y una sede cuya característica no está confirmada NO DEBE aparecer en ese filtro.
 
 **Sede**
 
 - **FR-011**: Al seleccionar una sede, el sistema DEBE mostrar su nombre, su dirección o referencia y sus funciones publicadas no canceladas.
-- **FR-012**: «Cómo llegar» DEBE abrir un destino verificado en una aplicación externa, y NO DEBE ofrecerse si la sede no tiene destino verificado.
-- **FR-013**: Si falta confirmación de accesibilidad, la sede DEBE mostrar «Accesibilidad por confirmar».
+- **FR-012**: «Cómo llegar» DEBE abrir un destino verificado en una aplicación externa, y NO DEBE ofrecerse si la sede no tiene destino verificado. La posición del marcador ilustrado NO DEBE usarse como coordenada real.
+- **FR-013**: Cada característica de accesibilidad DEBE mostrarse como confirmada, no disponible o por confirmar; si falta confirmación, DEBE mostrarse «por confirmar».
 - **FR-014**: Una plaza, museo o teatro DEBE aparecer como sede solo si está registrado como sede de la programación.
 
 **Lista alternativa**
@@ -175,23 +187,24 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 **Administración de sedes**
 
 - **FR-017**: El administrador DEBE poder actualizar los datos, marcadores y destinos de las sedes, sin revisión editorial y con registro en el historial.
-- **FR-018**: El administrador DEBE poder registrar la accesibilidad de una sede con su fuente y la fecha de verificación, y verificarla con su responsable o por revisión directa.
+- **FR-018**: El administrador DEBE poder registrar cada característica de accesibilidad de una sede por separado, con su estado, su fuente y la fecha de verificación, y verificarla con su responsable o por revisión directa. Las observaciones de texto DEBEN ser complementarias y NO DEBEN controlar el filtro.
 - **FR-019**: Trasladar una función a otra sede DEBE tratarse como una reprogramación con aviso público (spec 02), no como una actualización de la sede.
 - **FR-020**: El plano del circuito del PDF DEBE tratarse como referencia visual, no como fuente de coordenadas exactas.
 - **FR-021**: Solo el administrador DEBE poder modificar los datos de una sede.
 
-**Decisiones pendientes**
+**Ilustración, destino verificado y accesibilidad** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-022**: La ilustración isométrica del circuito de Loja que usa el Mapa DEBE provenir de [NEEDS CLARIFICATION: el contexto no define quién entrega la ilustración isométrica de Loja ni cómo se ubican los marcadores sobre ella; el mockup disponible es solo un ejemplo de estilo].
-- **FR-023**: Un destino de «Cómo llegar» se considera verificado cuando [NEEDS CLARIFICATION: el contexto no define quién verifica el destino ni con qué criterio].
-- **FR-024**: Las características de accesibilidad que se registran y filtran son [NEEDS CLARIFICATION: el contexto no define la lista de características de accesibilidad (por ejemplo, acceso sin escalones o baño accesible)].
+- **FR-022**: El equipo DEBE entregar la ilustración isométrica del circuito de Loja; el mockup define el estilo y NO la geografía. El administrador DEBE poder ubicar los marcadores sobre ella, y una sede fuera del plano o sin marcador DEBE seguir disponible en la lista.
+- **FR-023**: Un destino de «Cómo llegar» DEBE considerarse verificado solo cuando el administrador comprobó que corresponde a la sede y registró la fuente y la fecha de verificación.
+- **FR-024**: Para el MVP, las características de accesibilidad DEBEN ser «acceso sin escalones» y «baño accesible», verificadas por separado con los estados confirmada, no disponible y por confirmar. El filtro DEBE devolver solo sedes con la característica confirmada.
 
 ### Key Entities
 
 - **Sede**: lugar registrado en la programación, con nombre, dirección o referencia, destino verificado opcional, marcador opcional y accesibilidad con fuente y fecha de verificación.
 - **Marcador**: posición de una sede en la ilustración isométrica.
-- **Destino verificado**: punto que «Cómo llegar» abre en una aplicación externa.
-- **Característica de accesibilidad**: atributo verificado de una sede, con su fuente y fecha.
+- **Destino verificado**: punto que «Cómo llegar» abre en una aplicación externa, con la fuente y la fecha en que se comprobó que corresponde a la sede.
+- **Característica de accesibilidad**: «acceso sin escalones» o «baño accesible», con estado (confirmada, no disponible o por confirmar), fuente y fecha de verificación, y una observación de texto complementaria opcional.
+- **Ilustración isométrica**: imagen del circuito de Loja preparada por el equipo, sobre la que el administrador ubica los marcadores.
 - **Día consultado**: el día usado por el filtro «Funciones del día»; hoy por defecto, en hora de Loja.
 
 ## Success Criteria *(mandatory)*
@@ -204,9 +217,11 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 - **SC-004**: En el 100 % de las pruebas, una función cancelada no hace aparecer a su sede en el filtro.
 - **SC-005**: 0 lugares que no son sedes de la programación aparecen en la búsqueda, y la búsqueda de una función por nombre devuelve 0 funciones.
 - **SC-006**: El 100 % de las sedes sin destino verificado no ofrece «Cómo llegar», y el 100 % de las que lo tienen lo abre.
-- **SC-007**: El 100 % de las sedes sin accesibilidad verificada muestra «Accesibilidad por confirmar» y 0 aparecen en el filtro de accesibilidad.
+- **SC-007**: El 100 % de las características sin confirmar se muestra «por confirmar» y 0 sedes con la característica no confirmada aparecen en su filtro; las observaciones de texto no alteran el filtro en el 100 % de las pruebas.
 - **SC-008**: Una sede se consulta con teclado y sin usar el mapa gráfico en el 100 % de las pruebas de accesibilidad.
 - **SC-009**: El 100 % de los cambios del administrador sobre sedes queda en el historial con quién, cuándo y qué registro.
+- **SC-011**: El 100 % de los destinos sin fuente y fecha de verificación no ofrece «Cómo llegar», y 0 marcadores se usan como coordenadas reales.
+- **SC-012**: El 100 % de las sedes fuera del plano o sin marcador aparece en la lista.
 - **SC-010**: Agenda y fichas se abren aunque el Mapa falle, en el 100 % de las pruebas de fallo.
 
 ## Trazabilidad con el contexto
@@ -214,10 +229,11 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 | Contexto | Cubierto por |
 |---|---|
 | RF-12 (vista, búsqueda, filtros) | FR-001 a FR-010; Historias 1, 3, 4 |
-| RF-13 (sede y Cómo llegar) | FR-011 a FR-014; Historia 2 |
+| RF-13 (sede y Cómo llegar), Q5 | FR-011 a FR-014, FR-023; Historia 2 |
 | RF-14 (lista equivalente) | FR-015, FR-016; Historia 5 |
-| RF-15 (administración de sedes) | FR-017 a FR-021; Historia 6 |
+| RF-15 (administración de sedes), Q4 | FR-017 a FR-022; Historia 6 |
 | M-02, M-03 | FR-005 a FR-009 |
+| RF-12 (accesibilidad), Q6 | FR-010, FR-013, FR-018, FR-024 |
 | RNF-01, RNF-03, RNF-05 | FR-002, FR-003, FR-016; SC-001, SC-008 |
 | RNF-07 | FR-004; SC-010 |
 | RNF-09 | FR-017; SC-009 |
@@ -225,7 +241,7 @@ El administrador actualiza los datos, marcadores y destinos de las sedes, regist
 ## Assumptions
 
 - Los permisos del administrador vienen del spec 001, y las funciones publicadas vienen del spec 02.
-- El mockup de Mapa (`context/assets/mockups/`) solo ilustra el estilo; el mapa de VIVART debe representar el circuito de Loja con sedes verificadas.
+- El mockup de Mapa (`context/assets/mockups/`) solo ilustra el estilo; el mapa de VIVART debe representar el circuito de Loja con sedes verificadas. El equipo entrega la ilustración.
 - El mockup muestra la tarjeta de sede sin «Cómo llegar» ni lista; prevalece el requisito.
 - Las pantallas de lista de sedes y ficha de sede no tienen mockup.
 - Una sede puede no tener marcador y seguir siendo consultable en la lista.
