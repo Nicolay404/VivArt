@@ -8,6 +8,14 @@
 
 **Input**: User description: "Spec 05 de 8 de VIVART: carrito, compra y control de entradas. Cubre RF-19 a RF-24 y RF-36, con RC-04, RC-05 y RC-06. Sin plan técnico ni implementación."
 
+## Clarifications
+
+### Session 2026-11-20
+
+- Q: ¿Cómo se simula el pago de prueba? → A: Solo en demo o pruebas se puede simular un pago confirmado, fallido o confirmado después de vencer la retención. No se procesa dinero ni se piden datos de tarjeta. El pago tardío pasa a revisión sin emitir entradas ni recuperar cupos ya liberados.
+- Q: ¿Quién puede invalidar una entrada? → A: Solo el administrador, sobre una entrada confirmada y todavía no usada, y debe registrar el motivo. La entrada permanece visible en el historial y deja de permitir el ingreso. La invalidación manual no reembolsa ni repone cupo automáticamente. La cancelación de una función se rige por su propia regla, cuyo dueño es este spec.
+- Q: ¿Cuántas entradas se pueden comprar por pedido? → A: Un máximo de seis por pedido, contando todas las unidades del carrito aunque sean de funciones distintas. También aplica el cupo disponible de cada función. El límite no se configura por función en el MVP.
+
 ## Alcance y límites
 
 Este spec define cómo se compran entradas para funciones con venta interna habilitada y cómo se evita que una entrada conceda acceso dos veces: el carrito, el pago de prueba con retención de cupos, la emisión de entradas con QR, la configuración de la venta por el administrador, la validación en la sede, y la cancelación o reprogramación de funciones con entradas vendidas.
@@ -42,6 +50,8 @@ Un visitante agrega entradas de una o varias funciones con venta interna, ajusta
 5. **Given** un carrito, **When** el visitante ajusta cantidades o elimina ítems, **Then** el total se recalcula en USD.
 6. **Given** dos funciones del carrito que se cruzan, **When** ambos intervalos se conocen, **Then** se advierte sin bloquear la compra (RC-02).
 7. **Given** una función con «Evento Pagado» y sin precio, **When** se consulta, **Then** no entra al carrito.
+8. **Given** un carrito con seis unidades en total (aunque sean de funciones distintas), **When** el visitante intenta agregar otra unidad, **Then** el sistema no la agrega e indica el máximo de seis entradas por pedido.
+9. **Given** una función con menos cupo disponible que la cantidad pedida, **When** se ajusta la cantidad, **Then** también se aplica el cupo disponible.
 
 ---
 
@@ -81,6 +91,10 @@ Tras confirmarse el pago de prueba, el usuario recibe una entrada individual con
 3. **Given** un pago confirmado fuera de plazo (tardío), **When** llega, **Then** se registra una incidencia y no se emiten entradas automáticamente.
 4. **Given** un usuario, **When** abre Mis entradas, **Then** ve solo sus propios pedidos y entradas.
 5. **Given** un pago no verificable, **When** se consulta, **Then** se muestra que no está confirmado.
+6. **Given** el entorno de demo o pruebas, **When** se inicia un pago de prueba, **Then** se puede elegir simular pago confirmado, fallido o confirmado después de vencer la retención.
+7. **Given** el simulador, **When** se usa, **Then** no se procesa dinero ni se piden datos de tarjeta.
+8. **Given** un pago simulado como confirmado después de vencer la retención, **When** llega, **Then** pasa a revisión sin emitir entradas ni recuperar cupos ya liberados.
+9. **Given** un entorno que no es de demo ni de pruebas, **When** se inicia un pago, **Then** no se ofrece la opción de elegir el resultado.
 
 ---
 
@@ -100,6 +114,9 @@ El administrador configura precio, cupo y habilitación de venta por función, c
 4. **Given** una incidencia de pago tardío, **When** el administrador la revisa, **Then** registra su resolución en el entorno de prueba, sin emitir entradas, sin recuperar cupos ya liberados y sin reembolsos.
 5. **Given** el administrador, **When** consulta una función, **Then** ve pedidos, cupos retenidos y vendidos y entradas usadas.
 6. **Given** el administrador, **When** cambia el plazo de retención, **Then** solo el administrador puede hacerlo.
+7. **Given** una entrada confirmada y no usada, **When** el administrador la invalida e indica el motivo, **Then** deja de permitir el ingreso, permanece visible en el historial y no se reembolsa ni se repone cupo automáticamente.
+8. **Given** una entrada ya usada, **When** el administrador intenta invalidarla, **Then** el sistema lo rechaza.
+9. **Given** un usuario sin rol de administrador, **When** intenta invalidar una entrada, **Then** el sistema lo rechaza.
 
 ---
 
@@ -121,6 +138,7 @@ El personal de acceso abre el control de acceso de su función, escanea el QR o 
 6. **Given** una cámara no disponible, **When** el personal introduce el código alternativo, **Then** la validación funciona igual.
 7. **Given** dos solicitudes simultáneas con la misma entrada, **When** se validan, **Then** solo una se admite (RC-05).
 8. **Given** una función cancelada, **When** se escanea una de sus entradas, **Then** se rechaza con «función cancelada».
+9. **Given** una entrada invalidada por el administrador, **When** se escanea, **Then** se rechaza con «entrada no confirmada o invalidada».
 
 ---
 
@@ -172,6 +190,8 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - Personal de acceso sin funciones asignadas.
 - Funciones con venta externa (enlace verificado).
 - Un carrito con funciones de venta habilitada y otras agotadas.
+- Un carrito de más de seis unidades en total, repartidas en funciones distintas.
+- Una entrada invalidada que el usuario sigue viendo en Mis entradas.
 - Una función que ya empezó: el contexto no define si se sigue vendiendo.
 
 ## Requirements *(mandatory)*
@@ -180,7 +200,7 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 
 **Carrito**
 
-- **FR-001**: El sistema DEBE permitir agregar entradas de una o varias funciones con venta interna, ajustar cantidades, eliminar ítems y mostrar el precio unitario y el total en USD.
+- **FR-001**: El sistema DEBE permitir agregar entradas de una o varias funciones con venta interna, ajustar cantidades, eliminar ítems y mostrar el precio unitario y el total en USD, con un máximo de seis entradas por pedido (FR-038).
 - **FR-002**: Una función de pago DEBE entrar al carrito solo si tiene precio, cupo y venta interna habilitados.
 - **FR-003**: Las funciones gratuitas NO DEBEN mostrar «Agregar al carrito».
 - **FR-004**: Si la venta es externa, la ficha PUEDE mostrar un enlace verificado.
@@ -231,18 +251,19 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **FR-034**: Los reembolsos, automáticos o manuales dentro de VIVART, NO DEBEN existir en el MVP.
 - **FR-035**: Si una función con entradas vendidas sigue siendo la misma y cambia de fecha, hora o sede, las entradas no usadas DEBEN conservar su QR y su validez; las usadas NO DEBEN reactivarse. El cambio DEBE reflejarse en Agenda, Mi recorrido y Mis entradas. NO DEBE existir devolución desde la web.
 
-**Decisiones pendientes**
+**Pago de prueba, invalidación y límite por pedido** (decisiones cerradas el 2026-11-20; véase Clarifications)
 
-- **FR-036**: El pago de prueba DEBE simularse así: [NEEDS CLARIFICATION: el contexto no define cómo se simula el pago de prueba en la demo ni qué resultados posibles tiene (confirmado, fallido, tardío) ni quién los dispara].
-- **FR-037**: Una entrada pasa a «invalidada» cuando [NEEDS CLARIFICATION: el contexto menciona entradas invalidadas pero no define quién puede invalidar una entrada ni en qué casos].
-- **FR-038**: El máximo de entradas por pedido, por usuario o por función es [NEEDS CLARIFICATION: el contexto no define límites de cantidad por compra].
+- **FR-036**: Solo en demo o pruebas, el sistema DEBE permitir simular un pago confirmado, fallido o confirmado después de vencer la retención. NO DEBE procesar dinero ni pedir datos de tarjeta. Un pago confirmado tardío DEBE pasar a revisión sin emitir entradas ni recuperar cupos ya liberados.
+- **FR-037**: Solo el administrador DEBE poder invalidar una entrada confirmada y todavía no usada, y DEBE registrar el motivo. La entrada invalidada DEBE permanecer visible en el historial y dejar de permitir el ingreso. La invalidación manual NO DEBE reembolsar ni reponer cupo automáticamente. La cancelación de una función se rige por FR-030, no por esta invalidación.
+- **FR-038**: El sistema DEBE permitir un máximo de seis entradas por pedido, contando todas las unidades del carrito aunque sean de funciones distintas, y DEBE aplicar además el cupo disponible de cada función. El límite NO DEBE configurarse por función en el MVP.
 
 ### Key Entities
 
 - **Carrito**: conjunto de ítems (función y cantidad) de un visitante.
 - **Pedido**: carrito en pago, con total validado, estado (pendiente, confirmado, fallido, vencido, en incidencia) y retención.
 - **Retención de cupo**: cupos apartados por un pedido durante 10 minutos.
-- **Entrada**: unidad comprada, con QR único y estado (confirmada, usada, invalidada, función cancelada).
+- **Entrada**: unidad comprada, con QR único y estado (confirmada, usada, invalidada, función cancelada). Una entrada invalidada conserva el motivo y quién la invalidó.
+- **Simulador de pago de prueba**: opción disponible solo en demo o pruebas para elegir el resultado del pago.
 - **Configuración de venta**: precio, cupo y habilitación por función.
 - **Incidencia de pago**: confirmación tardía pendiente de resolución del administrador.
 - **Control de acceso**: apertura y cierre de la validación de una función por el personal asignado.
@@ -264,15 +285,18 @@ Si una función con entradas vendidas cambia de fecha, hora o sede y sigue siend
 - **SC-010**: 0 usuarios sin rol de administrador consiguen activar ventas, cambiar el plazo de retención o cancelar una función con entradas vendidas, incluso con solicitudes directas.
 - **SC-011**: 0 datos de tarjetas reales se procesan o aparecen en registros.
 - **SC-012**: 0 usuarios consultan pedidos o entradas de otra cuenta.
+- **SC-013**: El simulador ofrece los tres resultados solo en demo o pruebas; en el 100 % de los casos un pago confirmado tardío pasa a revisión sin entradas ni cupos recuperados, y 0 datos de tarjeta se piden.
+- **SC-014**: 0 usuarios sin rol de administrador consiguen invalidar una entrada; el 100 % de las invalidaciones registra el motivo, deja de permitir el ingreso y 0 reembolsos o reposiciones de cupo ocurren automáticamente.
+- **SC-015**: 0 pedidos superan las seis entradas en total, y el cupo disponible de cada función se respeta en el 100 % de los casos.
 
 ## Trazabilidad con el contexto
 
 | Contexto | Cubierto por |
 |---|---|
-| RF-19, RC-02 | FR-001 a FR-006; Historia 1 |
+| RF-19, RC-02, Q11 | FR-001 a FR-006, FR-038; Historia 1 |
 | RF-20, P-04, P-07 | FR-007 a FR-013; Historia 2 |
-| RF-21 | FR-014 a FR-018; Historia 3 |
-| RF-22, P-02 | FR-019 a FR-022; Historia 4 |
+| RF-21, Q9 | FR-014 a FR-018, FR-036; Historia 3 |
+| RF-22, P-02, Q10 | FR-019 a FR-022, FR-037; Historia 4 |
 | RF-23, RC-04 | FR-023 a FR-029; Historia 5 |
 | RF-24 | FR-030 a FR-034; Historia 6 |
 | RF-36 | FR-035; Historia 7 |
