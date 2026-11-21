@@ -1,6 +1,7 @@
 // Componente reutilizable de Ficha de actividad (FR-003, FR-004, RC-03, RNF-08).
 // Se usa tanto en la ficha pública (/actividad/{id}) como en la vista previa del editor editorial.
 import { h, icono, aviso } from './dom.js';
+import { guardarEnRecorrido, quitarDeRecorrido, estaEnRecorrido } from './recorrido.js';
 import {
   formatoFecha,
   formatoHorarioFuncion,
@@ -52,6 +53,56 @@ function renderVenta(estado, alAgregar) {
       ? h('button', { type: 'button', class: 'boton-sm boton-agregar-carrito', onclick: alAgregar }, icono('carrito', 'icono-sm'), 'Agregar al carrito')
       : null,
   );
+}
+
+function renderAccionRecorrido(datos) {
+  const itemId = datos.id;
+  const contenedor = h('div', { class: 'horario-recorrido-accion' });
+
+  function actualizar() {
+    const guardado = estaEnRecorrido(itemId);
+    contenedor.replaceChildren(
+      guardado
+        ? h(
+            'button',
+            {
+              type: 'button',
+              class: 'secundario boton-sm boton-quitar-recorrido',
+              'aria-label': `Quitar ${datos.title ?? 'esta función'} de mi recorrido`,
+              onclick: (ev) => {
+                ev.preventDefault();
+                quitarDeRecorrido(itemId);
+                actualizar();
+              },
+            },
+            icono('basura', 'icono-xs'),
+            'Quitar de mi recorrido',
+          )
+        : h(
+            'div',
+            { class: 'recorrido-guardar-grupo' },
+            h(
+              'button',
+              {
+                type: 'button',
+                class: 'boton-sm boton-guardar-recorrido',
+                'aria-label': `Guardar ${datos.title ?? 'esta función'} en mi recorrido (guardar no reserva cupo)`,
+                onclick: (ev) => {
+                  ev.preventDefault();
+                  guardarEnRecorrido(datos);
+                  actualizar();
+                },
+              },
+              icono('calendario', 'icono-xs'),
+              'Guardar en mi recorrido',
+            ),
+            h('span', { class: 'recorrido-aviso-cupo' }, 'Guardar no reserva cupo'),
+          ),
+    );
+  }
+
+  actualizar();
+  return contenedor;
 }
 
 export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(), alAgregar = null } = {}) {
@@ -220,6 +271,21 @@ export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(
                 estado ? h('span', { class: `insignia-estado ${estado.clase}` }, estado.texto) : null,
               ),
               renderSede(fn.venue),
+              renderAccionRecorrido({
+                id: `fn_${fn.id}`,
+                functionId: fn.id,
+                kind: 'function',
+                date: fn.date,
+                startTime: fn.startTime,
+                endTime: fn.endTime,
+                durationMinutes: fn.durationMinutes ?? actividad.durationMinutes,
+                venue: fn.venue,
+                status: fn.status,
+                notice: avisosFn[0] ?? null,
+                title: actividad.title,
+                artists: actividad.artists,
+                activityId: actividad.id,
+              }),
               esCancelada ? null : renderVenta(venta.get(fn.id), alAgregar ? () => alAgregar(fn) : null),
               avisosFn.length
                 ? h(
@@ -266,6 +332,21 @@ export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(
                 h('span', { class: 'insignia-estado estado-franja' }, 'Franja de apertura'),
               ),
               renderSede(sl.venue),
+              renderAccionRecorrido({
+                id: `slot_${sl.id}_${sl.dates?.[0] ?? sl.from ?? 'permanente'}`,
+                slotId: sl.id,
+                kind: 'slot',
+                date: sl.dates?.[0] ?? sl.from ?? 'permanente',
+                startTime: sl.opens ?? '10:00',
+                endTime: sl.closes ?? null,
+                durationMinutes: null,
+                venue: sl.venue,
+                status: 'scheduled',
+                notice: null,
+                title: actividad.title,
+                artists: actividad.artists,
+                activityId: actividad.id,
+              }),
             ),
           ),
         ),

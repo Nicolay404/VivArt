@@ -31,6 +31,6 @@
 
 ## Notes
 
-- Los marcadores [NEEDS CLARIFICATION] originales (FR-017 y FR-018) se cerraron el 2026-11-20; constan en «Clarifications» del spec.
+- Aclaraciones incorporadas en sesiones 2026-11-20 y 2026-11-21 (alternativas en la misma sede, persistencia de archivadas, contrato de función agotada, regla de cruces y acción de sustituir).
 - No se inventaron métricas de tiempo ni de volumen; los criterios se expresan como porcentajes y conteos verificables sobre las reglas del contexto.
-- No se eligió arquitectura ni tecnología. Los permisos y la identidad dependen del spec 001.
+- No se eligió arquitectura ni tecnología ajena a la constitución y las cuatro vistas comunes.
