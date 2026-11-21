@@ -86,13 +86,14 @@ export function resumenSede(f, { accesibilidad, foto, ilustracion = ILUSTRACION,
 
 const verdadero = (v) => v === true || v === 'true' || v === '1';
 
-export function createMapa({ repos, clock, clockFixed = false, ilustracion = ILUSTRACION }) {
-  function diaValido(day) {
-    if (day === undefined || day === null || day === '') return null;
-    if (!fechaValida(day)) throw validation({ day: 'El día debe tener el formato AAAA-MM-DD.' });
-    return day;
-  }
+/** Día consultado (AAAA-MM-DD) o null si no se pidió; 422 si no es una fecha válida. */
+function diaValido(day) {
+  if (day === undefined || day === null || day === '') return null;
+  if (!fechaValida(day)) throw validation({ day: 'El día debe tener el formato AAAA-MM-DD.' });
+  return day;
+}
 
+export function createMapa({ repos, clock, clockFixed = false, ilustracion = ILUSTRACION }) {
   return {
     ilustracion,
 

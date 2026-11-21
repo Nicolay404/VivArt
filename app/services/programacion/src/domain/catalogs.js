@@ -21,17 +21,22 @@ function filaDesde(tabla, cuerpo, { markerActual = null } = {}) {
     fila.year = year;
     fila.active = cuerpo.active === undefined ? true : Boolean(cuerpo.active);
   }
-  if (tabla === 'venues') {
-    const kind = cuerpo.kind ?? 'place';
-    if (!['place', 'route'].includes(kind)) throw validation({ kind: 'El tipo debe ser «place» (lugar) o «route» (recorrido).' });
-    fila.kind = kind;
-    fila.address = textoONulo(cuerpo.address, 500);
-    fila.route_description = textoONulo(cuerpo.routeDescription, 2000);
-    // Marcador sobre la ilustración vigente (spec 003). Si no se envía, se conserva el guardado tal cual.
-    const marcador = Object.hasOwn(cuerpo, 'marker') && cuerpo.marker !== undefined ? validarMarcador(cuerpo.marker) : markerActual;
-    fila.marker = marcador ? JSON.stringify(marcador) : null;
-  }
+  if (tabla === 'venues') Object.assign(fila, camposSede(cuerpo, markerActual));
   return fila;
+}
+
+/** Campos propios de una sede: tipo, dirección, recorrido y marcador sobre la ilustración vigente (spec 003). */
+function camposSede(cuerpo, markerActual) {
+  const kind = cuerpo.kind ?? 'place';
+  if (!['place', 'route'].includes(kind)) throw validation({ kind: 'El tipo debe ser «place» (lugar) o «route» (recorrido).' });
+  // Si no se envía el marcador, se conserva el guardado tal cual.
+  const marcador = Object.hasOwn(cuerpo, 'marker') && cuerpo.marker !== undefined ? validarMarcador(cuerpo.marker) : markerActual;
+  return {
+    kind,
+    address: textoONulo(cuerpo.address, 500),
+    route_description: textoONulo(cuerpo.routeDescription, 2000),
+    marker: marcador ? JSON.stringify(marcador) : null,
+  };
 }
 
 /** Campos que cambiaron, con su valor antes y después (historial, SC-009). */

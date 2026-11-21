@@ -48,7 +48,7 @@ async function prepararFoto(archivo) {
     if (blob && blob.size <= FOTO_MAX_BYTES) {
       const bytes = new Uint8Array(await blob.arrayBuffer());
       let binario = '';
-      for (let i = 0; i < bytes.length; i += 0x8000) binario += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+      for (let i = 0; i < bytes.length; i += 0x8000) binario += String.fromCodePoint(...bytes.subarray(i, i + 0x8000));
       return btoa(binario);
     }
   }
@@ -88,7 +88,7 @@ export async function abrirFichaSede(sedeId, { alCambiar } = {}) {
     const s = r.datos;
     const rHist = await apiProgramacion('GET', `/panel/venues/${encodeURIComponent(sedeId)}/history`);
     cuerpo.replaceChildren(
-      h('h3', { class: 'ficha-sede-nombre' }, s.name, s.kind === 'route' ? h('span', { class: 'chip-sutil' }, 'Recorrido') : null),
+      h('h3', { class: 'panel-sede-nombre' }, s.name, s.kind === 'route' ? h('span', { class: 'chip-sutil' }, 'Recorrido') : null),
       h('p', { class: 'ayuda' }, 'Estos cambios no pasan por revisión editorial ni crean avisos públicos; quedan en el historial. Cambiar la sede de una función es una reprogramación con aviso (Agenda).'),
       seccionMarcador(s),
       seccionDestino(s),

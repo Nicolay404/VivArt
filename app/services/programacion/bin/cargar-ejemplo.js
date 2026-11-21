@@ -51,10 +51,12 @@ try {
   // No se les da destino ni accesibilidad: quedan «por confirmar» (no se inventan esos datos, RNF-08).
   const sedesEjemplo = new Set(nombres('sede').map(normalizar));
   const sinMarcador = (await servicios.catalogs.list('venues')).filter((v) => sedesEjemplo.has(normalizar(v.name)) && !marcadorVigente(v.marker));
-  for (const [i, v] of sinMarcador.entries()) {
-    const [x, y] = POSICIONES_EJEMPLO[i % POSICIONES_EJEMPLO.length];
-    await servicios.catalogs.update(sesion.userId, 'venues', v.id, { marker: { illustrationId: ILUSTRACION.id, x, y } });
-  }
+  await Promise.all(
+    sinMarcador.map((v, i) => {
+      const [x, y] = POSICIONES_EJEMPLO[i % POSICIONES_EJEMPLO.length];
+      return servicios.catalogs.update(sesion.userId, 'venues', v.id, { marker: { illustrationId: ILUSTRACION.id, x, y } });
+    }),
+  );
   if (sinMarcador.length) console.log(`Marcadores de ejemplo colocados en la ilustración provisional: ${sinMarcador.length}.`);
 
   const previa = await servicios.imports.vistaPrevia(sesion, { file: lote, filename: 'lote-ejemplo.json' });

@@ -2328,7 +2328,7 @@ h1, h2, h3,
 
 .ficha-sede-panel { display: grid; gap: 1.1rem; }
 
-.ficha-sede-nombre {
+.panel-sede-nombre {
   margin: 0;
   display: flex;
   flex-wrap: wrap;

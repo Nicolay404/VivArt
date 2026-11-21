@@ -20,12 +20,20 @@ const CARACTERISTICAS = [
   { clave: 'accessibleToilet', nombre: 'Baño accesible', icono: 'bano', param: 'banio', api: 'accessibleToilet' },
 ];
 
-const direccionDe = (s) =>
-  s.kind === 'route'
-    ? h('span', {}, s.routeDescription || h('span', { class: 'dato-pendiente' }, 'Recorrido por confirmar'))
-    : s.address
-      ? h('span', {}, s.address)
-      : h('span', { class: 'dato-pendiente' }, 'Dirección por confirmar');
+function direccionDe(s) {
+  if (s.kind === 'route') return h('span', {}, s.routeDescription || h('span', { class: 'dato-pendiente' }, 'Recorrido por confirmar'));
+  if (s.address) return h('span', {}, s.address);
+  return h('span', { class: 'dato-pendiente' }, 'Dirección por confirmar');
+}
+
+/** «1 función» o «N funciones» el día consultado. */
+const textoFuncionesDia = (n) => `${n} ${n === 1 ? 'función' : 'funciones'} el día consultado`;
+
+/** Ruta con su cadena de consulta, si la hay. */
+const conConsulta = (ruta, params) => {
+  const qs = params.toString();
+  return qs ? `${ruta}?${qs}` : ruta;
+};
 
 /** Accesibilidad con icono y texto: nunca solo con color (FR-016). */
 function listaAccesibilidad(acc, compacta = false) {
@@ -159,7 +167,7 @@ export async function pantallaMapa() {
     };
 
     // «Funciones del día»: hoy por defecto en hora de Loja; otros días = días con funciones de la edición (M-05, M-06).
-    const opcionesDia = dias.includes(reference.date) ? dias : [reference.date, ...dias].sort();
+    const opcionesDia = dias.includes(reference.date) ? dias : [reference.date, ...dias].sort((a, b) => a.localeCompare(b));
     const selectDia = h(
       'select',
       {
@@ -399,7 +407,7 @@ export async function pantallaMapa() {
                 type: 'button',
                 class: `marcador-sede ${s.id === estado.sede ? 'activo' : ''}`,
                 'aria-pressed': String(s.id === estado.sede),
-                'aria-label': `${s.name}${s.dayFunctionCount ? `, ${s.dayFunctionCount} ${s.dayFunctionCount === 1 ? 'función' : 'funciones'} el día consultado` : ''}`,
+                'aria-label': s.dayFunctionCount ? `${s.name}, ${textoFuncionesDia(s.dayFunctionCount)}` : s.name,
                 onclick: () => {
                   if (movido) return;
                   void abrirSede(s.id);
@@ -464,7 +472,7 @@ export async function pantallaMapa() {
               { class: 'fila-sede-texto' },
               h('span', { class: 'fila-sede-nombre' }, s.name, s.kind === 'route' ? h('span', { class: 'chip-sutil' }, 'Recorrido') : null),
               h('span', { class: 'fila-sede-direccion' }, direccionDe(s)),
-              s.dayFunctionCount ? h('span', { class: 'fila-sede-funciones' }, `${s.dayFunctionCount} ${s.dayFunctionCount === 1 ? 'función' : 'funciones'} el día consultado`) : null,
+              s.dayFunctionCount ? h('span', { class: 'fila-sede-funciones' }, textoFuncionesDia(s.dayFunctionCount)) : null,
               listaAccesibilidad(s.accessibility, true),
             ),
           ),
@@ -500,7 +508,7 @@ export async function pantallaMapa() {
     if (estado.q.trim()) p.set('q', estado.q.trim());
     if (estado.dia) p.set('day', estado.dia);
     for (const c of CARACTERISTICAS) if (estado[c.param]) p.set(c.api, 'true');
-    const r = await apiProgramacion('GET', `/map/venues${p.toString() ? `?${p.toString()}` : ''}`);
+    const r = await apiProgramacion('GET', conConsulta('/map/venues', p));
     if (id !== consultaId) return;
     if (!r.ok) {
       zonaEstado.replaceChildren();
@@ -516,14 +524,13 @@ export async function pantallaMapa() {
       return;
     }
     sedes = r.datos.items ?? [];
+    const avisoDiaSinFunciones = dias.length ? ' · Ese día no hay funciones publicadas. Elige otro día de la edición.' : ' · Ese día no hay funciones publicadas.';
     const partes = [`${sedes.length} ${sedes.length === 1 ? 'sede' : 'sedes'}`];
     if (estado.dia) partes.push(`con funciones el ${formatoFecha(estado.dia)}`);
     zonaEstado.replaceChildren(
       ...[
         partes.join(' '),
-        estado.dia && r.datos.dayHasFunctions === false
-          ? h('span', { class: 'aviso-dia' }, ` · Ese día no hay funciones publicadas.${dias.length ? ' Elige otro día de la edición.' : ''}`)
-          : null,
+        estado.dia && r.datos.dayHasFunctions === false ? h('span', { class: 'aviso-dia' }, avisoDiaSinFunciones) : null,
       ].filter(Boolean),
     );
     pintarVista();
@@ -549,7 +556,7 @@ export async function pantallaMapa() {
     }
     zonaSede.hidden = false;
     zonaSede.replaceChildren(h('p', { class: 'cargando' }, 'Cargando la sede…'));
-    const r = await apiProgramacion('GET', `/map/venues/${encodeURIComponent(id)}${estado.dia ? `?day=${estado.dia}` : ''}`);
+    const r = await apiProgramacion('GET', conConsulta(`/map/venues/${encodeURIComponent(id)}`, new URLSearchParams(estado.dia ? { day: estado.dia } : {})));
     if (consulta !== consultaSede) return;
     if (!r.ok) {
       zonaSede.replaceChildren(
@@ -558,6 +565,7 @@ export async function pantallaMapa() {
       return;
     }
     const s = r.datos;
+    const textoSinFunciones = estado.dia ? 'Esta sede no tiene funciones ese día.' : 'No hay funciones próximas en esta sede.';
     const titulo = h('h2', { class: 'panel-sede-titulo', tabindex: '-1' }, s.name);
     const funciones = s.functions ?? [];
 
@@ -615,7 +623,7 @@ export async function pantallaMapa() {
                   );
                 }),
               )
-            : h('p', { class: 'sin-funciones' }, estado.dia ? 'Esta sede no tiene funciones ese día.' : 'No hay funciones próximas en esta sede.'),
+            : h('p', { class: 'sin-funciones' }, textoSinFunciones),
         ),
       ),
     );
