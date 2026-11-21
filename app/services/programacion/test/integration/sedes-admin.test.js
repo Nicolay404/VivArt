@@ -2,12 +2,13 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { crearApp, pedir, catalogos, relojMovible } from '../helpers.js';
 import { ILUSTRACION } from '../../src/domain/mapa.js';
+import { png, jpeg, SECRETO } from '../imagenes-prueba.js';
 
 // Spec 003, historia 6: el administrador mantiene las sedes sin revisión editorial, con historial y sin aviso público.
 // Datos FICTICIOS; reloj fijado el 2026-11-21 en Loja. Las imágenes son bytes mínimos generados aquí.
 
-const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
-const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0x10]);
+const PNG = png();
+const JPEG = jpeg();
 const DESTINO = { lat: -3.5, lng: -78.25, source: 'Revisión en sitio', verifiedOn: '2026-11-10' };
 const FOTO = { dataBase64: PNG.toString('base64'), alt: 'Fachada de la sede', credit: 'Foto propia del equipo' };
 
@@ -110,6 +111,12 @@ test('FR-025: la foto exige JPEG, PNG o WebP de hasta 1 MB con texto alternativo
   const segunda = await foto({ ...FOTO, dataBase64: JPEG.toString('base64'), alt: 'Interior de la sede' });
   assert.notEqual(segunda.json.photo.url, primera.json.photo.url);
   assert.equal(segunda.json.photo.alt, 'Interior de la sede');
+  // M-09: aunque se llame directo a la API con una foto con EXIF, se guarda y se sirve sin metadatos.
+  const conExif = await foto({ ...FOTO, dataBase64: jpeg({ conMetadatos: true }).toString('base64') });
+  assert.equal(conExif.status, 200);
+  const servida = await ctx.app.inject({ method: 'GET', url: conExif.json.photo.url.replace('/api/programacion', '') });
+  assert.equal(servida.headers['content-type'], 'image/jpeg');
+  assert.ok(!servida.rawPayload.includes(SECRETO), 'la foto servida no conserva metadatos');
   const quitada = await pedir(ctx, 'admin', 'DELETE', `/panel/venues/${c.museo.id}/photo`);
   assert.equal(quitada.json.photo, null);
   assert.equal((await pedir(ctx, null, 'GET', `/map/venues/${c.museo.id}/photo`)).status, 404);

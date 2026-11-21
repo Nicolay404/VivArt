@@ -2,10 +2,11 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { crearApp, pedir, catalogos, publicada, relojMovible, contenido } from '../helpers.js';
 import { ILUSTRACION } from '../../src/domain/mapa.js';
+import { png } from '../imagenes-prueba.js';
 
 // Spec 003: API pública del mapa de sedes. Datos FICTICIOS; reloj fijado el 2026-11-21 a las 18:00 en Loja.
 
-const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+const PNG = png();
 const nombres = (r) => r.json.items.map((s) => s.name).sort();
 
 /** Sedes y funciones de ejemplo que cubren los casos del spec. */
