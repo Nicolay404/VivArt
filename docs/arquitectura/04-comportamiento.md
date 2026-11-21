@@ -2,7 +2,7 @@
 
 Propuesta del equipo, pendiente de contrastar con la nomenclatura que pida el docente.
 
-Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001 y el tercero del spec 005, todos implementados; el cuarto **está identificado pero no implementado**.
+Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001, el tercero del spec 005 y el cuarto del spec 006, todos implementados.
 
 ## 1. Inicio de sesión (spec 001)
 
@@ -69,7 +69,9 @@ sequenceDiagram
     P-->>U2: Sin cupo: revisa tu carrito
 ```
 
-## 4. Canje de un sello único (spec 006, identificado, no implementado)
+## 4. Canje de un sello único (spec 006)
+
+Implementado con la restricción única `(user_id, function_id)` de la tabla `stamps` y una inserción `ON CONFLICT DO NOTHING`; probado con veinte solicitudes simultáneas. Antes de emitir, participación consulta la función vigente a programación: si cambió de fecha, hora o sede desde que se confirmó la ventana, el canje queda desactivado (P-03), sin avisos entre servicios.
 
 ```mermaid
 sequenceDiagram

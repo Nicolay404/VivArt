@@ -143,6 +143,9 @@ export function configPrueba(variables = {}, overrides = {}) {
       SERVICE_KEYS: 'programacion:clave-de-prueba-solo-para-tests',
       TICKET_KEY: 'clave-de-entradas-solo-para-pruebas-0123456789',
       PAYMENT_SIMULATOR: 'on',
+      // Cada prueba abre su propia aplicación: pools pequeños que sueltan pronto las conexiones (si no, PostgreSQL da 53300).
+      DB_POOL_MAX: '3',
+      DB_POOL_IDLE_MS: '1000',
       ...variables,
     },
     overrides,

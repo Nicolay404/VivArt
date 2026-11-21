@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { leerImagen } from './imagenes.js';
 import { enLoja, fechaValida } from '../clock.js';
 import { textoONulo } from './text.js';
 import { validation, notFound } from '../http/errors.js';
@@ -8,18 +9,8 @@ import { CARACTERISTICAS, destinoDeFila, accesibilidadCompleta, resumenSede, ILU
 // Sin revisión editorial y sin aviso público (RC-06); cada cambio queda en el historial con lo que cambió.
 // Todas las operaciones exigen `catalog.manage` (administrador), verificado en identidad con fallo cerrado.
 
-export const FOTO_MAX_BYTES = 1024 * 1024;
+export { IMAGEN_MAX_BYTES as FOTO_MAX_BYTES, tipoDeImagen } from './imagenes.js';
 const ESTADOS = new Set(['confirmed', 'unavailable', 'unconfirmed']);
-const BASE64 = /^[A-Za-z0-9+/]+={0,2}$/;
-
-/** Tipo real de la imagen por sus bytes iniciales: solo JPEG, PNG o WebP. SVG, GIF y lo demás se rechazan. */
-export function tipoDeImagen(bytes) {
-  if (bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return 'image/jpeg';
-  const png = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
-  if (bytes.length >= 8 && png.every((b, i) => bytes[i] === b)) return 'image/png';
-  if (bytes.length >= 12 && bytes.toString('latin1', 0, 4) === 'RIFF' && bytes.toString('latin1', 8, 12) === 'WEBP') return 'image/webp';
-  return null;
-}
 
 /** Fecha de verificación válida y no posterior a hoy en Loja. */
 function fechaVerificacion(valor, hoy, campo) {
@@ -65,24 +56,17 @@ export function validarAccesibilidad(cuerpo, hoy) {
   return { status, source, verifiedOn, note };
 }
 
-/** Valida la foto (FR-025): base64 de JPEG, PNG o WebP de hasta 1 MB, con texto alternativo y autoría. */
+/** Valida la foto (FR-025): base64 de JPEG, PNG o WebP de hasta 1 MB, sin metadatos, con texto alternativo y autoría. */
 export function validarFoto(cuerpo) {
   const errores = {};
   const alt = textoONulo(cuerpo?.alt, 300);
   const credit = textoONulo(cuerpo?.credit, 300);
   if (!alt || alt.length < 3) errores.alt = 'Describe la foto para quien no puede verla (texto alternativo).';
   if (!credit || credit.length < 3) errores.credit = 'Indica la fuente o la autoría de la foto.';
-  const datos = typeof cuerpo?.dataBase64 === 'string' ? cuerpo.dataBase64.replace(/\s/g, '') : '';
-  let bytes = null;
-  let mime = null;
-  if (!datos || datos.length % 4 !== 0 || !BASE64.test(datos)) {
-    errores.photo = 'Elige una foto en JPEG, PNG o WebP.';
-  } else {
-    bytes = Buffer.from(datos, 'base64');
-    mime = tipoDeImagen(bytes);
-    if (!mime) errores.photo = 'La foto debe ser JPEG, PNG o WebP.';
-    else if (bytes.length > FOTO_MAX_BYTES) errores.photo = 'La foto pesa más de 1 MB.';
-  }
+  // Tipo real, tamaño y metadatos se resuelven en el servidor (imagenes.js): sin EXIF aunque se llame directo a la API.
+  const imagen = leerImagen(cuerpo?.dataBase64);
+  if (imagen.error) errores.photo = imagen.error;
+  const { bytes, mime } = imagen;
   if (Object.keys(errores).length) throw validation(errores);
   return { bytes, mime, alt, credit, sha256: createHash('sha256').update(bytes).digest('hex') };
 }

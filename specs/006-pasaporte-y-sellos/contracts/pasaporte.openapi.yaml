@@ -1,0 +1,253 @@
+openapi: 3.1.0
+info:
+  title: VIVART - Pasaporte Vivo y sellos (servicio de participación)
+  version: 1.0.0
+  description: >
+    Spec 006. Amplía el servicio de participación (contrato base en specs/005-compra-y-entradas/contracts/).
+    Desde el navegador se llama con el prefijo /api/participacion (entrada común).
+    Las rutas /passport/* de la persona usan la cookie de sesión de identidad (vivart_sid); reclamar exige correo verificado.
+    Las rutas /panel/* exigen la acción passport.manage (administrador), verificada en identidad con fallo cerrado (503).
+    Las operaciones que cambian estado exigen Content-Type application/json y un Origin permitido.
+    Fechas y horas de la ventana en hora local de Loja (AAAA-MM-DD HH:MM).
+    Los datos de la función (título, fecha, hora, sede, avisos) son los VIGENTES de programación (P-14 pendiente).
+servers:
+  - url: /api/participacion
+tags:
+  - name: Pasaporte (persona)
+  - name: Pasaporte (público)
+  - name: Pasaporte (panel)
+paths:
+  /passport/claims:
+    post:
+      tags: [Pasaporte (persona)]
+      summary: Reclamar el sello de un QR (FR-001 a FR-009)
+      description: >
+        El ref es el último tramo del enlace /pasaporte/canje/{ref}. Si la persona ya tiene el sello de esa función,
+        se devuelve el mismo (200), aunque el QR esté reemplazado o la ventana cerrada. Sin sesión, 401: la web guarda
+        la acción pendiente «canje» en identidad y vuelve aquí tras iniciar sesión.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [ref], properties: { ref: { type: string, maxLength: 200 } } }
+      responses:
+        '201': { description: Sello nuevo, content: { application/json: { schema: { $ref: '#/components/schemas/ClaimResult' } } } }
+        '200': { description: Sello que ya tenía, content: { application/json: { schema: { $ref: '#/components/schemas/ClaimResult' } } } }
+        '401': { description: 'Sin sesión (error: unauthenticated)', content: { application/json: { schema: { $ref: '#/components/schemas/ClaimRejection' } } } }
+        '403': { description: 'Correo sin verificar (error: email_not_verified)', content: { application/json: { schema: { $ref: '#/components/schemas/ClaimRejection' } } } }
+        '409': { description: 'Canje rechazado con su motivo', content: { application/json: { schema: { $ref: '#/components/schemas/ClaimRejection' } } } }
+        '503': { description: 'No se pudo verificar: el canje no está confirmado (error: not_verifiable)', content: { application/json: { schema: { $ref: '#/components/schemas/ClaimRejection' } } } }
+  /passport:
+    get:
+      tags: [Pasaporte (persona)]
+      summary: Mi pasaporte, con el total de sellos y sin meta global (FR-010 a FR-012, M-01)
+      responses:
+        '200':
+          description: Colección de la persona
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [total, items, verified]
+                properties:
+                  total: { type: integer, description: Número de sellos obtenidos }
+                  verified: { type: boolean, description: false si programación no respondió; los datos de la función pueden estar desactualizados }
+                  items: { type: array, items: { $ref: '#/components/schemas/Stamp' } }
+        '401': { $ref: '#/components/responses/Error' }
+  /passport/stamps/{id}:
+    get:
+      tags: [Pasaporte (persona)]
+      summary: Detalle de un sello propio (FR-010, FR-021)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Sello, content: { application/json: { schema: { $ref: '#/components/schemas/Stamp' } } } }
+        '404': { description: No existe o no es de la persona (no se distingue) }
+  /passport/images/{id}:
+    get:
+      tags: [Pasaporte (público)]
+      summary: Imagen de un sello (sin metadatos; inmutable)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Imagen, content: { image/jpeg: {}, image/png: {}, image/webp: {} } }
+        '404': { $ref: '#/components/responses/Error' }
+
+  /panel/passport:
+    get:
+      tags: [Pasaporte (panel)]
+      summary: Estado del Pasaporte de varias funciones, para la lista del panel
+      parameters:
+        - { name: functionIds, in: query, required: true, schema: { type: string }, description: Ids separados por comas (máximo 100) }
+      responses:
+        '200':
+          description: Estado por función
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        functionId: { type: string }
+                        qrStatus: { type: [string, 'null'], enum: [inactive, active, replaced, null] }
+                        inactiveCause: { type: [string, 'null'], enum: [manual, function_changed, null] }
+                        stampsCount: { type: integer }
+  /panel/functions/{id}/passport:
+    get:
+      tags: [Pasaporte (panel)]
+      summary: Pasaporte de una función con su QR en SVG y su enlace (FR-014, FR-027)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Estado, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+        '404': { description: La función no existe, no está publicada o no es una función con fecha y hora }
+  /panel/functions/{id}/passport/qr:
+    post:
+      tags: [Pasaporte (panel)]
+      summary: Generar el QR (queda desactivado hasta fijar la ventana y activarlo)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '201': { description: Generado, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+        '409': { description: 'Ya tiene un QR vigente (error: qr_exists): usa reemplazar' }
+  /panel/functions/{id}/passport/qr/replace:
+    post:
+      tags: [Pasaporte (panel)]
+      summary: Reemplazar el QR; el anterior deja de valer y los sellos se conservan (FR-015)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Reemplazado (el nuevo queda desactivado), content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+  /panel/functions/{id}/passport/window:
+    put:
+      tags: [Pasaporte (panel)]
+      summary: Fijar o confirmar la ventana de canje; también la confirma tras un cambio de la función (FR-019)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [start, end]
+              properties:
+                start: { type: string, example: '2026-11-21 18:00' }
+                end: { type: string, example: '2026-11-21 23:00' }
+      responses:
+        '200': { description: Guardada, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+  /panel/functions/{id}/passport/activate:
+    post:
+      tags: [Pasaporte (panel)]
+      summary: Activar el canje (exige ventana; M-10)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Activo, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+        '422': { description: 'Sin ventana, o la función cambió y hay que confirmar una ventana nueva (error: window_required)' }
+  /panel/functions/{id}/passport/deactivate:
+    post:
+      tags: [Pasaporte (panel)]
+      summary: Desactivar el canje
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Desactivado, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+  /panel/functions/{id}/passport/content:
+    put:
+      tags: [Pasaporte (panel)]
+      summary: Nueva versión del contenido del sello (M-11, M-12); los sellos emitidos conservan la suya
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text: { type: [string, 'null'], maxLength: 280, description: Solo texto plano }
+                image:
+                  description: 'Imagen nueva; null la quita de la versión nueva; omitirla conserva la de la versión anterior'
+                  oneOf:
+                    - type: 'null'
+                    - type: object
+                      required: [dataBase64, alt, credit]
+                      properties:
+                        dataBase64: { type: string, description: 'JPEG, PNG o WebP de hasta 1 MB, sin prefijo data:' }
+                        alt: { type: string, minLength: 3, maxLength: 300 }
+                        credit: { type: string, minLength: 3, maxLength: 300 }
+      responses:
+        '200': { description: Versión creada, content: { application/json: { schema: { $ref: '#/components/schemas/PassportAdmin' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+
+components:
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+  responses:
+    Error: { description: Error, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error: { type: string }
+        message: { type: string }
+        fields: { type: object, additionalProperties: { type: string } }
+    ClaimRejection:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          enum: [wrong_code_type, qr_not_found, qr_replaced, qr_inactive, window_not_open, window_expired, function_cancelled, email_not_verified, unauthenticated, not_verifiable]
+        cause: { type: [string, 'null'], enum: [manual, function_changed, null], description: Solo con qr_inactive }
+        message: { type: string, description: Motivo en español para mostrar }
+    ClaimResult:
+      type: object
+      required: [created, stamp]
+      properties:
+        created: { type: boolean, description: false si ya tenía el sello }
+        stamp: { $ref: '#/components/schemas/Stamp' }
+    Stamp:
+      type: object
+      properties:
+        id: { type: string }
+        functionId: { type: string }
+        activityId: { type: [string, 'null'] }
+        title: { type: [string, 'null'], description: Vigente en programación }
+        date: { type: [string, 'null'] }
+        startTime: { type: [string, 'null'] }
+        venueName: { type: [string, 'null'] }
+        functionStatus: { type: [string, 'null'], enum: [scheduled, cancelled, null] }
+        notice: { type: [object, 'null'], description: 'Último aviso público de la función (cambio o cancelación)' }
+        obtainedAt: { type: string }
+        content:
+          type: [object, 'null']
+          description: null = solo la plantilla común
+          properties:
+            text: { type: [string, 'null'] }
+            image:
+              type: [object, 'null']
+              properties:
+                url: { type: string }
+                alt: { type: string }
+                credit: { type: string }
+    PassportAdmin:
+      type: object
+      properties:
+        function: { type: object, description: 'Datos vigentes de la función (programación)' }
+        qr:
+          type: [object, 'null']
+          properties:
+            id: { type: string }
+            status: { type: string, enum: [inactive, active] }
+            inactiveCause: { type: [string, 'null'], enum: [manual, function_changed, null] }
+            url: { type: string, description: 'PUBLIC_BASE_URL + /pasaporte/canje/{ref}' }
+            svg: { type: string, description: QR en SVG listo para descargar e imprimir }
+            window:
+              type: [object, 'null']
+              properties: { start: { type: string }, end: { type: string } }
+        content:
+          type: [object, 'null']
+          properties:
+            version: { type: integer }
+            text: { type: [string, 'null'] }
+            image: { type: [object, 'null'] }
+        stampsCount: { type: integer }

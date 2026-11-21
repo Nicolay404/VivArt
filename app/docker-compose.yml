@@ -97,6 +97,7 @@ services:
       TICKET_KEY: ${TICKET_KEY:?Falta TICKET_KEY en app/.env. Ejecuta node preparar-entorno.mjs}
       # Simulador de pago de prueba: solo en la demo; nunca procesa dinero (FR-036).
       PAYMENT_SIMULATOR: "on"
+      PUBLIC_BASE_URL: http://localhost:8080
       CLOCK_FIXED: ${CLOCK_FIXED:-}
     depends_on:
       db-preparar:

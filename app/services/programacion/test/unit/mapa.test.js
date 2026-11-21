@@ -2,12 +2,14 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { ILUSTRACION, validarMarcador, marcadorVigente, enlaceComoLlegar, destinoDeFila } from '../../src/domain/mapa.js';
 import { validarDestino, validarAccesibilidad, validarFoto, tipoDeImagen, FOTO_MAX_BYTES } from '../../src/domain/sedes.js';
+import { quitarMetadatos, leerImagen } from '../../src/domain/imagenes.js';
+import { jpeg, png, webp, SECRETO } from '../imagenes-prueba.js';
 
 // Spec 003: reglas puras del mapa de sedes. Las imágenes son bytes mínimos generados aquí, nunca fotos reales.
 
-const PNG = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
-const JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0x10]);
-const WEBP = Buffer.concat([Buffer.from('RIFF'), Buffer.from([4, 0, 0, 0]), Buffer.from('WEBP')]);
+const PNG = png();
+const JPEG = jpeg();
+const WEBP = webp();
 
 test('marcador: x e y entre 0 y 1 sobre la ilustración vigente; otra ilustración no vale (FR-022, SC-012)', () => {
   assert.deepEqual(validarMarcador({ illustrationId: ILUSTRACION.id, x: 0.5, y: 0.123456789 }), {
@@ -94,6 +96,25 @@ test('foto: solo JPEG, PNG o WebP por sus bytes, hasta 1 MB, con texto alternati
   assert.deepEqual(error({ dataBase64: PNG.toString('base64') }), ['alt', 'credit']);
   assert.deepEqual(error({ dataBase64: Buffer.from('GIF89a').toString('base64'), alt: 'Algo', credit: 'Alguien' }), ['photo']);
   assert.deepEqual(error({ dataBase64: 'no es base64!', alt: 'Algo', credit: 'Alguien' }), ['photo']);
-  const grande = Buffer.concat([PNG, Buffer.alloc(FOTO_MAX_BYTES)]);
+  const grande = jpeg({ extra: FOTO_MAX_BYTES });
   assert.deepEqual(error({ dataBase64: grande.toString('base64'), alt: 'Algo', credit: 'Alguien' }), ['photo']);
+});
+
+test('M-09, M-12: el servidor quita EXIF, XMP y textos de JPEG, PNG y WebP; los datos de imagen se conservan', () => {
+  for (const [nombre, crear, mime] of [['jpeg', jpeg, 'image/jpeg'], ['png', png, 'image/png'], ['webp', webp, 'image/webp']]) {
+    const con = crear({ conMetadatos: true });
+    assert.ok(con.includes(SECRETO), `${nombre}: la imagen de prueba lleva metadatos`);
+    const limpia = quitarMetadatos(con, mime);
+    assert.ok(limpia, nombre);
+    assert.ok(!limpia.includes(SECRETO), `${nombre}: no quedan metadatos`);
+    assert.equal(tipoDeImagen(limpia), mime, `${nombre}: sigue siendo del mismo tipo`);
+    assert.deepEqual(quitarMetadatos(crear(), mime), crear(), `${nombre}: sin metadatos no cambia`);
+  }
+  // WebP: tamaño RIFF recalculado y marcas EXIF/XMP apagadas.
+  const w = quitarMetadatos(webp({ conMetadatos: true }), 'image/webp');
+  assert.equal(w.readUInt32LE(4), w.length - 8);
+  assert.equal(w[20] & 0x0c, 0);
+  // La subida por base64 devuelve la imagen ya limpia; una estructura dañada se rechaza.
+  assert.ok(!leerImagen(png({ conMetadatos: true }).toString('base64')).bytes.includes(SECRETO));
+  assert.match(leerImagen(Buffer.from([0xff, 0xd8, 0xff, 0xe0, 0, 0x10]).toString('base64')).error, /dañado/);
 });

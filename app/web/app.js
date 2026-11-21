@@ -2,7 +2,7 @@
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
-import { pantallaAgenda, pantallaFicha, pantallaProximamente } from './js/publico.js';
+import { pantallaAgenda, pantallaFicha } from './js/publico.js';
 import {
   registro,
   ingresar,
@@ -152,15 +152,14 @@ async function resolverRuta(ruta) {
       };
     }
   }
-  if (ruta === '/pasaporte') {
-    return {
-      ancho: 'normal',
-      contenido: pantallaProximamente(
-        'Pasaporte Vivo',
-        'Muy pronto podrás coleccionar sellos en las funciones, recorrer rutas culturales y desbloquear insignias del festival.',
-        'Esta sección se construye en los specs 006 y 007 (Pasaporte, sellos y rutas).',
-      ),
-    };
+  // Pasaporte Vivo (spec 006): colección, detalle del sello y canje. Se importa solo al abrir la pestaña.
+  const matchSello = ruta.match(/^\/pasaporte\/sello\/([^/]+)$/);
+  const matchCanje = ruta.match(/^\/pasaporte\/canje\/([^/]+)$/);
+  if (ruta === '/pasaporte' || matchSello || matchCanje) {
+    const { pantallaPasaporte, pantallaSello, pantallaCanje } = await import('./js/pasaporte.js');
+    if (matchSello) return { ancho: 'completo', contenido: await pantallaSello({ ...ctx, id: decodeURIComponent(matchSello[1]) }) };
+    if (matchCanje) return { ancho: 'completo', contenido: await pantallaCanje({ ...ctx, ref: decodeURIComponent(matchCanje[1]) }) };
+    return { ancho: 'completo', contenido: await pantallaPasaporte(ctx) };
   }
 
   const matchActividad = ruta.match(/^\/actividad\/([^/]+)$/);
@@ -177,6 +176,14 @@ async function resolverRuta(ruta) {
     return { ancho: 'panel', contenido: await pantallaEditor({ ...ctx, id: decodeURIComponent(matchEditor[1]) }) };
   }
   if (ruta === '/panel/ventas') return { ancho: 'panel', contenido: await pantallaVentas(ctx) };
+  const matchPanelPasaporte = ruta.match(/^\/panel\/pasaporte\/actividad\/([^/]+)$/);
+  if (ruta === '/panel/pasaporte' || matchPanelPasaporte) {
+    const { pantallaPanelPasaporte, pantallaPanelPasaporteActividad } = await import('./js/panel-pasaporte.js');
+    const contenido = matchPanelPasaporte
+      ? await pantallaPanelPasaporteActividad({ ...ctx, id: decodeURIComponent(matchPanelPasaporte[1]) })
+      : await pantallaPanelPasaporte(ctx);
+    return { ancho: 'panel', contenido };
+  }
   const matchVentas = ruta.match(/^\/panel\/ventas\/actividad\/([^/]+)$/);
   if (matchVentas) return { ancho: 'panel', contenido: await pantallaVentasActividad({ ...ctx, id: decodeURIComponent(matchVentas[1]) }) };
 

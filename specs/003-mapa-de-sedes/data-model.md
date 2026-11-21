@@ -45,6 +45,7 @@ Como máximo una foto por sede.
 |---|---|---|
 | venue_id | texto | Clave; → `venues(id)`; borrado en cascada |
 | mime | texto | `image/jpeg`, `image/png` o `image/webp`, comprobado por los bytes iniciales, no por lo que diga el cliente |
+| (limpieza) | — | El servidor quita EXIF, XMP, IPTC y comentarios antes de guardar (`src/domain/imagenes.js`), aunque se suba directamente por la API |
 | bytes | binario (`bytea`) | Hasta 1 MB |
 | alt | texto | Obligatorio, de 3 a 300 caracteres: texto alternativo (FR-025) |
 | credit | texto | Obligatorio, de 3 a 300 caracteres: fuente o autoría, y licencia si aplica (M-09) |

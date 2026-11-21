@@ -50,6 +50,12 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/ticket
 [ "$codigo" = "401" ]
 echo "ok: Mis entradas pide identificarse"
 
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/passport")"
+[[ "$codigo" = "401" ]]
+codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/panel/passport?functionIds=x")"
+[[ "$codigo" = "401" ]]
+echo "ok: Mi pasaporte y el panel del Pasaporte piden identificarse (spec 006)"
+
 codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/participacion/internal/functions/x/impact")"
 [ "$codigo" = "401" ]
 echo "ok: la API interna de participación exige credencial de servicio"

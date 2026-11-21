@@ -34,3 +34,4 @@
 - Los marcadores [NEEDS CLARIFICATION] originales (FR-021 y FR-022) se cerraron el 2026-11-20; constan en «Clarifications» del spec.
 - No se inventaron métricas de tiempo ni de volumen; los criterios se expresan como porcentajes y conteos verificables sobre las reglas del contexto.
 - No se eligió arquitectura ni tecnología. Los permisos y la identidad dependen del spec 001.
+- Segunda ronda de aclaraciones (2026-11-20): ventana sin valor por defecto, contenido versionado, imagen y texto del sello, QR único con enlace `/pasaporte/canje/{ref}` e impresión, y rutas «Próximamente». Registradas como M-10 a M-13; queda pendiente P-14 (datos de un sello reprogramado).

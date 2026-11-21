@@ -35,6 +35,11 @@ export function loadConfig(env = process.env, overrides = {}) {
     clock: relojFijo ? () => new Date(relojFijo) : () => new Date(),
     clockFixed: Boolean(relojFijo),
     timeoutMs: Number(env.SERVICE_TIMEOUT_MS ?? 3000),
+    // Dirección pública que lleva el QR impreso del Pasaporte (spec 006). Depende de P-12 (dominio).
+    publicBaseUrl: (env.PUBLIC_BASE_URL ?? 'http://localhost:8080').replace(/\/$/, ''),
+    // Tamaño del pool y cierre de conexiones inactivas. Las pruebas usan pools pequeños para no agotar la base.
+    dbPoolMax: Number(env.DB_POOL_MAX ?? 10),
+    dbPoolIdleMs: Number(env.DB_POOL_IDLE_MS ?? 10000),
   };
   return { ...base, ...overrides };
 }
