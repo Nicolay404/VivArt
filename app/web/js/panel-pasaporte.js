@@ -1,6 +1,6 @@
 // Panel del Pasaporte (spec 006, historias 4 y 5): QR por función, ventana de canje, activación y contenido del sello.
 // Escritorio primero. El servidor verifica el rol de administrador en cada operación; la interfaz no es una barrera.
-import { h, icono, aviso, campo, campoTextarea, formulario } from './dom.js';
+import { h, aviso, campo, campoTextarea, formulario } from './dom.js';
 import { apiParticipacion, apiProgramacion } from './api.js';
 import { formatoFecha, formatoHorarioFuncion } from './format.js';
 import { requiereSesion } from './cuenta.js';
@@ -100,8 +100,7 @@ export async function pantallaPanelPasaporteActividad({ persona, barraPanel, id 
   if (!rf.ok) return [barraPanel('/panel/pasaporte'), h('p', { class: 'aviso error-caja' }, rf.datos?.message ?? 'No se pudo cargar la actividad.')];
   const ficha = rf.datos;
   const funciones = ficha.functions ?? [];
-  const contenedor = h('div', { class: 'pila' });
-  for (const fn of funciones) contenedor.append(await tarjetaFuncion(fn));
+  const contenedor = h('div', { class: 'pila' }, await Promise.all(funciones.map(tarjetaFuncion)));
   return [
     barraPanel('/panel/pasaporte'),
     h('a', { href: '/panel/pasaporte', 'data-enlace': true, class: 'enlace-volver' }, '← Pasaporte'),

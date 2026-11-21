@@ -127,6 +127,24 @@ export async function desactivarPorCambio(db, qr, f, momento) {
 
 // ---------- Canje y colección ----------
 
+/** Sello con los datos vigentes de la función (P-14 pendiente) y el contenido de su versión. */
+function presentar(s, f, contenidos) {
+  const c = s.content_id ? contenidos.get(s.content_id) : null;
+  return {
+    id: s.id,
+    functionId: s.function_id,
+    activityId: f?.activityId ?? null,
+    title: f?.title ?? null,
+    date: f?.date ?? null,
+    startTime: f?.startTime ?? null,
+    venueName: f?.venueName ?? null,
+    functionStatus: f ? f.status : null,
+    notice: f?.latestNotice ?? null,
+    obtainedAt: s.obtained_at,
+    content: c && (c.text || c.image) ? c : null,
+  };
+}
+
 export function createPasaporte({ db, programacion, clock }) {
   const repo = pasaporteRepo(db);
 
@@ -151,23 +169,6 @@ export function createPasaporte({ db, programacion, clock }) {
         return [c.id, { text: c.text, image: img ? { url: `/api/participacion/passport/images/${img.id}`, alt: img.alt, credit: img.credit } : null }];
       }),
     );
-  }
-
-  function presentar(s, f, contenidos) {
-    const c = s.content_id ? contenidos.get(s.content_id) : null;
-    return {
-      id: s.id,
-      functionId: s.function_id,
-      activityId: f?.activityId ?? null,
-      title: f?.title ?? null,
-      date: f?.date ?? null,
-      startTime: f?.startTime ?? null,
-      venueName: f?.venueName ?? null,
-      functionStatus: f ? f.status : null,
-      notice: f?.latestNotice ?? null,
-      obtainedAt: s.obtained_at,
-      content: c && (c.text || c.image) ? c : null,
-    };
   }
 
   async function presentarUno(s, f) {

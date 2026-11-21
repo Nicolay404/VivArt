@@ -39,6 +39,20 @@ function emblema(s, grande = false) {
 
 const cancelada = (s) => s.functionStatus === 'cancelled';
 
+/** «dom, 22 nov 2026 · 17:00», o lo que se sepa. */
+function fechaDelSello(s) {
+  if (!s.date) return 'Fecha sin confirmar';
+  return s.startTime ? `${formatoFecha(s.date)} · ${s.startTime}` : formatoFecha(s.date);
+}
+
+/** Aviso de cancelación o de cambio de la función, si lo hay. */
+function avisoDelSello(s) {
+  if (!cancelada(s) && !s.notice) return null;
+  const clase = cancelada(s) ? 'error-caja' : 'alerta-caja';
+  const etiqueta = cancelada(s) ? 'Función cancelada. ' : 'Aviso: ';
+  return h('p', { class: `aviso ${clase}` }, h('strong', {}, etiqueta), s.notice?.text ?? 'Tu sello se conserva.');
+}
+
 function tarjetaSello(s) {
   return h(
     'li',
@@ -106,20 +120,13 @@ function detalleSello(s) {
     h(
       'ul',
       { class: 'sello-datos' },
-      h('li', {}, icono('calendario', 'icono-xs'), s.date ? `${formatoFecha(s.date)}${s.startTime ? ` · ${s.startTime}` : ''}` : 'Fecha sin confirmar'),
+      h('li', {}, icono('calendario', 'icono-xs'), fechaDelSello(s)),
       h('li', {}, icono('sede', 'icono-xs'), s.venueName ?? 'Sede sin confirmar'),
       h('li', {}, icono('check', 'icono-xs'), `Obtenido el ${formatoFechaHoraIso(s.obtainedAt)}`),
     ),
     // El texto breve se pinta como texto: nunca se interpreta como HTML.
     s.content?.text ? h('p', { class: 'sello-texto' }, s.content.text) : null,
-    cancelada(s) || s.notice
-      ? h(
-          'p',
-          { class: `aviso ${cancelada(s) ? 'error-caja' : 'alerta-caja'}` },
-          h('strong', {}, cancelada(s) ? 'Función cancelada. ' : 'Aviso: '),
-          s.notice?.text ?? 'Tu sello se conserva.',
-        )
-      : null,
+    avisoDelSello(s),
     s.activityId ? h('a', { href: `/actividad/${encodeURIComponent(s.activityId)}`, 'data-enlace': true, class: 'boton secundario' }, 'Ver la ficha de la actividad') : null,
   );
 }

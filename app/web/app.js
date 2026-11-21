@@ -2,7 +2,7 @@
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
-import { pantallaAgenda, pantallaFicha, pantallaProximamente } from './js/publico.js';
+import { pantallaAgenda, pantallaFicha } from './js/publico.js';
 import {
   registro,
   ingresar,
