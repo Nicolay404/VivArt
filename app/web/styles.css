@@ -2387,3 +2387,319 @@ h1, h2, h3,
 @media (min-width: 44rem) {
   .rejilla-accesibilidad { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+/* ==========================================================================
+   Mi recorrido y alternativas (spec 004: RF-16 a RF-18, RC-02, RC-03, RC-06)
+   Modo claro, paleta violeta/atardecer, accesible (RNF-01, RNF-03)
+   ========================================================================== */
+
+.hero-fila-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.boton-recorrido-acceso {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--marca-oscuro);
+  color: var(--superficie);
+  font-weight: 600;
+  border-radius: var(--radio-sm);
+  padding: 0.5rem 0.95rem;
+  text-decoration: none;
+}
+.boton-recorrido-acceso:hover {
+  background: var(--acento-hover);
+}
+
+.recorrido-pagina {
+  max-width: 54rem;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 3.5rem;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.recorrido-cabecera {
+  display: grid;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--borde);
+  padding-bottom: 1.25rem;
+}
+
+.recorrido-cabecera-top {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recorrido-cabecera-titulo-fila {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.recorrido-titulo {
+  margin: 0;
+  font-size: 1.85rem;
+  color: var(--marca-oscuro);
+}
+
+.recorrido-subtitulo {
+  margin: 0;
+  color: var(--suave);
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.recorrido-banner-cupo {
+  background: var(--superficie-suave);
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--texto);
+  line-height: 1.4;
+}
+
+.recorrido-banner-cupo svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.recorrido-dia-seccion {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.recorrido-dia-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-bottom: 2px solid var(--borde);
+  padding-bottom: 0.45rem;
+}
+
+.recorrido-dia-titulo {
+  margin: 0;
+  font-size: 1.2rem;
+  color: var(--marca-primario);
+}
+
+.recorrido-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.recorrido-tarjeta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: border-color 0.15s ease;
+}
+
+.recorrido-tarjeta.tarjeta-con-cruce {
+  border-color: var(--marca-calido);
+  border-width: 2px;
+}
+
+.alerta-cruce-horario {
+  background: #fff5ee;
+  color: #8f3412;
+  border-bottom: 1px solid #fbd0b8;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.86rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  line-height: 1.4;
+}
+
+.alerta-cruce-horario svg {
+  flex-shrink: 0;
+}
+
+.recorrido-tarjeta-cuerpo {
+  padding: 1rem 1.15rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.recorrido-tarjeta-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recorrido-hora-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--marca-primario);
+  background: var(--superficie-suave);
+  padding: 0.25rem 0.55rem;
+  border-radius: var(--radio-sm);
+}
+
+.recorrido-tarjeta-titulo {
+  margin: 0;
+  font-size: 1.15rem;
+}
+.recorrido-tarjeta-titulo a {
+  color: var(--texto);
+  text-decoration: none;
+}
+.recorrido-tarjeta-titulo a:hover {
+  text-decoration: underline;
+  color: var(--acento);
+}
+
+.recorrido-tarjeta-artistas {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--suave);
+}
+
+.recorrido-tarjeta-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--borde);
+}
+
+.horario-recorrido-accion {
+  margin-top: 0.45rem;
+}
+
+.recorrido-guardar-grupo {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.recorrido-aviso-cupo {
+  font-size: 0.82rem;
+  color: var(--suave);
+  font-style: italic;
+}
+
+.boton-guardar-recorrido {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.boton-quitar-recorrido {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.recorrido-vacio {
+  padding: 3rem 1.5rem;
+}
+
+.lista-alternativas {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tarjeta-alternativa {
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  padding: 0.85rem;
+  display: grid;
+  gap: 0.45rem;
+  background: var(--fondo);
+}
+
+.tarjeta-alternativa-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ---------- User Story 3: Avisos y estados en recorrido ---------- */
+
+.horario-aviso-caja {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+  border: 1px solid var(--alerta-borde);
+  border-radius: var(--radio-sm);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.horario-aviso-caja svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
+.horario-aviso-caja.aviso-cancelled {
+  background: var(--error-fondo);
+  color: var(--error);
+  border-color: var(--error-borde);
+}
+
+.recorrido-tarjeta.tarjeta-cancelada {
+  border-color: var(--error-borde);
+  background: #fffdfd;
+}
+
+.estado-reprogramada {
+  background: var(--alerta-fondo);
+  color: var(--alerta);
+  border-color: var(--alerta-borde);
+}
+
+.boton-alternativas {
+  background: var(--superficie-suave);
+  color: var(--marca-primario);
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  transition: all 0.15s ease;
+}
+
+.boton-alternativas:hover {
+  background: #f0eaf7;
+  border-color: var(--marca-primario);
+  color: var(--marca-primario);
+}
+
+
+
