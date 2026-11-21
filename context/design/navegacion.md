@@ -39,6 +39,7 @@ Los mockups no se editan en esta entrega. Cuando un mockup muestre algo distinto
 | Mapa | Foto de la sede en la tarjeta. | Foto **opcional**, subida por el administrador, con texto alternativo y fuente o autoría; sin foto la tarjeta no cambia (RF-13, M-09). |
 | Pasaporte | «5 de 12 sellos», 42 % y un casillero «Próximo sello». | «Mi pasaporte» muestra el total obtenido («5 sellos»), sin meta, porcentaje ni casillero bloqueado (RF-27). |
 | Rutas | «2 de 3 sellos» en una ruta. | Es correcto: el denominador pertenece a cada ruta (RF-29). |
+| Pasaporte | Pestañas «Rutas Culturales» e «Insignias» con contenido. | Hasta que exista el spec 007, la sección de rutas dice **«Próximamente»** (M-13). |
 | Todos | Fechas de octubre y nombres de funciones de ejemplo. | La programación sale del PDF y del catálogo publicado. |
 
 ## Pantallas sin mockup
