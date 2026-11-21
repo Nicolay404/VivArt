@@ -215,7 +215,7 @@ paths:
       summary: Cancelar con motivo y aviso (publicador o administrador)
       parameters: [{ $ref: '#/components/parameters/Id' }]
       requestBody: { content: { application/json: { schema: { type: object, required: [reason, notice], properties: { reason: { type: string }, notice: { type: string } } } } } }
-      responses: { '200': { description: Cancelada; sale de «¿Qué hay ahora?» } }
+      responses: { '200': { description: "Cancelada; sale de «¿Qué hay ahora?»" } }
 
   /panel/categories:
     post: { tags: [Catálogos], summary: Crear (administrador), responses: { '201': { description: Creada } } }
@@ -374,7 +374,7 @@ components:
       description: Los datos no confirmados llegan como null y en `pending` se listan sus nombres para mostrarlos como pendientes (FR-004)
       properties:
         id: { type: string }
-        shareUrl: { type: string, description: Ruta pública de la ficha, p. ej. /actividad/{id} }
+        shareUrl: { type: string, description: "Ruta pública de la ficha, p. ej. /actividad/{id}" }
         title: { type: string }
         artists: { type: array, items: { type: string } }
         organization: { type: [string, 'null'] }
