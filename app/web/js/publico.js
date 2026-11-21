@@ -473,7 +473,22 @@ export async function pantallaAgenda() {
       h('p', { class: 'hero-eyebrow' }, 'Festival Internacional de Artes Vivas de Loja'),
       h('h1', { class: 'hero-titulo' }, 'Agenda cultural'),
       h('p', { class: 'hero-subtitulo' }, 'Consulta obras, conciertos, exposiciones y recorridos confirmados en hora local de Loja.'),
-      h('div', { class: 'hero-pestanas', role: 'group', 'aria-label': 'Modo de consulta' }, btnTodo, btnAhora),
+      h(
+        'div',
+        { class: 'hero-fila-acciones' },
+        h('div', { class: 'hero-pestanas', role: 'group', 'aria-label': 'Modo de consulta' }, btnTodo, btnAhora),
+        h(
+          'a',
+          {
+            href: '/recorrido',
+            'data-enlace': true,
+            class: 'boton boton-recorrido-acceso',
+            'aria-label': 'Ir a Mi recorrido guardado',
+          },
+          icono('calendario', 'icono-sm'),
+          'Mi recorrido',
+        ),
+      ),
       zonaReloj,
     ),
   );

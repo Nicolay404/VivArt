@@ -35,7 +35,7 @@ after(() => {
 });
 
 test('SC-002: sirve la web y las pantallas de la aplicación sin exigir sesión', async () => {
-  for (const ruta of ['/', '/registro', '/ingresar', '/perfil']) {
+  for (const ruta of ['/', '/registro', '/ingresar', '/perfil', '/recorrido']) {
     const r = await fetch(urlEdge + ruta);
     assert.equal(r.status, 200, ruta);
     assert.match(r.headers.get('content-type'), /text\/html/);
