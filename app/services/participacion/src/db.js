@@ -115,6 +115,62 @@ CREATE TRIGGER history_sin_cambios BEFORE UPDATE OR DELETE ON history
 DROP TRIGGER IF EXISTS history_sin_vaciar ON history;
 CREATE TRIGGER history_sin_vaciar BEFORE TRUNCATE ON history
   FOR EACH STATEMENT EXECUTE FUNCTION history_solo_anexar();
+
+-- Spec 006 (Pasaporte Vivo y sellos). Ver specs/006-pasaporte-y-sellos/data-model.md.
+-- Ventanas en hora local de Loja 'AAAA-MM-DD HH:MM'; instantes en ISO UTC.
+CREATE TABLE IF NOT EXISTS passport_qrs (
+  id TEXT PRIMARY KEY,
+  function_id TEXT NOT NULL,
+  ref_hash TEXT NOT NULL UNIQUE,
+  status TEXT NOT NULL CHECK (status IN ('inactive', 'active', 'replaced')),
+  inactive_cause TEXT CHECK (inactive_cause IS NULL OR inactive_cause IN ('manual', 'function_changed')),
+  window_start TEXT CHECK (window_start IS NULL OR window_start ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$'),
+  window_end TEXT CHECK (window_end IS NULL OR window_end ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$'),
+  confirmed_for JSONB,
+  created_at TEXT NOT NULL,
+  created_by TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  updated_by TEXT NOT NULL,
+  CHECK ((window_start IS NULL) = (window_end IS NULL)),
+  CHECK (window_start IS NULL OR window_end > window_start),
+  -- Activar exige ventana confirmada (M-10).
+  CHECK (status <> 'active' OR (window_start IS NOT NULL AND confirmed_for IS NOT NULL))
+);
+-- Un solo QR vigente por función (FR-014, M-13).
+CREATE UNIQUE INDEX IF NOT EXISTS passport_qrs_vigente ON passport_qrs (function_id) WHERE status <> 'replaced';
+
+CREATE TABLE IF NOT EXISTS stamp_images (
+  id TEXT PRIMARY KEY,
+  mime TEXT NOT NULL CHECK (mime IN ('image/jpeg', 'image/png', 'image/webp')),
+  bytes BYTEA NOT NULL CHECK (octet_length(bytes) <= 1048576),
+  alt TEXT NOT NULL,
+  credit TEXT NOT NULL,
+  sha256 TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  created_by TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS stamp_contents (
+  id TEXT PRIMARY KEY,
+  function_id TEXT NOT NULL,
+  version INTEGER NOT NULL CHECK (version > 0),
+  text TEXT CHECK (text IS NULL OR char_length(text) <= 280),
+  image_id TEXT REFERENCES stamp_images(id) ON DELETE RESTRICT,
+  created_at TEXT NOT NULL,
+  created_by TEXT NOT NULL,
+  UNIQUE (function_id, version)
+);
+
+CREATE TABLE IF NOT EXISTS stamps (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  function_id TEXT NOT NULL,
+  qr_id TEXT NOT NULL REFERENCES passport_qrs(id),
+  content_id TEXT REFERENCES stamp_contents(id) ON DELETE RESTRICT,
+  obtained_at TEXT NOT NULL,
+  -- Un sello por persona y función (RC-05, RNF-06).
+  UNIQUE (user_id, function_id)
+);
 `;
 
 const NOMBRE_ESQUEMA = /^[a-z_][a-z0-9_]{0,62}$/;
@@ -124,11 +180,11 @@ const NOMBRE_ESQUEMA = /^[a-z_][a-z0-9_]{0,62}$/;
  * `schema` (opcional) aísla las tablas en un esquema propio: lo usan las pruebas.
  * Devuelve: `query` (filas), `run` (filas afectadas), `transaction(clave, trabajo)` y `close`.
  */
-export async function openDb({ url, schema } = {}) {
+export async function openDb({ url, schema, max = 10, idleTimeoutMillis = 10000 } = {}) {
   if (!url) throw new Error('Falta DATABASE_URL: el servicio de participación necesita su base de datos PostgreSQL.');
   if (schema !== undefined && !NOMBRE_ESQUEMA.test(schema)) throw new Error('Nombre de esquema no válido.');
 
-  const pool = new pg.Pool({ connectionString: url, max: 10, ...(schema ? { options: `-c search_path=${schema}` } : {}) });
+  const pool = new pg.Pool({ connectionString: url, max, idleTimeoutMillis, ...(schema ? { options: `-c search_path=${schema}` } : {}) });
 
   const cliente = await pool.connect();
   try {

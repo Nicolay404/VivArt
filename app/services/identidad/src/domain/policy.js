@@ -19,6 +19,8 @@ const ACCIONES = {
   // Spec 002: reprogramar o cancelar funciones con aviso, gestionar catálogos y archivar actividades.
   'schedule.change': { roles: ['publicador', 'administrador'] },
   'catalog.manage': { roles: ['administrador'] },
+  // Spec 006: QR, ventana y contenido del sello del Pasaporte.
+  'passport.manage': { roles: ['administrador'] },
   'activity.archive': { roles: ['administrador'] },
   // Spec 005: cancelar una función con entradas vendidas es solo del administrador (FR-030).
   'schedule.cancel_with_sales': { roles: ['administrador'] },

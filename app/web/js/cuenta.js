@@ -242,6 +242,10 @@ export async function retorno({ persona, navegar }) {
     d.type === 'compra' && d.canProceed
       ? h('a', { href: '/carrito', 'data-enlace': true, class: 'boton' }, 'Volver al carrito')
       : null,
+    // Canje del Pasaporte (spec 006): vuelve al enlace del QR, que se revalida al abrirlo.
+    d.type === 'canje' && d.canProceed && /^\/pasaporte\/canje\/[A-Za-z0-9_-]+$/.test(d.destination ?? '')
+      ? h('a', { href: d.destination, 'data-enlace': true, class: 'boton' }, 'Volver al canje')
+      : null,
     !d.canProceed
       ? h(
           'p',

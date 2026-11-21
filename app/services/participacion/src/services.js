@@ -8,11 +8,13 @@ import { createOrders } from './domain/orders.js';
 import { createTickets } from './domain/tickets.js';
 import { createAccess } from './domain/access.js';
 import { createAdmin } from './domain/admin.js';
+import { createPasaporte, createRefs } from './domain/pasaporte.js';
+import { createPasaporteAdmin } from './domain/pasaporte-admin.js';
 
 /** Ensambla la lógica del servicio. Identidad y programación se pueden sustituir en las pruebas. */
 export async function createServices({ config, db, identidad, programacion }) {
   const codes = createCodes(config.ticketKey);
-  db ??= await openDb({ url: config.databaseUrl, schema: config.dbSchema });
+  db ??= await openDb({ url: config.databaseUrl, schema: config.dbSchema, max: config.dbPoolMax, idleTimeoutMillis: config.dbPoolIdleMs });
   identidad ??= createIdentidadClient({ url: config.identidadUrl, serviceKey: config.identidadServiceKey, timeoutMs: config.timeoutMs });
   programacion ??= createProgramacionClient({ url: config.programacionUrl, serviceKey: config.identidadServiceKey, timeoutMs: config.timeoutMs });
   const clock = config.clock;
@@ -23,6 +25,10 @@ export async function createServices({ config, db, identidad, programacion }) {
   const tickets = createTickets({ db, programacion, codes });
   const access = createAccess({ db, programacion, permisos, clock });
   const admin = createAdmin({ db, programacion, permisos, clock });
+  // Pasaporte (spec 006): el ref del QR se deriva de TICKET_KEY con otra etiqueta, sin secretos nuevos.
+  const refs = createRefs(config.ticketKey);
+  const pasaporte = createPasaporte({ db, programacion, clock });
+  const pasaporteAdmin = createPasaporteAdmin({ db, programacion, permisos, refs, clock, publicBaseUrl: config.publicBaseUrl });
 
-  return { db, identidad, programacion, permisos, codes, cart, orders, tickets, access, admin, clock };
+  return { db, identidad, programacion, permisos, codes, cart, orders, tickets, access, admin, refs, pasaporte, pasaporteAdmin, clock };
 }

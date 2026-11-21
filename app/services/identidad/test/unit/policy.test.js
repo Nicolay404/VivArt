@@ -103,3 +103,12 @@ test('spec 005: cancelar con entradas vendidas, configurar la venta y validar el
   assert.equal(authorize(acceso, 'access.validate', { functionId: 'f1' }).allowed, true);
   assert.equal(authorize(acceso, 'access.validate', { functionId: 'f2' }).reason, 'function_not_assigned');
 });
+
+test('spec 006: solo el administrador gestiona el Pasaporte (passport.manage)', () => {
+  assert.equal(puede(persona(['administrador']), 'passport.manage'), true);
+  for (const rol of ['editor', 'publicador', 'personal_acceso']) {
+    const r = authorize(persona([rol]), 'passport.manage');
+    assert.equal(r.allowed, false, rol);
+    assert.equal(r.missingRole, 'administrador');
+  }
+});

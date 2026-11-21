@@ -53,7 +53,11 @@ docker compose exec programacion node bin/cargar-ejemplo.js
 
 | Fecha | Comprobación | Resultado |
 |---|---|---|
-| — | Pendiente de implementación (`/speckit-tasks` y `/speckit-implement`) | — |
+| 2026-11-21 | `npm test` en `app/` | 298 pruebas: 114 de identidad (1 nueva: `passport.manage`), 78 de programación, 64 de participación (24 nuevas del Pasaporte: 6 unitarias, 8 de canje y colección, 8 del panel y 2 de concurrencia), 15 de la entrada común (1 nueva de punta a punta con los tres servicios) y 27 de la web. Todas pasan |
+| 2026-11-21 | Concurrencia | 20 solicitudes simultáneas de la misma persona con el mismo enlace: 1 sello y el mismo id en todas las respuestas |
+| 2026-11-21 | Punta a punta | Con los servicios reales, reprogramar la función en programación desactiva el canje en participación sin avisos entre servicios; el sello anterior muestra la fecha vigente y el aviso |
+| 2026-11-21 | Demo con contenedores | Tablas nuevas creadas sin perder datos; prueba de humo correcta con las dos comprobaciones nuevas |
+| 2026-11-21 | Navegador (Chrome, protocolo de depuración) | Panel a 1440 px: generar QR, activar sin ventana rechazado, error de ventana en su campo, activar, QR con enlace y descarga en SVG. Público a 360 px: canje sin sesión invita a ingresar; con sesión entrega el sello; al repetir, el mismo; una entrada abierta como sello da «Tipo de código incorrecto»; Mi pasaporte «1 sello» sin meta y con rutas «Próximamente»; ancho 360 px, 0 errores, 0 peticiones de ubicación. Retorno: enlace sin sesión → ingresar → /retorno → «Volver al canje» → sello |
 
 ## Qué NO hace este spec
 

@@ -46,10 +46,10 @@ Este documento es la decisión arquitectónica compartida por los ocho specs. Cu
 | Entrada HTTP común | Por separado |
 | Base de datos de demo | Una instancia compartida con **tres bases lógicas**, una por servicio, con credenciales propias |
 
-## Flujos críticos identificados (no implementados todavía)
+## Flujos críticos
 
 - **Último cupo (RF-20, RC-05):** el servicio de participación es el único dueño del cupo. La retención y la venta se resuelven dentro de ese servicio con una transacción y una restricción en sus propios datos, no en la interfaz.
-- **Sello único (RF-26, RC-05):** el servicio de participación garantiza un sello por persona y función con una restricción de unicidad; repetir el canje devuelve el mismo sello.
+- **Sello único (RF-26, RC-05):** el servicio de participación garantiza un sello por persona y función con una restricción de unicidad; repetir el canje devuelve el mismo sello. Implementado en el spec 006.
 - **Retorno a la acción original (RF-03):** lo describe la vista de comportamiento. El servicio de identidad solo garantiza el regreso y la revalidación; **no ejecuta el pago ni el canje**.
 
 ## Propuestas técnicas reversibles (no son requisitos aprobados)

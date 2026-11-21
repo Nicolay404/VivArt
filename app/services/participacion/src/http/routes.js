@@ -9,7 +9,7 @@ const cuerpo = (request) => (request.body && typeof request.body === 'object' &&
 const huella = (texto) => createHash('sha256').update(String(texto)).digest();
 
 export function registerRoutes(app, servicios, config) {
-  const { cart, orders, tickets, access, admin } = servicios;
+  const { cart, orders, tickets, access, admin, pasaporte, pasaporteAdmin } = servicios;
   const sesion = createSession(servicios.identidad);
 
   // ---------- Público (FR-001 a FR-006, FR-041) ----------
@@ -47,6 +47,39 @@ export function registerRoutes(app, servicios, config) {
     const codigo = cuerpo(request).code;
     return access.validar(s, request.params.id, typeof codigo === 'string' ? codigo.slice(0, 500) : '');
   });
+
+  // ---------- Pasaporte Vivo (spec 006) ----------
+  // Reclamar: el ref se comprueba antes que la sesión, así un enlace inválido no pide identificarse.
+  app.post('/passport/claims', async (request, reply) => {
+    const ref = cuerpo(request).ref;
+    const r = await pasaporte.reclamar(typeof ref === 'string' ? ref.slice(0, 200) : '', () => sesion(request));
+    return reply.code(r.created ? 201 : 200).send(r);
+  });
+  app.get('/passport', async (request) => pasaporte.coleccion(await sesion(request)));
+  app.get('/passport/stamps/:id', async (request) => pasaporte.sello(await sesion(request), request.params.id));
+  app.get('/passport/images/:id', async (request, reply) => {
+    const img = await pasaporte.imagen(request.params.id);
+    return reply.type(img.mime).send(img.bytes);
+  });
+
+  app.get('/panel/passport', async (request) => {
+    const ids = String(request.query?.functionIds ?? '').split(',').map((s) => s.trim()).filter((s) => s && s.length <= 100);
+    return pasaporteAdmin.estados(await sesion(request), ids);
+  });
+  app.get('/panel/functions/:id/passport', async (request) => pasaporteAdmin.ver(await sesion(request), request.params.id));
+  app.post('/panel/functions/:id/passport/qr', async (request, reply) =>
+    reply.code(201).send(await pasaporteAdmin.generar(await sesion(request), request.params.id)),
+  );
+  app.post('/panel/functions/:id/passport/qr/replace', async (request) => pasaporteAdmin.reemplazar(await sesion(request), request.params.id));
+  app.put('/panel/functions/:id/passport/window', async (request) =>
+    pasaporteAdmin.ventana(await sesion(request), request.params.id, cuerpo(request)),
+  );
+  app.post('/panel/functions/:id/passport/activate', async (request) => pasaporteAdmin.activar(await sesion(request), request.params.id));
+  app.post('/panel/functions/:id/passport/deactivate', async (request) => pasaporteAdmin.desactivar(await sesion(request), request.params.id));
+  // Solo esta ruta recibe imágenes (hasta 1 MB, ~1,4 MB en base64): el resto del servicio sigue limitado a 64 KB.
+  app.put('/panel/functions/:id/passport/content', { bodyLimit: 2 * 1024 * 1024 }, async (request) =>
+    pasaporteAdmin.contenido(await sesion(request), request.params.id, cuerpo(request)),
+  );
 
   // ---------- Interno: para el servicio de programación (FR-042) ----------
   function servicioAutenticado(request) {
