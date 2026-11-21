@@ -1,4 +1,4 @@
-// Enrutador principal de VIVART (specs 001, 002 y 005).
+// Enrutador principal de VIVART (specs 001, 002, 003 y 005).
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
@@ -130,14 +130,22 @@ async function resolverRuta(ruta) {
 
   if (ruta === '/' || ruta === '/agenda') return { ancho: 'completo', contenido: await pantallaAgenda() };
   if (ruta === '/mapa') {
-    return {
-      ancho: 'normal',
-      contenido: pantallaProximamente(
-        'Mapa del Festival',
-        'Muy pronto podrás explorar el mapa isométrico con las sedes verificadas de Loja, buscar sedes y consultar las funciones del día.',
-        'Esta sección se construye en el spec 003 (Mapa de sedes).',
-      ),
-    };
+    // El mapa se importa solo al abrir la pestaña: la Agenda y las fichas no lo esperan (spec 003, FR-004).
+    try {
+      const { pantallaMapa } = await import('./js/mapa.js');
+      return { ancho: 'completo', contenido: await pantallaMapa() };
+    } catch {
+      return {
+        ancho: 'normal',
+        contenido: h(
+          'section',
+          { class: 'estado-vacio estado-error', role: 'alert' },
+          h('h1', {}, 'No pudimos cargar el mapa'),
+          h('p', {}, 'La Agenda y las fichas siguen disponibles mientras tanto.'),
+          h('a', { href: '/agenda', 'data-enlace': true, class: 'boton' }, 'Ir a la Agenda'),
+        ),
+      };
+    }
   }
   if (ruta === '/pasaporte') {
     return {

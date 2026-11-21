@@ -29,6 +29,29 @@ export function h(etiqueta, atributos = {}, ...hijos) {
 }
 
 /** Construye un icono SVG limpio y compatible con CSP (sin atributos de estilo ni cadenas de marcado). */
+// Iconos del mapa de sedes (spec 003) como tabla de trazos: [etiqueta, atributos].
+const TRAZOS_MAPA = {
+  mas: [['line', { x1: 12, y1: 5, x2: 12, y2: 19 }], ['line', { x1: 5, y1: 12, x2: 19, y2: 12 }]],
+  menos: [['line', { x1: 5, y1: 12, x2: 19, y2: 12 }]],
+  centrar: [['path', { d: 'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5' }]],
+  lista: [
+    ['line', { x1: 9, y1: 6, x2: 20, y2: 6 }],
+    ['line', { x1: 9, y1: 12, x2: 20, y2: 12 }],
+    ['line', { x1: 9, y1: 18, x2: 20, y2: 18 }],
+    ['circle', { cx: 4.5, cy: 6, r: 1 }],
+    ['circle', { cx: 4.5, cy: 12, r: 1 }],
+    ['circle', { cx: 4.5, cy: 18, r: 1 }],
+  ],
+  mapa: [
+    ['path', { d: 'M3 6.5 9 4l6 2.5L21 4v13.5L15 20l-6-2.5L3 20z' }],
+    ['line', { x1: 9, y1: 4, x2: 9, y2: 17.5 }],
+    ['line', { x1: 15, y1: 6.5, x2: 15, y2: 20 }],
+  ],
+  accesible: [['circle', { cx: 12, cy: 4.5, r: 1.7 }], ['path', { d: 'M6 8.5h12M12 8.5v5.5M12 14l-3.5 6.5M12 14l3.5 6.5' }]],
+  bano: [['rect', { x: 4, y: 3, width: 16, height: 18, rx: 2 }], ['circle', { cx: 12, cy: 8, r: 1.6 }], ['path', { d: 'M9 17v-4.5a3 3 0 0 1 6 0V17' }]],
+  externo: [['path', { d: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5' }]],
+};
+
 export function icono(nombre, clase = 'icono') {
   const s = document.createElementNS(SVG_NS, 'svg');
   s.setAttribute('viewBox', '0 0 24 24');
@@ -45,6 +68,11 @@ export function icono(nombre, clase = 'icono') {
     for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, String(v));
     s.append(n);
   };
+
+  if (Object.hasOwn(TRAZOS_MAPA, nombre)) {
+    for (const [tag, attrs] of TRAZOS_MAPA[nombre]) trazo(tag, attrs);
+    return s;
+  }
 
   switch (nombre) {
     case 'calendario':

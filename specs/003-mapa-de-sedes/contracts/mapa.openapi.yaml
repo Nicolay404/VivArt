@@ -1,0 +1,333 @@
+openapi: 3.1.0
+info:
+  title: VIVART - Mapa de sedes (servicio de programación)
+  version: 1.0.0
+  description: >
+    Spec 003. Amplía el servicio de programación (contrato base en specs/002-programacion-y-publicacion/contracts/).
+    Desde el navegador se llama con el prefijo /api/programacion (entrada común).
+    Las rutas /map/* son públicas y no usan sesión ni piden ubicación.
+    Las rutas /panel/venues/* usan la cookie de sesión de identidad (vivart_sid) y exigen la acción catalog.manage
+    (administrador), verificada en el servidor con fallo cerrado (503 si identidad no responde).
+    Las operaciones que cambian estado exigen Content-Type application/json y un Origin permitido; la foto se envía en base64.
+    Los errores tienen la forma Error del contrato del spec 002. Fechas en hora local de Loja (AAAA-MM-DD).
+    Ningún cambio de este contrato crea avisos públicos (RC-06).
+servers:
+  - url: /api/programacion
+tags:
+  - name: Mapa público
+  - name: Sedes (panel)
+paths:
+  /map:
+    get:
+      tags: [Mapa público]
+      summary: Ilustración vigente, días elegibles y reloj de referencia (FR-008, FR-028)
+      responses:
+        '200':
+          description: Datos generales del mapa
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [reference, illustration, days]
+                properties:
+                  reference: { $ref: '#/components/schemas/Reference' }
+                  illustration: { $ref: '#/components/schemas/Illustration' }
+                  days:
+                    type: array
+                    items: { type: string, format: date }
+                    description: Días con al menos una función publicada y no cancelada de la edición activa (M-06)
+  /map/venues:
+    get:
+      tags: [Mapa público]
+      summary: Sedes registradas con búsqueda y filtros combinados con «y» (FR-005 a FR-010, FR-015, FR-027)
+      parameters:
+        - { name: q, in: query, schema: { type: string, maxLength: 100 }, description: 'Parte del nombre de la sede; sin distinguir mayúsculas ni tildes. Solo busca sedes, nunca funciones' }
+        - { name: day, in: query, schema: { type: string, format: date }, description: 'Activa «Funciones del día» para ese día. La web envía reference.date por defecto' }
+        - { name: stepFree, in: query, schema: { type: boolean }, description: Solo sedes con «acceso sin escalones» confirmado }
+        - { name: accessibleToilet, in: query, schema: { type: boolean }, description: Solo sedes con «baño accesible» confirmado }
+      responses:
+        '200':
+          description: >
+            Sin filtros: todas las sedes registradas (con o sin funciones, con o sin marcador, incluidos los recorridos).
+            Con day: solo las que tienen al menos una función programada ese día; las franjas no cuentan.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [reference, items]
+                properties:
+                  reference: { $ref: '#/components/schemas/Reference' }
+                  day: { type: [string, 'null'], format: date }
+                  dayHasFunctions: { type: [boolean, 'null'], description: 'Con day: false si ese día no hay funciones (por ejemplo, hoy fuera de la edición)' }
+                  items: { type: array, items: { $ref: '#/components/schemas/VenueSummary' } }
+        '422': { $ref: '#/components/responses/Error' }
+  /map/venues/{id}:
+    get:
+      tags: [Mapa público]
+      summary: Ficha de una sede con sus funciones (FR-011 a FR-013, FR-025)
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - { name: day, in: query, schema: { type: string, format: date }, description: 'Con «Funciones del día» activo: solo las funciones de ese día' }
+      responses:
+        '200':
+          description: Sede con sus funciones desde hoy (hora de Loja), o solo las del día pedido; las canceladas llegan marcadas
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/VenueSummary'
+                  - type: object
+                    required: [functions]
+                    properties:
+                      reference: { $ref: '#/components/schemas/Reference' }
+                      functions: { type: array, items: { $ref: '#/components/schemas/VenueFunction' } }
+        '404': { $ref: '#/components/responses/Error' }
+  /map/venues/{id}/photo:
+    get:
+      tags: [Mapa público]
+      summary: Foto de la sede (FR-025)
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - { name: v, in: query, schema: { type: string }, description: Huella de la foto; cambia al reemplazarla }
+      responses:
+        '200':
+          description: Bytes de la foto con su tipo
+          content:
+            image/jpeg: {}
+            image/png: {}
+            image/webp: {}
+        '404': { $ref: '#/components/responses/Error' }
+
+  /panel/venues/{id}:
+    get:
+      tags: [Sedes (panel)]
+      summary: Sede completa para el administrador, con fuentes y fechas de verificación
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Sede, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+        '401': { $ref: '#/components/responses/Error' }
+        '403': { $ref: '#/components/responses/Error' }
+        '404': { $ref: '#/components/responses/Error' }
+    put:
+      tags: [Sedes (panel)]
+      summary: Corregir nombre, tipo, dirección, descripción o marcador sin aviso público (spec 002 FR-025; ampliado)
+      description: El marcador se valida contra la ilustración vigente. Pasar una sede con destino a recorrido da 409 hasta quitar el destino.
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                kind: { type: string, enum: [place, route] }
+                address: { type: [string, 'null'] }
+                routeDescription: { type: [string, 'null'] }
+                marker: { oneOf: [{ $ref: '#/components/schemas/Marker' }, { type: 'null' }] }
+      responses:
+        '200': { description: Corregida, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+        '409': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /panel/venues/{id}/destination:
+    put:
+      tags: [Sedes (panel)]
+      summary: Registrar o corregir el destino verificado de «Cómo llegar» (FR-012, FR-023)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [lat, lng, source, verifiedOn]
+              properties:
+                lat: { type: number, minimum: -90, maximum: 90 }
+                lng: { type: number, minimum: -180, maximum: 180 }
+                source: { type: string, minLength: 3, maxLength: 500 }
+                verifiedOn: { type: string, format: date, description: No posterior a hoy }
+      responses:
+        '200': { description: Guardado, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [Sedes (panel)]
+      summary: Quitar el destino («Cómo llegar» deja de ofrecerse)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Quitado, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+  /panel/venues/{id}/accessibility/{feature}:
+    put:
+      tags: [Sedes (panel)]
+      summary: Registrar una característica de accesibilidad (FR-013, FR-018, FR-024)
+      parameters:
+        - $ref: '#/components/parameters/Id'
+        - { name: feature, in: path, required: true, schema: { $ref: '#/components/schemas/Feature' } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status: { $ref: '#/components/schemas/FeatureStatus' }
+                source: { type: [string, 'null'], maxLength: 500, description: Obligatoria con confirmed o unavailable }
+                verifiedOn: { type: [string, 'null'], format: date, description: Obligatoria con confirmed o unavailable; no posterior a hoy }
+                note: { type: [string, 'null'], maxLength: 1000, description: Complementaria; no controla el filtro }
+      responses:
+        '200': { description: Guardada, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+        '404': { $ref: '#/components/responses/Error' }
+        '422': { $ref: '#/components/responses/Error' }
+  /panel/venues/{id}/photo:
+    put:
+      tags: [Sedes (panel)]
+      summary: Subir o reemplazar la foto (FR-025, M-09)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dataBase64, alt, credit]
+              properties:
+                dataBase64: { type: string, description: 'JPEG, PNG o WebP de hasta 1 MB, en base64 sin el prefijo data:' }
+                alt: { type: string, minLength: 3, maxLength: 300, description: Texto alternativo }
+                credit: { type: string, minLength: 3, maxLength: 300, description: Fuente o autoría (propia o con licencia que permita reutilizarla) }
+      responses:
+        '200': { description: Guardada, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+        '422': { $ref: '#/components/responses/Error' }
+    delete:
+      tags: [Sedes (panel)]
+      summary: Quitar la foto (la tarjeta vuelve a mostrarse sin foto)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Quitada, content: { application/json: { schema: { $ref: '#/components/schemas/VenueAdmin' } } } }
+  /panel/venues/{id}/history:
+    get:
+      tags: [Sedes (panel)]
+      summary: Historial de la sede, con quién, cuándo y qué cambió (FR-017, SC-009)
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200':
+          description: Entradas del historial, de la más reciente a la más antigua
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        at: { type: string }
+                        actorId: { type: string }
+                        action: { type: string }
+                        details: { type: object }
+
+components:
+  parameters:
+    Id: { name: id, in: path, required: true, schema: { type: string } }
+  responses:
+    Error: { description: Error (forma Error del spec 002), content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  schemas:
+    Error:
+      type: object
+      required: [error, message]
+      properties:
+        error: { type: string, description: 'validation, unauthenticated, forbidden, not_found, has_destination, identity_unavailable…' }
+        message: { type: string }
+        fields: { type: object, additionalProperties: { type: string } }
+    Reference:
+      type: object
+      description: Reloj común (contrato del spec 002)
+      properties:
+        now: { type: string }
+        date: { type: string, format: date }
+        time: { type: string }
+        timeZone: { const: America/Guayaquil }
+        fixed: { type: boolean }
+    Illustration:
+      type: object
+      required: [id, src, width, height, provisional]
+      properties:
+        id: { type: string }
+        src: { type: string, description: Ruta del archivo en la web }
+        width: { type: integer }
+        height: { type: integer }
+        provisional: { type: boolean, description: Si es true, la web muestra «Ilustración provisional» }
+    Marker:
+      type: object
+      required: [illustrationId, x, y]
+      properties:
+        illustrationId: { type: string, description: Debe ser el id de la ilustración vigente }
+        x: { type: number, minimum: 0, maximum: 1 }
+        y: { type: number, minimum: 0, maximum: 1 }
+    Feature: { type: string, enum: [step_free, accessible_toilet] }
+    FeatureStatus: { type: string, enum: [confirmed, unavailable, unconfirmed] }
+    PublicFeature:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/FeatureStatus' }
+        note: { type: [string, 'null'] }
+    Photo:
+      type: object
+      required: [url, alt, credit]
+      properties:
+        url: { type: string, description: '/api/programacion/map/venues/{id}/photo?v={huella}' }
+        alt: { type: string }
+        credit: { type: string }
+    VenueSummary:
+      type: object
+      required: [id, name, kind, marker, directionsUrl, accessibility, photo]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        kind: { type: string, enum: [place, route] }
+        address: { type: [string, 'null'], description: 'null: la web muestra «Dirección por confirmar» (lugares) o routeDescription (recorridos)' }
+        routeDescription: { type: [string, 'null'] }
+        marker: { oneOf: [{ $ref: '#/components/schemas/Marker' }, { type: 'null' }], description: null si no tiene marcador en la ilustración vigente }
+        directionsUrl: { type: [string, 'null'], description: 'Enlace de Google Maps a las coordenadas verificadas; null sin destino verificado o en recorridos' }
+        accessibility:
+          type: object
+          required: [stepFree, accessibleToilet]
+          properties:
+            stepFree: { $ref: '#/components/schemas/PublicFeature' }
+            accessibleToilet: { $ref: '#/components/schemas/PublicFeature' }
+        photo: { oneOf: [{ $ref: '#/components/schemas/Photo' }, { type: 'null' }] }
+        dayFunctionCount: { type: [integer, 'null'], description: Con day, funciones programadas de ese día }
+    VenueFunction:
+      type: object
+      properties:
+        id: { type: string }
+        activityId: { type: string, description: 'Enlace a /actividad/{activityId}' }
+        title: { type: string }
+        date: { type: string, format: date }
+        startTime: { type: string }
+        endTime: { type: [string, 'null'] }
+        status: { type: string, enum: [scheduled, cancelled], description: 'cancelled: la web muestra «Cancelada»' }
+        timeStatus: { type: string, enum: [upcoming, in_progress, start_passed, finished, cancelled] }
+    VenueAdmin:
+      allOf:
+        - $ref: '#/components/schemas/VenueSummary'
+        - type: object
+          properties:
+            storedMarker: { type: [object, 'null'], description: Marcador guardado aunque sea de otra ilustración }
+            destination:
+              type: [object, 'null']
+              properties:
+                lat: { type: number }
+                lng: { type: number }
+                source: { type: string }
+                verifiedOn: { type: string, format: date }
+            accessibilityDetail:
+              type: object
+              additionalProperties:
+                type: object
+                properties:
+                  status: { $ref: '#/components/schemas/FeatureStatus' }
+                  source: { type: [string, 'null'] }
+                  verifiedOn: { type: [string, 'null'], format: date }
+                  note: { type: [string, 'null'] }
+                  updatedAt: { type: [string, 'null'] }

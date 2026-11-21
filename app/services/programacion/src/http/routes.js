@@ -11,7 +11,7 @@ const ACCESOS = new Set(['free', 'paid', 'unconfirmed']);
 const textoParam = (v, max = 200) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : undefined);
 
 export function registerRoutes(app, servicios, config) {
-  const { agenda, catalogs, editorial, changes, imports, permisos } = servicios;
+  const { agenda, catalogs, editorial, changes, imports, mapa, sedes, permisos } = servicios;
   const sesion = createSession(servicios.identidad);
 
   // ---------- Público (FR-001 a FR-007) ----------
@@ -31,6 +31,23 @@ export function registerRoutes(app, servicios, config) {
   app.get('/categories', async () => ({ items: await catalogs.list('categories') }));
   app.get('/venues', async () => ({ items: await catalogs.list('venues') }));
   app.get('/editions', async () => ({ items: await catalogs.list('editions') }));
+
+  // ---------- Mapa de sedes (spec 003): público, sin sesión ni ubicación ----------
+  app.get('/map', async () => mapa.datos());
+  app.get('/map/venues', async (request) => {
+    const q = request.query ?? {};
+    return mapa.sedes({
+      q: textoParam(q.q, 100),
+      day: textoParam(q.day, 10),
+      stepFree: q.stepFree,
+      accessibleToilet: q.accessibleToilet,
+    });
+  });
+  app.get('/map/venues/:id', async (request) => mapa.sede(request.params.id, { day: textoParam(request.query?.day, 10) }));
+  app.get('/map/venues/:id/photo', async (request, reply) => {
+    const foto = await mapa.foto(request.params.id);
+    return reply.type(foto.mime).send(foto.bytes);
+  });
 
   // ---------- Panel editorial ----------
   app.get('/panel/activities', async (request) => {
@@ -73,6 +90,17 @@ export function registerRoutes(app, servicios, config) {
       return catalogs.update(s.userId, tabla, request.params.id, cuerpo(request));
     });
   }
+
+  // ---------- Sedes del mapa (spec 003): solo administrador, sin aviso público ----------
+  app.get('/panel/venues/:id', async (request) => sedes.ver(await sesion(request), request.params.id));
+  app.put('/panel/venues/:id/destination', async (request) => sedes.guardarDestino(await sesion(request), request.params.id, cuerpo(request)));
+  app.delete('/panel/venues/:id/destination', async (request) => sedes.quitarDestino(await sesion(request), request.params.id));
+  app.put('/panel/venues/:id/accessibility/:feature', async (request) =>
+    sedes.guardarAccesibilidad(await sesion(request), request.params.id, request.params.feature, cuerpo(request)),
+  );
+  app.put('/panel/venues/:id/photo', async (request) => sedes.guardarFoto(await sesion(request), request.params.id, cuerpo(request)));
+  app.delete('/panel/venues/:id/photo', async (request) => sedes.quitarFoto(await sesion(request), request.params.id));
+  app.get('/panel/venues/:id/history', async (request) => sedes.historial(await sesion(request), request.params.id));
 
   // ---------- Carga (FR-020 a FR-024, FR-031, FR-033) ----------
   app.post('/panel/imports', async (request, reply) => reply.code(201).send(await imports.vistaPrevia(await sesion(request), cuerpo(request))));

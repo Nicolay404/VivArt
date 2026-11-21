@@ -1,6 +1,6 @@
 // Pantallas públicas de VIVART (sin sesión; celular primero):
 // Agenda (/ y /agenda), «¿Qué hay ahora?» (dentro de Agenda), Ficha pública (/actividad/:id),
-// y estados honestos «Próximamente» para Mapa (/mapa) y Pasaporte (/pasaporte).
+// y el estado honesto «Próximamente» para Pasaporte (/pasaporte). El Mapa (/mapa) vive en mapa.js (spec 003).
 import { h, icono, esqueletoTarjetas } from './dom.js';
 import { apiProgramacion, apiParticipacion } from './api.js';
 import { agregarAlCarrito } from './carrito.js';
