@@ -28,8 +28,13 @@ export function createProgramacionClient({ url, serviceKey, timeoutMs = 3000, fe
     async functions(ids) {
       const unicos = [...new Set(ids)].filter(Boolean);
       if (unicos.length === 0) return new Map();
-      const datos = await obtener(`/internal/functions?ids=${unicos.map(encodeURIComponent).join(',')}`);
-      return new Map((datos?.items ?? []).map((f) => [f.id, f]));
+      const mapa = new Map();
+      for (let i = 0; i < unicos.length; i += 100) {
+        const bloque = unicos.slice(i, i + 100);
+        const datos = await obtener(`/internal/functions?ids=${bloque.map(encodeURIComponent).join(',')}`);
+        for (const f of datos?.items ?? []) mapa.set(f.id, f);
+      }
+      return mapa;
     },
   };
 }

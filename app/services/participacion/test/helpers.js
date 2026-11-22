@@ -99,6 +99,8 @@ export function funcionesDeEjemplo() {
       base('f-pendiente', { access: { mode: 'unconfirmed', priceUsd: null } }),
       base('f-cancelable'),
       base('f-pronto', { date: '2026-11-21', startTime: '18:20' }),
+      base('f-teatro2', { startTime: '18:00', endTime: '19:30' }),
+      base('f-teatro3', { startTime: '21:00', endTime: '22:30' }),
     ].map((f) => [f.id, f]),
   );
 }

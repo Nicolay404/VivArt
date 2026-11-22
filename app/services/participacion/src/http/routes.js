@@ -9,7 +9,7 @@ const cuerpo = (request) => (request.body && typeof request.body === 'object' &&
 const huella = (texto) => createHash('sha256').update(String(texto)).digest();
 
 export function registerRoutes(app, servicios, config) {
-  const { cart, orders, tickets, access, admin, pasaporte, pasaporteAdmin } = servicios;
+  const { cart, orders, tickets, access, admin, pasaporte, pasaporteAdmin, routes } = servicios;
   const sesion = createSession(servicios.identidad);
 
   // ---------- Público (FR-001 a FR-006, FR-041) ----------
@@ -80,6 +80,17 @@ export function registerRoutes(app, servicios, config) {
   app.put('/panel/functions/:id/passport/content', { bodyLimit: 2 * 1024 * 1024 }, async (request) =>
     pasaporteAdmin.contenido(await sesion(request), request.params.id, cuerpo(request)),
   );
+
+  // ---------- Rutas culturales e insignias (spec 007) ----------
+  app.get('/passport/routes', async (request) => routes.listarPublicas(await sesion.opcional(request)));
+  app.get('/passport/routes/:id', async (request) => routes.verPublica(await sesion.opcional(request), request.params.id));
+  app.get('/passport/badges', async (request) => routes.misInsignias(await sesion(request)));
+  app.get('/panel/routes', async (request) => routes.listarAdmin(await sesion(request)));
+  app.post('/panel/routes', async (request, reply) =>
+    reply.code(201).send(await routes.crear(await sesion(request), cuerpo(request))),
+  );
+  app.get('/panel/routes/:id', async (request) => routes.verAdmin(await sesion(request), request.params.id));
+  app.put('/panel/routes/:id', async (request) => routes.editar(await sesion(request), request.params.id, cuerpo(request)));
 
   // ---------- Interno: para el servicio de programación (FR-042) ----------
   function servicioAutenticado(request) {

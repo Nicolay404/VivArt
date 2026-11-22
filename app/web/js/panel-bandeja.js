@@ -29,6 +29,7 @@ export function barraPanel(persona, rutaActual) {
     enlace('/panel/actividades', 'Bandeja editorial'),
     esAdmin ? enlace('/panel/ventas', 'Ventas') : null,
     esAdmin ? enlace('/panel/pasaporte', 'Pasaporte') : null,
+    esAdmin ? enlace('/panel/rutas', 'Rutas') : null,
     esAdmin ? enlace('/panel/catalogos', 'Catálogos') : null,
     esAdmin ? enlace('/panel/carga', 'Carga desde PDF') : null,
     esAdmin ? enlace('/panel/roles', 'Roles') : null,
