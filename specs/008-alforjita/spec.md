@@ -15,6 +15,17 @@
 - Q: ¿Cómo se formulan las consultas? → A: Con preguntas rápidas y con texto libre acotado, interpretado con reglas simples y sin exigir IA generativa. Debe poder resolver casos como «¿Qué funciones gratuitas de danza hay después de las seis?», indicar qué día asumió cuando corresponda y, si no entiende, ofrecer preguntas guiadas o volver a la Agenda. Las respuestas consultan el catálogo público vigente.
 - Q: ¿Se pueden editar las preguntas rápidas? → A: No. En el MVP no hay un panel para editarlas: las preguntas rápidas son fijas, pero sus resultados cambian con la programación publicada.
 
+### Session 2026-11-21
+
+- Q: ¿Cómo se lee «después de las seis» y otras horas? → A: Una hora de 1 a 11 sin «de la mañana» o «am» se lee de tarde o noche («las seis» = 18:00), y la hora indicada cuenta («a las 18:00 o después»). «Mañana» sola es el día siguiente; «en la mañana» es antes de las 12:00, «en la tarde» de 12:00 a 17:59 y «en la noche» desde las 18:00. Para hoy solo salen funciones que aún no empiezan; un día ya pasado se indica como pasado y se ofrece consultar hoy u otro día (M-14).
+- Q: ¿Cuáles son las preguntas rápidas? → A: «¿Qué hay hoy?», «¿Qué hay gratis hoy?», «¿Qué hay esta noche?», «¿Qué hay en una sede?» (se elige la sede), «¿Hubo cambios?» y «¿Cómo funcionan el Pasaporte y las rutas?» (M-15).
+- Q: ¿Qué cuenta como «cambios»? → A: Las funciones de hoy en adelante con un aviso publicado de cancelación o reprogramación, la más reciente primero, sin ventana de horas (M-15).
+- Q: ¿Cómo se muestran los resultados y cómo se comparan con la Agenda? → A: Cada resultado es una función (título, día, hora, sede y acceso) que enlaza a su ficha; como máximo 10, con «Ver todas en la Agenda» que abre la Agenda con los mismos filtros. La Agenda no gana un filtro por hora: la comparación se hace con los criterios que comparten (día, categoría, sede y acceso) (M-16).
+- Q: ¿Qué entiende el texto libre? → A: Hasta 200 caracteres, sin distinguir tildes ni mayúsculas. Días («hoy», «mañana», «pasado mañana», nombres de día, «sábado 21»), horas («después de», «antes de», «en la mañana/tarde/noche»), categorías y sedes por su nombre en el catálogo, acceso («gratis», «gratuita», «de pago») y una obra por su título, como la búsqueda de la Agenda, para responder precio, hora de fin o duración (M-16).
+- Q: ¿Qué páginas enlaza sobre Pasaporte y rutas? → A: Un texto breve y fijo que explica cómo funcionan (no repite datos de la programación) y un enlace a `/pasaporte`, donde el spec 007 muestra las rutas públicas también sin cuenta (M-16).
+- Q: ¿Cómo es la ventana, sin mockup? → A: El botón «Pregúntale a Alforjita» está solo en la Agenda y abre un panel lateral en escritorio y a pantalla completa en celular. Esc cierra y el foco vuelve al botón. El avatar es un icono neutro, no la mascota, hasta que haya autorización (M-17).
+- Q: ¿Se guarda la conversación? → A: No. Vive solo en la página abierta y se borra al cerrar o recargar; el servidor no guarda ni registra el texto escrito, porque podría contener datos personales (M-17).
+
 ## Alcance y límites
 
 Este spec define cómo Alforjita ayuda al visitante a encontrar un plan o aclarar dudas sin revisar toda la programación: cómo se abre, qué preguntas rápidas ofrece, qué consultas resuelve, qué respuestas distingue cuando falta un dato y qué no hace nunca.
@@ -185,10 +196,19 @@ Las preguntas rápidas son fijas en el MVP: no hay un panel para editarlas, pero
 - **FR-021**: Alforjita DEBE permitir preguntas rápidas y consultas de texto libre interpretadas con reglas simples, sin exigir IA generativa. DEBE poder resolver casos como «¿Qué funciones gratuitas de danza hay después de las seis?», indicar qué día asumió cuando corresponda y, si no entiende, ofrecer preguntas guiadas o volver a la Agenda. Las respuestas DEBEN consultar el catálogo público vigente.
 - **FR-022**: El sistema NO DEBE incluir en el MVP un panel para editar las preguntas rápidas.
 
+**Interpretación, resultados e interfaz** (decisiones cerradas el 2026-11-21; véase Clarifications)
+
+- **FR-023**: Alforjita DEBE interpretar las horas según M-14: de 1 a 11 sin «de la mañana» o «am» son de tarde o noche; «después de» incluye la hora indicada; «mañana» sola es el día siguiente; «en la mañana», «en la tarde» y «en la noche» son antes de las 12:00, de 12:00 a 17:59 y desde las 18:00. Un día ya pasado DEBE indicarse como pasado y ofrecer consultar hoy u otro día.
+- **FR-024**: Las preguntas rápidas DEBEN ser las de M-15. «¿Hubo cambios?» DEBE mostrar las funciones de hoy en adelante con aviso publicado de cancelación o reprogramación, la más reciente primero.
+- **FR-025**: Cada resultado DEBE ser una función con título, día, hora, sede y acceso, enlazada a su ficha. Se DEBEN mostrar como máximo 10 y, si hay más, «Ver todas en la Agenda» con los mismos filtros.
+- **FR-026**: El texto libre DEBE admitir hasta 200 caracteres, sin distinguir tildes ni mayúsculas, y reconocer categorías, sedes y títulos por su nombre en el catálogo, sin listas manuales.
+- **FR-027**: El botón DEBE estar solo en la Agenda y abrir un panel (lateral en escritorio, a pantalla completa en celular); Esc DEBE cerrarlo y devolver el foco al botón. El avatar DEBE ser un icono neutro mientras no haya autorización para la mascota.
+- **FR-028**: La conversación NO DEBE guardarse: vive solo en la página abierta. El servidor NO DEBE guardar ni registrar el texto escrito.
+
 ### Key Entities
 
 - **Consulta**: pregunta del visitante con criterios de fecha, horario, categoría, sede y modalidad.
-- **Respuesta**: una de cuatro: coincidencias, sin coincidencias, dato no confirmado, fuera de alcance o falla del servicio.
+- **Respuesta**: coincidencias o uno de los cuatro casos: sin coincidencias, dato no confirmado, fuera de alcance o falla del servicio.
 - **Pregunta rápida**: consulta predefinida y fija ofrecida al abrir el asistente; su resultado cambia con la programación publicada.
 - **Texto libre acotado**: consulta escrita por el visitante, interpretada con reglas simples.
 - **Suposición de día**: «hoy» en hora de Loja cuando la consulta no indica día.
@@ -207,8 +227,9 @@ Las preguntas rápidas son fijas en el MVP: no hay un panel para editarlas, pero
 - **SC-007**: Alforjita se abre, usa y cierra con teclado en el 100 % de las pruebas de accesibilidad.
 - **SC-008**: Con Alforjita fallando, la Agenda se abre y consulta en el 100 % de las pruebas.
 - **SC-009**: 0 pantallas del MVP permiten editar preguntas rápidas, y el 100 % de las preguntas rápidas refleja la programación publicada vigente.
-- **SC-011**: En el 100 % de las pruebas, las consultas de texto libre del tipo «¿Qué funciones gratuitas de danza hay después de las seis?» devuelven las funciones correctas e indican el día asumido, y las que no se entienden ofrecen preguntas guiadas o volver a la Agenda, sin inventar datos.
 - **SC-010**: El 100 % de las respuestas con una hora de referencia fijada usa esa misma referencia que la Agenda.
+- **SC-011**: En el 100 % de las pruebas, las consultas de texto libre del tipo «¿Qué funciones gratuitas de danza hay después de las seis?» devuelven las funciones correctas e indican el día asumido, y las que no se entienden ofrecen preguntas guiadas o volver a la Agenda, sin inventar datos.
+- **SC-012**: El 0 % de los textos escritos en Alforjita queda guardado o registrado en el servidor.
 
 ## Trazabilidad con el contexto
 
@@ -222,10 +243,11 @@ Las preguntas rápidas son fijas en el MVP: no hay un panel para editarlas, pero
 | RNF-03, RNF-05 | FR-003, FR-004; SC-001, SC-007 |
 | RNF-07 | FR-014; SC-008 |
 | RNF-10 | FR-009; SC-010 |
+| M-14 a M-17 | FR-023 a FR-028; SC-012 |
 
 ## Assumptions
 
 - La Agenda aporta el catálogo, los filtros y los enlaces a las fichas; Alforjita los reutiliza.
 - El mockup de Agenda muestra «Pregúntale a VIVART»; prevalece el requisito: el botón y el asistente se llaman **Alforjita**.
-- No existe mockup de la ventana de conversación ni de las preguntas rápidas.
+- No existe mockup de la ventana de conversación ni de las preguntas rápidas; se diseña según M-17 con la Agenda como referencia visual.
 - La autorización para usar la ilustración de la mascota es un trámite externo pendiente; hasta que exista, el asistente no usa esa ilustración.

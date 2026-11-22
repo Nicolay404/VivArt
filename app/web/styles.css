@@ -3116,4 +3116,145 @@ h1, h2, h3,
 .aviso-insignia-desbloqueada h3 {
   margin: 0;
   color: var(--ok);
+/* ---------- Alforjita (spec 008): panel lateral en escritorio, pantalla completa en celular ---------- */
+
+.boton-alforjita {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: var(--marca-calido);
+  color: var(--superficie);
+  font-weight: 600;
+  border-radius: var(--radio-sm);
+  padding: 0.5rem 0.95rem;
+}
+.boton-alforjita:hover { background: var(--marca-magenta); }
+
+.alforjita-panel {
+  position: fixed;
+  inset: 0 0 0 auto;
+  width: min(26.25rem, 100vw);
+  max-width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid var(--borde);
+  background: var(--fondo);
+  color: var(--texto);
+  box-shadow: var(--sombra-lg);
+  display: none;
+  grid-template-rows: auto 1fr auto;
+}
+.alforjita-panel[open] { display: grid; }
+.alforjita-panel::backdrop { background: rgb(25 16 43 / 38%); }
+
+.alforjita-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem;
+  background: var(--superficie);
+  border-bottom: 1px solid var(--borde);
+}
+.alforjita-cabecera > div { flex: 1; min-width: 0; }
+.alforjita-cabecera h2 { margin: 0; font-family: var(--fuente-titulos); font-size: 1.2rem; }
+.alforjita-cabecera .ayuda { margin: 0; font-size: 0.82rem; }
+.alforjita-avatar {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--acento-suave);
+  color: var(--acento);
+}
+.alforjita-cabecera .boton-texto {
+  min-height: var(--toque);
+  background: none;
+  border: 0;
+  color: var(--acento);
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0 0.35rem;
+  text-decoration: underline;
+}
+
+.alforjita-conversacion {
+  list-style: none;
+  margin: 0;
+  padding: 1rem;
+  overflow-y: auto;
+  display: grid;
+  align-content: start;
+  gap: 0.75rem;
+}
+.alforjita-burbuja {
+  max-width: 100%;
+  padding: 0.7rem 0.9rem;
+  border-radius: var(--radio);
+  overflow-wrap: anywhere;
+}
+.alforjita-burbuja > p { margin: 0; }
+.alforjita-burbuja > * + * { margin-top: 0.6rem; }
+.alforjita-visitante {
+  justify-self: end;
+  max-width: 85%;
+  background: var(--acento);
+  color: var(--acento-texto);
+  border-bottom-right-radius: var(--radio-sm);
+}
+.alforjita-respuesta {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-bottom-left-radius: var(--radio-sm);
+  box-shadow: var(--sombra-sm);
+}
+.alforjita-pensando { color: var(--suave); font-style: italic; }
+
+.alforjita-resultados,
+.alforjita-accesibilidad { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.5rem; }
+.alforjita-resultado {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.6rem 0.7rem;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: var(--fondo);
+}
+.alforjita-resultado-titulo { font-weight: 700; color: var(--acento); }
+.alforjita-resultado-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.7rem;
+  margin: 0;
+  color: var(--suave);
+  font-size: 0.88rem;
+}
+.alforjita-resultado .insignia-estado { justify-self: start; }
+.alforjita-acceso { font-weight: 600; }
+.alforjita-acceso.acceso-gratuita { color: var(--ok); }
+.alforjita-acceso.acceso-pago { color: var(--pago); }
+.alforjita-acceso.acceso-pendiente { color: var(--alerta); }
+.alforjita-aviso { margin: 0; font-size: 0.88rem; }
+.alforjita-accesibilidad li { display: flex; align-items: center; gap: 0.4rem; }
+
+.alforjita-opciones { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.alforjita-opciones .pildora { min-height: var(--toque); text-align: left; }
+.alforjita-enlaces { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+.alforjita-enlaces .boton { min-height: var(--toque); }
+
+.alforjita-formulario {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+  background: var(--superficie);
+  border-top: 1px solid var(--borde);
+}
+.alforjita-formulario input { flex: 1; min-width: 0; min-height: var(--toque); }
+
+@media (max-width: 40rem) {
+  .alforjita-panel { width: 100vw; border-left: 0; }
 }

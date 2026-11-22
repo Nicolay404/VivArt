@@ -1,0 +1,179 @@
+openapi: 3.1.0
+info:
+  title: VIVART - Alforjita (servicio de programación)
+  version: 1.0.0
+  description: >
+    Spec 008. Amplía el servicio de programación (contrato base en specs/002-programacion-y-publicacion/contracts/).
+    Desde el navegador se llama con el prefijo /api/programacion (entrada común).
+    Ruta pública sin sesión: no lee la cookie, no pide datos personales ni ubicación.
+    Es POST para que el texto escrito viaje en el cuerpo y no quede en el registro de solicitudes; nada se guarda (M-17).
+    Exige Content-Type application/json y un Origin permitido, como las demás rutas que reciben cuerpo.
+    Solo lee el catálogo publicado de la edición activa, el mismo que la Agenda (FR-006). Fechas y horas en hora de Loja.
+    Los errores tienen la forma Error del contrato del spec 002.
+servers:
+  - url: /api/programacion
+tags:
+  - name: Alforjita
+paths:
+  /assistant/answers:
+    post:
+      tags: [Alforjita]
+      summary: Responde una pregunta rápida o un texto libre acotado (FR-001 a FR-028)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Query' }
+            examples:
+              texto:
+                value: { text: '¿Qué funciones gratuitas de danza hay después de las seis?' }
+              rapida:
+                value: { quick: free_today }
+              sede:
+                value: { quick: venue, venueId: 'teatro-de-ejemplo' }
+              sugerencia:
+                value: { criteria: { date: '2026-11-22', from: '18:00', categoryId: 'danza' } }
+      responses:
+        '200':
+          description: Respuesta de Alforjita (incluye «sin coincidencias», «no entendida» y «fuera de alcance»)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Answer' }
+        '422':
+          description: Consulta inválida (texto vacío o de más de 200 caracteres, pregunta rápida desconocida, falta venueId)
+        '503':
+          description: No se pudo consultar la programación (catalog_unavailable). La web muestra la falla y remite a la Agenda (FR-014)
+components:
+  schemas:
+    Query:
+      type: object
+      description: Exactamente uno de text, quick o criteria.
+      properties:
+        text: { type: string, minLength: 1, maxLength: 200 }
+        quick: { type: string, enum: [today, free_today, tonight, venue, changes, passport_routes] }
+        venueId: { type: string }
+        criteria: { $ref: '#/components/schemas/Criteria' }
+        intent:
+          type: string
+          enum: [search, price, end, accessibility]
+          default: search
+          description: Solo con criteria. Lo usan las opciones de «elegir» para pedir el precio, la hora de fin o la accesibilidad
+    Criteria:
+      type: object
+      properties:
+        date: { type: string, format: date }
+        from: { type: [string, 'null'], pattern: '^([01]\d|2[0-3]):[0-5]\d$', description: Incluida }
+        until: { type: [string, 'null'], pattern: '^([01]\d|2[0-3]):[0-5]\d$', description: Excluida }
+        categoryId: { type: [string, 'null'] }
+        venueId: { type: [string, 'null'] }
+        access: { type: [string, 'null'], enum: [free, paid, null] }
+        activityId: { type: [string, 'null'] }
+    Reference:
+      type: object
+      description: El mismo reloj que la Agenda (RC-07); fixed solo en pruebas y demo.
+      required: [now, date, time, timeZone, fixed]
+      properties:
+        now: { type: string, format: date-time }
+        date: { type: string, format: date }
+        time: { type: string }
+        timeZone: { type: string, example: America/Guayaquil }
+        fixed: { type: boolean }
+    Link:
+      type: object
+      required: [label, href]
+      properties:
+        label: { type: string }
+        href: { type: string, description: Ruta de la web, siempre interna (empieza por /) }
+    Item:
+      type: object
+      required: [type, activityId, title, href, date, venue, access]
+      properties:
+        type: { type: string, enum: [function, slot] }
+        activityId: { type: string }
+        functionId: { type: [string, 'null'] }
+        title: { type: string }
+        href: { type: string, example: /actividad/a-1 }
+        date: { type: string, format: date }
+        startTime: { type: [string, 'null'], description: Hora de inicio, o de apertura en una franja }
+        endTime: { type: [string, 'null'], description: Solo si está confirmada, o el cierre de una franja }
+        timeStatus: { type: [string, 'null'], enum: [upcoming, in_progress, start_passed, cancelled, null] }
+        venue:
+          type: [object, 'null']
+          properties:
+            id: { type: string }
+            name: { type: string }
+            kind: { type: string, enum: [place, route] }
+        access:
+          type: object
+          properties:
+            mode: { type: string, enum: [free, paid, unconfirmed] }
+            priceUsd: { type: [number, 'null'] }
+            label: { type: string }
+        notice:
+          type: [object, 'null']
+          properties:
+            kind: { type: string, enum: [cancelled, rescheduled] }
+            text: { type: string }
+            at: { type: string }
+    Answer:
+      type: object
+      required: [kind, reference, message]
+      properties:
+        kind:
+          type: string
+          enum: [matches, no_matches, answer, unconfirmed, out_of_scope, info, not_understood, choose, past_day]
+        reference: { $ref: '#/components/schemas/Reference' }
+        message: { type: string, description: Nunca repite el texto escrito por el visitante }
+        topic:
+          type: string
+          enum: [buy, redeem, tickets, passport_personal, modify, others_data]
+          description: Solo en out_of_scope
+        accessibility:
+          type: array
+          description: Solo al preguntar por la accesibilidad de una sede (spec 003)
+          items:
+            type: object
+            properties:
+              feature: { type: string, enum: [step_free, accessible_toilet] }
+              label: { type: string }
+              status: { type: string, enum: [confirmed, unavailable, unconfirmed] }
+              source: { type: [string, 'null'] }
+              verifiedOn: { type: [string, 'null'], format: date }
+        criteria:
+          allOf: [{ $ref: '#/components/schemas/Criteria' }]
+          description: Criterios aplicados, con nombres para describirlos
+        criteriaLabels:
+          type: array
+          items: { type: string }
+          example: ['hoy, 21 de noviembre', 'desde las 18:00', 'Danza', 'gratuitas']
+        assumedDay: { type: boolean, description: true si la consulta no indicó día y se asumió hoy en Loja (FR-007) }
+        items:
+          type: array
+          maxItems: 10
+          items: { $ref: '#/components/schemas/Item' }
+        total: { type: integer }
+        agendaUrl: { type: string, example: '/agenda?date=2026-11-21&categoryId=danza&access=free' }
+        missing:
+          type: array
+          items: { type: string, enum: [price, access, end, duration, step_free, accessible_toilet] }
+        suggestions:
+          type: array
+          items:
+            type: object
+            properties:
+              label: { type: string }
+              criteria: { $ref: '#/components/schemas/Criteria' }
+        options:
+          type: array
+          items:
+            type: object
+            properties:
+              type: { type: string, enum: [venue, activity] }
+              id: { type: string }
+              name: { type: string }
+              request:
+                allOf: [{ $ref: '#/components/schemas/Query' }]
+                description: Cuerpo que la web envía al elegir esta opción
+        links:
+          type: array
+          items: { $ref: '#/components/schemas/Link' }

@@ -43,6 +43,9 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/panel/v
 [[ "$codigo" = "401" ]]
 echo "ok: el panel de sedes pide identificarse"
 
+curl -fsS -X POST -H "content-type: application/json" -d '{"quick":"today"}' "$BASE/api/programacion/assistant/answers" | grep -q '"kind"'
+echo "ok: Alforjita responde sin sesión (spec 008)"
+
 curl -fsS "$BASE/api/participacion/health" | grep -q '"participacion"'
 echo "ok: la entrada enruta al servicio de participación y su base responde"
 
