@@ -51,6 +51,6 @@ No se han recibido mockups de estas pantallas. Se diseñan a partir de los requi
 - Carrito, pago de prueba, Perfil y Mis entradas.
 - Lista de sedes del Mapa.
 - Canje de un QR de Pasaporte y vista de un sello individual.
-- Alforjita (ventana de conversación y preguntas rápidas).
+- Alforjita (ventana de conversación y preguntas rápidas). Se diseña con la Agenda como referencia: panel lateral en escritorio, pantalla completa en celular y avatar neutro (M-17).
 - Panel interno: borradores, revisión, publicación, carga desde PDF, sedes, ventas, Pasaporte y rutas, roles.
 - Control de acceso del personal (validación por QR y código manual).
