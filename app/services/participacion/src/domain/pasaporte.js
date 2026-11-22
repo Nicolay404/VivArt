@@ -145,7 +145,7 @@ function presentar(s, f, contenidos) {
   };
 }
 
-export function createPasaporte({ db, programacion, clock }) {
+export function createPasaporte({ db, programacion, clock, routes }) {
   const repo = pasaporteRepo(db);
 
   async function funcionVigente(id) {
@@ -192,7 +192,7 @@ export function createPasaporte({ db, programacion, clock }) {
 
       // Reabrir el enlace siempre devuelve el mismo sello, aunque el QR se haya reemplazado o la ventana haya cerrado (FR-003).
       const existente = await repo.selloDe(sesion.userId, qr.function_id);
-      if (existente) return { created: false, stamp: await presentarUno(existente, await funcionVigente(qr.function_id).catch(() => null)) };
+      if (existente) return { created: false, stamp: await presentarUno(existente, await funcionVigente(qr.function_id).catch(() => null)), badgeUnlocked: null };
 
       if (qr.status === 'replaced') throw rechazo('qr_replaced');
       const f = await funcionVigente(qr.function_id);
@@ -217,7 +217,11 @@ export function createPasaporte({ db, programacion, clock }) {
       });
       // Si otra solicitud simultánea ganó la carrera, se devuelve su sello (RC-05).
       const sello = nuevo ?? (await repo.selloDe(sesion.userId, qr.function_id));
-      return { created: Boolean(nuevo), stamp: await presentarUno(sello, f) };
+      let badgeUnlocked = null;
+      if (nuevo && routes?.evaluarDesbloqueoEnCanje) {
+        badgeUnlocked = await routes.evaluarDesbloqueoEnCanje(db, sesion.userId, qr.function_id);
+      }
+      return { created: Boolean(nuevo), stamp: await presentarUno(sello, f), badgeUnlocked };
     },
 
     /** Mi pasaporte: total de sellos, sin meta global (M-01). Si programación no responde, verified = false. */

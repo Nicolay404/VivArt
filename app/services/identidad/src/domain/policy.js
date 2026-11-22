@@ -21,6 +21,8 @@ const ACCIONES = {
   'catalog.manage': { roles: ['administrador'] },
   // Spec 006: QR, ventana y contenido del sello del Pasaporte.
   'passport.manage': { roles: ['administrador'] },
+  // Spec 007: rutas culturales e insignias.
+  'panel.routes': { roles: ['administrador'] },
   'activity.archive': { roles: ['administrador'] },
   // Spec 005: cancelar una función con entradas vendidas es solo del administrador (FR-030).
   'schedule.cancel_with_sales': { roles: ['administrador'] },

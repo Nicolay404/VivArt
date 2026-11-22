@@ -112,3 +112,12 @@ test('spec 006: solo el administrador gestiona el Pasaporte (passport.manage)', 
     assert.equal(r.missingRole, 'administrador');
   }
 });
+
+test('spec 007: solo el administrador gestiona las rutas culturales (panel.routes)', () => {
+  assert.equal(puede(persona(['administrador']), 'panel.routes'), true);
+  for (const rol of ['editor', 'publicador', 'personal_acceso', 'usuario_registrado']) {
+    const r = authorize(persona([rol]), 'panel.routes');
+    assert.equal(r.allowed, false, rol);
+    assert.equal(r.missingRole, 'administrador');
+  }
+});

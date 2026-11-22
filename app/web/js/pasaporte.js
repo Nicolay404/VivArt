@@ -20,14 +20,98 @@ const cabecera = (titulo, subtitulo) =>
 
 const textoSellos = (n) => `${n} ${n === 1 ? 'sello' : 'sellos'}`;
 
-/** Rutas culturales: llegan con el spec 007 (M-13). */
-const seccionRutas = () =>
-  h(
+/** Apartado de insignias obtenidas (spec 007, US3). */
+function seccionInsignias(insignias) {
+  if (!insignias || insignias.length === 0) return null;
+  return h(
     'section',
-    { class: 'tarjeta pila rutas-proximamente' },
-    h('h2', {}, icono('recorrido', 'icono-sm'), 'Rutas culturales'),
-    h('p', { class: 'ayuda' }, 'Próximamente: recorridos por funciones del festival con su progreso e insignias.'),
+    { class: 'pila seccion-insignias' },
+    h('h2', {}, icono('estrella', 'icono-sm'), 'Mis insignias'),
+    h(
+      'ul',
+      { class: 'rejilla-insignias' },
+      insignias.map((ins) =>
+        h(
+          'li',
+          { class: 'item-insignia' },
+          h(
+            'div',
+            { class: `insignia-plantilla insignia-color-${ins.color ?? 'violeta'}` },
+            h('div', { class: 'insignia-emblema' }, icono(ins.icon ?? 'estrella', 'icono-insignia')),
+            h(
+              'div',
+              { class: 'insignia-datos' },
+              h('h3', { class: 'insignia-titulo' }, ins.title),
+              h('p', { class: 'insignia-desc' }, ins.description),
+              h('span', { class: 'insignia-fecha' }, `Obtenida el ${formatoFechaHoraIso(ins.unlockedAt)}`),
+            ),
+          ),
+        ),
+      ),
+    ),
   );
+}
+
+/** Tarjeta de ruta cultural en la lista pública (spec 007, US1). */
+function tarjetaRuta(rt) {
+  return h(
+    'li',
+    { class: 'tarjeta-ruta-item' },
+    h(
+      'a',
+      { href: `/pasaporte/ruta/${encodeURIComponent(rt.id)}`, 'data-enlace': true, class: 'tarjeta-ruta-enlace' },
+      h(
+        'div',
+        { class: `insignia-plantilla insignia-color-${rt.badge?.color ?? 'violeta'}` },
+        h('div', { class: 'insignia-emblema' }, icono(rt.badge?.icon ?? 'teatro', 'icono-insignia')),
+        h(
+          'div',
+          { class: 'insignia-datos' },
+          h('h3', { class: 'insignia-titulo' }, rt.title),
+          h('p', { class: 'insignia-desc' }, rt.description),
+        ),
+      ),
+      h(
+        'div',
+        { class: 'tarjeta-ruta-pie' },
+        rt.inReview
+          ? h('span', { class: 'insignia-estado estado-cancelada' }, 'Ruta en revisión')
+          : null,
+        rt.progress
+          ? h(
+              'span',
+              { class: `ruta-progreso-texto ${rt.progress.completed ? 'progreso-completo' : ''}` },
+              rt.progress.unlockedBadge
+                ? `¡Insignia obtenida! (${rt.progress.formatted})`
+                : `Progreso: ${rt.progress.formatted}`,
+            )
+          : h('span', { class: 'ruta-meta-texto' }, `Meta: ${rt.goal} ${rt.goal === 1 ? 'sello' : 'sellos'}`),
+        h('span', { class: 'enlace-accion' }, 'Ver recorrido →'),
+      ),
+    ),
+  );
+}
+
+/** Rutas culturales públicas (spec 007, US1). */
+async function seccionRutas() {
+  const r = await apiParticipacion('GET', '/passport/routes');
+  const rutas = r.ok ? r.datos.items ?? [] : [];
+  if (rutas.length === 0) {
+    return h(
+      'section',
+      { class: 'tarjeta pila' },
+      h('h2', {}, icono('recorrido', 'icono-sm'), 'Rutas culturales'),
+      h('p', { class: 'ayuda' }, 'Aún no hay rutas culturales publicadas.'),
+    );
+  }
+  return h(
+    'section',
+    { class: 'pila' },
+    h('h2', {}, icono('recorrido', 'icono-sm'), 'Rutas culturales'),
+    h('p', { class: 'ayuda' }, 'Explora propuestas artísticas y reúne los sellos de cada recorrido para desbloquear su insignia.'),
+    h('ul', { class: 'rejilla-rutas' }, rutas.map(tarjetaRuta)),
+  );
+}
 
 /** Emblema de la plantilla común de VIVART: el sello siempre se muestra, aunque no tenga imagen ni texto (FR-022). */
 function emblema(s, grande = false) {
@@ -79,20 +163,29 @@ export async function pantallaPasaporte({ persona }) {
         'section',
         { class: 'tarjeta pila' },
         h('h2', {}, 'Mi pasaporte'),
-        h('p', {}, 'Ingresa con tu cuenta para ver tus sellos.'),
+        h('p', {}, 'Ingresa con tu cuenta para ver tus sellos y registrar tu progreso.'),
         h('div', { class: 'acciones-fila' }, h('a', { href: '/ingresar', 'data-enlace': true, class: 'boton' }, 'Ingresar'), h('a', { href: '/registro', 'data-enlace': true, class: 'boton secundario' }, 'Crear cuenta')),
       ),
-      seccionRutas(),
+      await seccionRutas(),
     );
     return pagina;
   }
 
-  const r = await apiParticipacion('GET', '/passport');
-  if (!r.ok) {
-    hoja.append(h('div', { class: 'estado-vacio estado-error', role: 'alert' }, h('h2', {}, 'No pudimos cargar tu pasaporte'), h('p', {}, r.datos?.message ?? 'Inténtalo de nuevo en unos minutos.')));
+  const [rPassport, rBadges] = await Promise.all([
+    apiParticipacion('GET', '/passport'),
+    apiParticipacion('GET', '/passport/badges'),
+  ]);
+
+  if (!rPassport.ok) {
+    hoja.append(h('div', { class: 'estado-vacio estado-error', role: 'alert' }, h('h2', {}, 'No pudimos cargar tu pasaporte'), h('p', {}, rPassport.datos?.message ?? 'Inténtalo de nuevo en unos minutos.')));
     return pagina;
   }
-  const { total, items, verified } = r.datos;
+  const { total, items, verified } = rPassport.datos;
+  const insignias = rBadges.ok ? rBadges.datos.items ?? [] : [];
+
+  const nodoInsignias = seccionInsignias(insignias);
+  if (nodoInsignias) hoja.append(nodoInsignias);
+
   hoja.append(
     h(
       'section',
@@ -103,7 +196,122 @@ export async function pantallaPasaporte({ persona }) {
         ? h('ul', { class: 'rejilla-sellos' }, items.map(tarjetaSello))
         : h('div', { class: 'estado-vacio' }, h('h3', {}, 'Aún no tienes sellos'), h('p', {}, 'Escanea el QR del Pasaporte en la sede de una función para reclamar tu primer sello.')),
     ),
-    seccionRutas(),
+    await seccionRutas(),
+  );
+  return pagina;
+}
+
+/** Detalle público de una ruta cultural (spec 007, US1 y US2). */
+export async function pantallaRuta({ persona, id }) {
+  const pagina = h('div', { class: 'pasaporte-pagina' });
+  const hoja = h('div', { class: 'hoja-contenido' });
+  pagina.append(cabecera('Ruta cultural'), hoja);
+
+  const r = await apiParticipacion('GET', `/passport/routes/${encodeURIComponent(id)}`);
+  if (!r.ok) {
+    hoja.append(
+      h(
+        'div',
+        { class: 'estado-vacio estado-error', role: 'alert' },
+        h('h2', {}, 'No encontramos esta ruta'),
+        h('p', {}, r.datos?.message ?? 'La ruta solicitada no existe o no está publicada.'),
+        h('a', { href: '/pasaporte', 'data-enlace': true, class: 'boton' }, 'Volver a Pasaporte'),
+      ),
+    );
+    return pagina;
+  }
+
+  const ruta = r.datos;
+  hoja.append(
+    h('a', { href: '/pasaporte', 'data-enlace': true, class: 'enlace-volver' }, '← Volver a Pasaporte'),
+    h('h1', { class: 'ruta-detalle-titulo' }, ruta.title),
+    h('p', { class: 'ruta-detalle-desc' }, ruta.description),
+    ruta.inReview
+      ? h(
+          'p',
+          { class: 'aviso alerta-caja', role: 'alert' },
+          h('strong', {}, 'Ruta en revisión: '),
+          'Algunas funciones elegibles fueron canceladas y la meta temporalmente no puede completarse con las opciones activas restantes. Tus sellos ya obtenidos siguen contando.',
+        )
+      : null,
+    h(
+      'div',
+      { class: `insignia-plantilla insignia-color-${ruta.badge.color}` },
+      h('div', { class: 'insignia-emblema' }, icono(ruta.badge.icon, 'icono-insignia')),
+      h(
+        'div',
+        { class: 'insignia-datos' },
+        h('strong', { class: 'insignia-titulo' }, `Insignia: ${ruta.badge.title}`),
+        h('p', { class: 'insignia-desc' }, ruta.badge.description),
+      ),
+    ),
+    persona && ruta.progress
+      ? h(
+          'div',
+          { class: 'tarjeta pila ruta-progreso-caja' },
+          h(
+            'div',
+            { class: 'fila-espaciada' },
+            h('h2', {}, 'Tu progreso'),
+            h('strong', { class: 'progreso-denominador' }, ruta.progress.formatted),
+          ),
+          ruta.progress.unlockedBadge
+            ? h('p', { class: 'aviso ok-caja' }, '¡Felicitaciones! Has obtenido la insignia de esta ruta.')
+            : h('p', { class: 'ayuda' }, `Reúne ${ruta.goal} sellos de las funciones elegibles para desbloquear la insignia.`),
+        )
+      : h(
+          'div',
+          { class: 'tarjeta pila ruta-invitacion' },
+          h('h2', {}, 'Registra tu progreso'),
+          h('p', {}, 'Ingresa con tu cuenta para registrar los sellos que colecciones y desbloquear la insignia de esta ruta.'),
+          h(
+            'div',
+            { class: 'acciones-fila' },
+            h('a', { href: '/ingresar', 'data-enlace': true, class: 'boton' }, 'Ingresar'),
+            h('a', { href: '/registro', 'data-enlace': true, class: 'boton secundario' }, 'Crear cuenta'),
+          ),
+        ),
+    h(
+      'section',
+      { class: 'pila' },
+      h('h2', {}, `Funciones elegibles (${ruta.functions.length})`),
+      h(
+        'ul',
+        { class: 'lista-funciones-elegibles' },
+        ruta.functions.map((f) =>
+          h(
+            'li',
+            { class: 'tarjeta funcion-elegible-card' },
+            h(
+              'div',
+              { class: 'funcion-elegible-datos' },
+              h('h3', { class: 'funcion-elegible-titulo' }, f.title),
+              h(
+                'p',
+                { class: 'funcion-elegible-horario' },
+                icono('calendario', 'icono-xs'),
+                f.date ? `${formatoFecha(f.date)} · ${f.startTime ?? ''}` : 'Fecha a confirmar',
+                f.venueName ? ` · ${f.venueName}` : '',
+              ),
+              f.status === 'cancelled'
+                ? h('span', { class: 'insignia-estado estado-cancelada' }, 'Función cancelada')
+                : null,
+            ),
+            persona && f.hasStamp !== null
+              ? h(
+                  'div',
+                  { class: 'funcion-elegible-estado' },
+                  f.hasStamp
+                    ? h('span', { class: 'insignia-estado estado-curso' }, icono('check', 'icono-xs'), ' Sello obtenido')
+                    : f.status !== 'cancelled'
+                      ? h('span', { class: 'insignia-estado estado-pasada' }, 'Pendiente')
+                      : null,
+                )
+              : null,
+          ),
+        ),
+      ),
+    ),
   );
   return pagina;
 }
@@ -163,11 +371,36 @@ export async function pantallaCanje({ persona, ref }) {
 
   const r = await apiParticipacion('POST', '/passport/claims', { ref });
   if (r.ok) {
-    hoja.append(
+    const nodos = [
       h('p', { class: 'aviso ok-caja', role: 'status' }, r.datos.created ? '¡Sello obtenido! Ya está en tu pasaporte.' : 'Ya tenías este sello: aquí está.'),
+    ];
+    if (r.datos.badgeUnlocked) {
+      const b = r.datos.badgeUnlocked;
+      nodos.push(
+        h(
+          'div',
+          { class: 'tarjeta pila aviso-insignia-desbloqueada', role: 'alert' },
+          h('h3', {}, '🏆 ¡Insignia desbloqueada!'),
+          h('p', { class: 'ayuda' }, `¡Felicitaciones! Has completado la ruta «${b.routeTitle}».`),
+          h(
+            'div',
+            { class: `insignia-plantilla insignia-color-${b.color ?? 'violeta'}` },
+            h('div', { class: 'insignia-emblema' }, icono(b.icon ?? 'estrella', 'icono-insignia')),
+            h(
+              'div',
+              { class: 'insignia-datos' },
+              h('strong', { class: 'insignia-titulo' }, b.title),
+              h('p', { class: 'insignia-desc' }, b.description ?? `Insignia oficial de la ruta ${b.routeTitle}`),
+            ),
+          ),
+        ),
+      );
+    }
+    nodos.push(
       detalleSello(r.datos.stamp),
       h('a', { href: '/pasaporte', 'data-enlace': true, class: 'boton' }, 'Ver Mi pasaporte'),
     );
+    hoja.append(...nodos);
     return pagina;
   }
 

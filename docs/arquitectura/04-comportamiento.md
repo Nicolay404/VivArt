@@ -2,7 +2,7 @@
 
 Propuesta del equipo, pendiente de contrastar con la nomenclatura que pida el docente.
 
-Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001, el tercero del spec 005 y el cuarto del spec 006, todos implementados.
+Muestra los flujos críticos entre piezas. Los dos primeros son del spec 001, el tercero del spec 005, el cuarto del spec 006 y el quinto del spec 007, todos implementados.
 
 ## 1. Inicio de sesión (spec 001)
 
@@ -85,4 +85,28 @@ sequenceDiagram
     P->>D: Crear sello (usuario, función) con restricción única
     D-->>P: Segundo intento encuentra el sello existente
     P-->>U: Muestra el mismo sello en ambos casos
+```
+
+## 5. Desbloqueo concurrente de insignias por ruta (spec 007)
+
+Implementado con la restricción única `(user_id, route_id)` de la tabla `user_badges` y una inserción `ON CONFLICT (user_id, route_id) DO NOTHING RETURNING *`.
+Al canjear el sello que alcanza la meta de una ruta, el servicio evalúa de forma atómica si corresponde desbloquear la insignia. Si varias peticiones concurrentes completan la meta simultáneamente, exactamente una logra la inserción, registra el evento en `history` y retorna `badgeUnlocked` en la respuesta JSON; las demás retornan `badgeUnlocked: null` sin duplicar filas ni eventos.
+
+```mermaid
+sequenceDiagram
+    actor U as Usuario
+    participant P as Servicio de participación
+    participant D as Datos de participación
+
+    U->>P: Reclama el último sello necesario en dos solicitudes simultáneas
+    P->>D: Insertar sello con ON CONFLICT DO NOTHING
+    D-->>P: Sello registrado
+    P->>D: Contar sellos distintos de funciones elegibles en la ruta
+    D-->>P: Conteo alcanza o supera la meta (COUNT >= goal)
+    P->>D: Insertar en user_badges ON CONFLICT DO NOTHING
+    D-->>P: Primer intento inserta la insignia y retorna RETURNING *
+    P->>D: Insertar en user_badges ON CONFLICT DO NOTHING
+    D-->>P: Segundo intento no inserta (conflicto ignorado)
+    P->>D: Registrar badge.unlocked en history (solo el primero)
+    P-->>U: Respuesta con badgeUnlocked presente (primera) y null (segunda)
 ```

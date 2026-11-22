@@ -171,6 +171,44 @@ CREATE TABLE IF NOT EXISTS stamps (
   -- Un sello por persona y función (RC-05, RNF-06).
   UNIQUE (user_id, function_id)
 );
+
+-- Spec 007 (Rutas culturales e insignias). Ver specs/007-rutas-e-insignias/data-model.md.
+CREATE TABLE IF NOT EXISTS routes (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL CHECK (char_length(title) BETWEEN 3 AND 120),
+  description TEXT NOT NULL CHECK (char_length(description) BETWEEN 10 AND 500),
+  badge_title TEXT NOT NULL CHECK (char_length(badge_title) BETWEEN 3 AND 80),
+  badge_description TEXT NOT NULL CHECK (char_length(badge_description) BETWEEN 5 AND 280),
+  badge_icon TEXT NOT NULL CHECK (badge_icon IN ('teatro', 'musica', 'danza', 'artes-vivas', 'patrimonio', 'estrella', 'brujula')),
+  badge_color TEXT NOT NULL CHECK (badge_color IN ('violeta', 'atardecer', 'terracota', 'esmeralda')),
+  goal INTEGER NOT NULL CHECK (goal > 0),
+  status TEXT NOT NULL DEFAULT 'draft' CHECK (status IN ('draft', 'published')),
+  created_at TEXT NOT NULL,
+  created_by TEXT NOT NULL,
+  updated_at TEXT NOT NULL,
+  updated_by TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS routes_estado ON routes (status);
+
+CREATE TABLE IF NOT EXISTS route_functions (
+  route_id TEXT NOT NULL REFERENCES routes(id) ON DELETE CASCADE,
+  function_id TEXT NOT NULL,
+  added_at TEXT NOT NULL,
+  added_by TEXT NOT NULL,
+  PRIMARY KEY (route_id, function_id)
+);
+CREATE INDEX IF NOT EXISTS route_functions_funcion ON route_functions (function_id);
+
+CREATE TABLE IF NOT EXISTS user_badges (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  route_id TEXT NOT NULL REFERENCES routes(id) ON DELETE RESTRICT,
+  unlocked_at TEXT NOT NULL,
+  stamp_count_at_unlock INTEGER NOT NULL CHECK (stamp_count_at_unlock > 0),
+  -- Una sola insignia por persona y ruta (RC-05, RNF-06, SC-004).
+  UNIQUE (user_id, route_id)
+);
+CREATE INDEX IF NOT EXISTS user_badges_persona ON user_badges (user_id);
 `;
 
 const NOMBRE_ESQUEMA = /^[a-z_][a-z0-9_]{0,62}$/;

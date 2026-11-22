@@ -33,5 +33,22 @@ export function createSession(identidad) {
     if (!s.emailVerified) throw new AppError(403, 'email_not_verified', 'Verifica tu correo para poder pagar.');
     return s;
   };
+  /** Sesión opcional para rutas de consulta pública que muestran progreso si hay cuenta (spec 007). */
+  sesion.opcional = async (request) => {
+    try {
+      const token = leerCookie(request.headers?.cookie, SESSION_COOKIE);
+      if (!token) return null;
+      const persona = await identidad.introspect(token);
+      if (!persona) return null;
+      return {
+        token,
+        userId: persona.userId,
+        emailVerified: persona.emailVerified === true,
+        functionIds: Array.isArray(persona.functionIds) ? persona.functionIds : [],
+      };
+    } catch {
+      return null;
+    }
+  };
   return sesion;
 }

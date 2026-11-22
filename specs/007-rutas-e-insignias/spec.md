@@ -15,6 +15,14 @@
 - Q: ¿Qué pasa con una ruta si una función elegible se cancela o pierde su canje? → A: Una función cancelada deja de aparecer como pendiente para nuevos canjes, pero sus sellos ya obtenidos siguen contando. Si todavía se puede alcanzar la meta, la ruta sigue activa. Si la cancelación impide completarla con las opciones restantes, se muestra «Ruta en revisión» y el administrador puede ajustarla, por ejemplo añadiendo otra función elegible. No se reduce la meta automáticamente ni se retira progreso, sellos o insignias ya otorgadas.
 - Q: ¿Cómo se presentan las rutas y las insignias? → A: Con plantillas visuales comunes de VIVART, con el nombre y la descripción que defina el administrador. No se exige una ilustración única ni subir archivos para publicar cada ruta.
 
+### Session 2026-11-22
+
+- Q: ¿Cómo se estructura la experiencia de rutas e insignias en la interfaz pública (/pasaporte)? → A: En /pasaporte se presentan tres secciones: (1) Mis insignias (logros obtenidos con sesión), (2) Mi pasaporte (sellos con total sin meta global, según M-01), y (3) Rutas culturales (tarjetas de rutas con meta y progreso «X de Y» si hay sesión). Cada ruta abre /pasaporte/ruta/:id con detalle de funciones elegibles marcadas (con o sin sello), meta y estado «Ruta en revisión» si aplica.
+- Q: ¿Dónde gestiona el administrador las rutas en el panel interno? → A: En un panel dedicado /panel/rutas accesible para el rol administrador, con listado de rutas, advertencia para rutas en revisión, y formulario de creación/edición de rutas y selección de funciones elegibles.
+- Q: ¿Cómo se personalizan las plantillas visuales de insignias y rutas sin subir archivos (RF-28, FR-021)? → A: Con plantillas visuales comunes de VIVART: el administrador define nombre y descripción de la ruta, nombre y descripción de la insignia, selecciona un motivo SVG temático oficial (teatro, musica, danza, artes-vivas, patrimonio, estrella, brujula) y un tono de acento de la paleta oficial (violeta, atardecer/dorado, terracota).
+- Q: ¿En qué momento se otorga y desbloquea la insignia de una ruta (RF-30, FR-017, FR-018)? → A: En el canje de sellos (POST /passport/claims), evaluando si el nuevo sello completa la meta (progreso >= meta) y registrando la insignia de forma atómica e idempotente con clave única (user_id, route_id), devolviendo badgeUnlocked para avisar al usuario inmediatamente. También se garantiza idempotencia al consultar el progreso de la ruta.
+- Q: ¿Cómo se detecta y muestra el estado «Ruta en revisión» cuando se cancela una función elegible (RF-30, FR-020)? → A: Se calcula dinámicamente: si el número de funciones elegibles activas (no canceladas) es menor a la meta (activas_restantes < meta), la ruta muestra el distintivo «Ruta en revisión». Sus sellos ya obtenidos siguen contando y no se reduce la meta automáticamente. El administrador puede editar la ruta desde /panel/rutas y añadir otra función elegible para restaurar su viabilidad.
+
 ## Alcance y límites
 
 Este spec define cómo se anima al público a explorar distintas propuestas a partir de los sellos que ya colecciona: la creación y publicación de rutas por el administrador, la consulta pública de las rutas, el progreso de cada usuario en cada ruta y el desbloqueo de insignias.
@@ -127,8 +135,8 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 - **FR-001**: El administrador DEBE poder crear y publicar rutas, seleccionar funciones elegibles, establecer una meta alcanzable y asignar la insignia.
 - **FR-002**: Solo las funciones con Pasaporte habilitado DEBEN poder ser elegibles; una franja de apertura NO DEBE ser elegible ni contar para rutas.
 - **FR-003**: El sistema DEBE rechazar una meta mayor al número de funciones elegibles de la ruta.
-- **FR-004**: El sistema NO DEBE permitir publicar una ruta sin insignia asignada (con nombre y descripción) ni sin funciones elegibles, ni exigir una ilustración ni archivos para publicarla.
-- **FR-005**: Solo el administrador DEBE poder crear, editar y publicar rutas, incluso con solicitudes directas.
+- **FR-004**: El sistema NO DEBE permitir publicar una ruta sin insignia asignada (con nombre, descripción, motivo SVG oficial y color de acento) ni sin funciones elegibles, ni exigir una ilustración propia ni subir archivos para publicarla.
+- **FR-005**: Solo el administrador DEBE poder crear, editar y publicar rutas desde el panel `/panel/rutas`, incluso con solicitudes directas.
 - **FR-006**: Editar una ruta NO DEBE retirar automáticamente insignias ya ganadas.
 - **FR-007**: Los cambios sobre rutas e insignias DEBEN quedar en el historial (RC-06).
 
@@ -149,14 +157,14 @@ El administrador crea una ruta, selecciona las funciones elegibles, establece un
 
 **Insignias**
 
-- **FR-017**: Al alcanzar la meta, el usuario DEBE obtener la insignia de la ruta una sola vez.
+- **FR-017**: Al alcanzar la meta (sea en el canje del sello o en la consulta de progreso), el usuario DEBE obtener la insignia de la ruta una sola vez y recibir aviso de desbloqueo.
 - **FR-018**: Dos solicitudes simultáneas que completan la meta NO DEBEN otorgar la insignia dos veces (RC-05).
-- **FR-019**: El usuario DEBE ver solo sus propias insignias en el apartado Insignias.
+- **FR-019**: El usuario DEBE ver solo sus propias insignias en el apartado Insignias de `/pasaporte`.
 
-**Ruta en revisión y presentación visual** (decisiones cerradas el 2026-11-20; véase Clarifications)
+**Ruta en revisión y presentación visual** (decisiones cerradas el 2026-11-20 y 2026-11-22; véase Clarifications)
 
-- **FR-020**: Los sellos ya obtenidos de una función cancelada DEBEN seguir contando en el progreso. Si la cancelación impide completar la meta con las funciones elegibles restantes, la ruta DEBE mostrarse como «Ruta en revisión» y el administrador DEBE poder ajustarla, por ejemplo añadiendo otra función elegible. El sistema NO DEBE reducir la meta automáticamente ni retirar progreso, sellos o insignias ya otorgadas.
-- **FR-021**: Las rutas y las insignias DEBEN presentarse con plantillas visuales comunes de VIVART y con el nombre y la descripción que defina el administrador; NO DEBE exigirse una ilustración única ni subir archivos para publicar cada ruta.
+- **FR-020**: Los sellos ya obtenidos de una función cancelada DEBEN seguir contando en el progreso. Si la cancelación impide completar la meta con las funciones elegibles restantes, la ruta DEBE mostrarse como «Ruta en revisión» y el administrador DEBE poder ajustarla desde `/panel/rutas`, por ejemplo añadiendo otra función elegible. El sistema NO DEBE reducir la meta automáticamente ni retirar progreso, sellos o insignias ya otorgadas.
+- **FR-021**: Las rutas y las insignias DEBEN presentarse con plantillas visuales comunes de VIVART (icono temático oficial y color de la paleta) y con el nombre y la descripción que defina el administrador; NO DEBE exigirse una ilustración única ni subir archivos para publicar cada ruta.
 
 ### Key Entities
 

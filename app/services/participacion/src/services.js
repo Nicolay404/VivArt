@@ -10,6 +10,7 @@ import { createAccess } from './domain/access.js';
 import { createAdmin } from './domain/admin.js';
 import { createPasaporte, createRefs } from './domain/pasaporte.js';
 import { createPasaporteAdmin } from './domain/pasaporte-admin.js';
+import { createRoutesService } from './domain/routes-service.js';
 
 /** Ensambla la lógica del servicio. Identidad y programación se pueden sustituir en las pruebas. */
 export async function createServices({ config, db, identidad, programacion }) {
@@ -27,8 +28,10 @@ export async function createServices({ config, db, identidad, programacion }) {
   const admin = createAdmin({ db, programacion, permisos, clock });
   // Pasaporte (spec 006): el ref del QR se deriva de TICKET_KEY con otra etiqueta, sin secretos nuevos.
   const refs = createRefs(config.ticketKey);
-  const pasaporte = createPasaporte({ db, programacion, clock });
+  // Rutas e insignias (spec 007)
+  const routes = createRoutesService({ db, programacion, permisos, clock });
+  const pasaporte = createPasaporte({ db, programacion, clock, routes });
   const pasaporteAdmin = createPasaporteAdmin({ db, programacion, permisos, refs, clock, publicBaseUrl: config.publicBaseUrl });
 
-  return { db, identidad, programacion, permisos, codes, cart, orders, tickets, access, admin, refs, pasaporte, pasaporteAdmin, clock };
+  return { db, identidad, programacion, permisos, codes, cart, orders, tickets, access, admin, refs, pasaporte, pasaporteAdmin, routes, clock };
 }
