@@ -4,6 +4,7 @@ import { h, icono, aviso } from './dom.js';
 import { guardarEnRecorrido, quitarDeRecorrido, estaEnRecorrido } from './recorrido.js';
 import {
   formatoFecha,
+  partesFecha,
   formatoHorarioFuncion,
   formatoDuracion,
   formatoFranjaDias,
@@ -33,6 +34,24 @@ function renderSede(venue) {
         : null,
     ),
   );
+}
+
+/** Día de la función en grande, como en las tarjetas del festival. Solo decoración: la fecha completa va al lado. */
+function bloqueDia(fecha, cancelada) {
+  const p = partesFecha(fecha);
+  if (!p) return h('div', { class: 'horario-dia sin-dia', 'aria-hidden': 'true' }, icono('calendario', 'icono'));
+  return h(
+    'div',
+    { class: `horario-dia ${cancelada ? 'cancelada' : ''}`, 'aria-hidden': 'true' },
+    h('span', { class: 'fecha-semana' }, p.semana),
+    h('span', { class: 'fecha-dia' }, String(p.dia)),
+    h('span', { class: 'fecha-mes' }, p.mes),
+  );
+}
+
+/** Hora en grande y, aparte, la aclaración de que es hora de Loja (RC-07). */
+function horaGrande(texto) {
+  return h('span', { class: 'horario-hora' }, h('strong', { class: 'hora-grande' }, texto), h('span', { class: 'hora-zona' }, 'hora de Loja'));
 }
 
 const ESTADO_VENTA = {
@@ -257,15 +276,16 @@ export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(
             const durFn = fn.durationMinutes ? formatoDuracion(fn.durationMinutes) : null;
             return h(
               'li',
-              { class: `horario-tarjeta ${esCancelada ? 'horario-cancelada' : ''}` },
+              { class: `horario-tarjeta con-dia ${esCancelada ? 'horario-cancelada' : ''}` },
+              bloqueDia(fn.date, esCancelada),
               h(
                 'div',
                 { class: 'horario-principal' },
                 h(
                   'div',
                   { class: 'horario-fecha-hora' },
+                  horaGrande(formatoHorarioFuncion(fn)),
                   h('span', { class: 'horario-fecha' }, icono('calendario', 'icono-sm'), formatoFecha(fn.date)),
-                  h('span', { class: 'horario-hora' }, icono('reloj', 'icono-sm'), formatoHorarioFuncion(fn), ' (hora de Loja)'),
                   durFn ? h('span', { class: 'chip-sutil' }, durFn) : null,
                 ),
                 estado ? h('span', { class: `insignia-estado ${estado.clase}` }, estado.texto) : null,
@@ -314,20 +334,16 @@ export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(
           franjas.map((sl) =>
             h(
               'li',
-              { class: 'horario-tarjeta' },
+              { class: 'horario-tarjeta con-dia' },
+              h('div', { class: 'horario-dia sin-dia', 'aria-hidden': 'true' }, icono('reloj', 'icono'), h('span', { class: 'fecha-mes' }, 'Visita')),
               h(
                 'div',
                 { class: 'horario-principal' },
                 h(
                   'div',
                   { class: 'horario-fecha-hora' },
+                  sl.opens && sl.closes ? horaGrande(`${sl.opens} – ${sl.closes}`) : h('span', { class: 'horario-hora dato-pendiente' }, 'Horario por confirmar'),
                   h('span', { class: 'horario-fecha' }, icono('calendario', 'icono-sm'), formatoFranjaDias(sl)),
-                  h(
-                    'span',
-                    { class: 'horario-hora' },
-                    icono('reloj', 'icono-sm'),
-                    sl.opens && sl.closes ? `${sl.opens} – ${sl.closes} (hora de Loja)` : 'Horario por confirmar',
-                  ),
                 ),
                 h('span', { class: 'insignia-estado estado-franja' }, 'Franja de apertura'),
               ),

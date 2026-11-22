@@ -233,7 +233,7 @@ export async function pantallaRuta({ persona, id }) {
           h('strong', {}, 'Ruta en revisión: '),
           'Algunas funciones elegibles fueron canceladas y la meta temporalmente no puede completarse con las opciones activas restantes. Tus sellos ya obtenidos siguen contando.',
         )
-      : null,
+      : '', // un null aquí se pintaba como el texto «null»
     h(
       'div',
       { class: `insignia-plantilla insignia-color-${ruta.badge.color}` },

@@ -7,6 +7,7 @@
     <meta name="description" content="Agenda cultural, fichas de actividades, ¿Qué hay ahora? y panel editorial de VIVART." />
     <meta name="theme-color" content="#3b0f66" />
     <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/diseno.css" />
   </head>
   <body>
     <a class="saltar" href="#contenido">Saltar al contenido</a>
@@ -14,8 +15,11 @@
     <header class="cabecera">
       <div class="cabecera-interior">
         <a class="marca" href="/" data-enlace aria-label="VIVART, ir a la Agenda">
-          <span class="marca-nombre">VIVART</span>
-          <span class="marca-lema">Artes Vivas Loja</span>
+          <span class="marca-sello" aria-hidden="true">V</span>
+          <span class="marca-textos">
+            <span class="marca-nombre">VIVART</span>
+            <span class="marca-lema">Artes vivas · Loja</span>
+          </span>
         </a>
         <button type="button" class="boton-menu" id="boton-menu" aria-controls="navegacion" aria-expanded="false">
           <span class="icono-menu" aria-hidden="true"></span>
@@ -30,8 +34,18 @@
     <main id="contenido" tabindex="-1"></main>
 
     <footer class="pie">
+      <div class="pie-franja" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
       <div class="pie-interior">
-        <p class="pie-marca"><strong>VIVART</strong> · Festival Internacional de Artes Vivas de Loja</p>
+        <div class="pie-marca-bloque">
+          <p class="pie-logo">VIVART</p>
+          <p class="pie-marca">Festival Internacional de Artes Vivas de Loja</p>
+        </div>
+        <nav class="pie-nav" aria-label="Pie de página">
+          <a href="/agenda" data-enlace>Agenda</a>
+          <a href="/mapa" data-enlace>Mapa</a>
+          <a href="/recorrido" data-enlace>Mi recorrido</a>
+          <a href="/pasaporte" data-enlace>Pasaporte</a>
+        </nav>
         <p class="pie-nota">Entorno de demostración: horarios en hora local de Loja, sin cobros reales ni envío de correos reales.</p>
       </div>
     </footer>

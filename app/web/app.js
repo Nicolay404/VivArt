@@ -48,6 +48,12 @@ function abrirMenu(abierto) {
 }
 
 botonMenu.addEventListener('click', () => abrirMenu(botonMenu.getAttribute('aria-expanded') !== 'true'));
+
+// La barra flotante se compacta y gana sombra al bajar por la página.
+const cabecera = document.querySelector('.cabecera');
+const marcarDesplazamiento = () => cabecera?.classList.toggle('desplazada', window.scrollY > 8);
+window.addEventListener('scroll', marcarDesplazamiento, { passive: true });
+marcarDesplazamiento();
 document.addEventListener('keydown', (evento) => {
   if (evento.key === 'Escape' && botonMenu.getAttribute('aria-expanded') === 'true') {
     abrirMenu(false);
@@ -67,34 +73,62 @@ function pintarNavegacion() {
   const esAgenda = actual === '/' || actual === '/agenda' || actual.startsWith('/actividad/');
   const esPanel = actual.startsWith('/panel');
 
-  const enlace = (ruta, texto, activo = actual === ruta) =>
-    h('a', { href: ruta, 'data-enlace': true, 'aria-current': activo ? 'page' : null }, texto);
+  const enlace = (ruta, texto, activo = actual === ruta, nombreIcono = null, clase = null) =>
+    h(
+      'a',
+      { href: ruta, 'data-enlace': true, class: clase, 'aria-current': activo ? 'page' : null },
+      nombreIcono ? icono(nombreIcono, 'icono-sm') : null,
+      h('span', {}, texto),
+    );
 
   const principales = [
-    enlace('/mapa', 'Mapa', actual === '/mapa'),
-    enlace('/', 'Agenda', esAgenda),
-    enlace('/recorrido', 'Mi recorrido', actual === '/recorrido'),
-    enlace('/pasaporte', 'Pasaporte', actual === '/pasaporte'),
+    enlace('/mapa', 'Mapa', actual === '/mapa', 'sede'),
+    enlace('/', 'Agenda', esAgenda, 'calendario'),
+    enlace('/recorrido', 'Mi recorrido', actual === '/recorrido', 'recorrido'),
+    enlace('/pasaporte', 'Pasaporte', actual.startsWith('/pasaporte'), 'pasaporte'),
   ];
 
   const cuentaItems = [];
   const enCarrito = unidadesEnCarrito();
-  cuentaItems.push(enlace('/carrito', enCarrito ? `Carrito (${enCarrito})` : 'Carrito'));
+  const unidades = enCarrito === 1 ? 'entrada' : 'entradas';
+  // Carrito como icono con contador; el nombre completo va en aria-label para lectores de pantalla.
+  cuentaItems.push(
+    h(
+      'a',
+      {
+        href: '/carrito',
+        'data-enlace': true,
+        class: 'nav-carrito',
+        'aria-current': actual === '/carrito' ? 'page' : null,
+        'aria-label': enCarrito ? `Carrito, ${enCarrito} ${unidades}` : 'Carrito',
+        title: 'Carrito',
+      },
+      icono('carrito', 'icono-sm'),
+      h('span', { class: 'nav-carrito-texto' }, 'Carrito'),
+      enCarrito ? h('span', { class: 'nav-contador', 'aria-hidden': 'true' }, String(enCarrito)) : null,
+    ),
+  );
   if (persona) {
     if (tieneRolPanel(persona)) {
-      cuentaItems.push(enlace('/panel/actividades', 'Panel editorial', esPanel));
+      cuentaItems.push(enlace('/panel/actividades', 'Panel editorial', esPanel, 'panel'));
     }
-    cuentaItems.push(enlace('/perfil', 'Mi cuenta'));
+    cuentaItems.push(enlace('/perfil', 'Mi cuenta', actual === '/perfil', 'usuario'));
     cuentaItems.push(h('button', { type: 'button', class: 'secundario boton-nav-salir', onclick: salir }, 'Salir'));
   } else {
-    cuentaItems.push(enlace('/ingresar', 'Ingresar'), enlace('/registro', 'Crear cuenta'));
+    cuentaItems.push(enlace('/ingresar', 'Ingresar'), enlace('/registro', 'Crear cuenta', actual === '/registro', null, 'nav-cta'));
   }
 
+  // Herramientas de la demo, recogidas en un desplegable para que no compitan con la navegación real.
   const demo = h(
-    'div',
-    { class: 'nav-demo', role: 'group', 'aria-label': 'Herramientas de demostración' },
-    enlace('/demo/buzon', 'Buzón de pruebas'),
-    enlace('/demo/retorno', 'Demo retorno'),
+    'details',
+    { class: 'nav-demo' },
+    h('summary', {}, 'Demo'),
+    h(
+      'div',
+      { class: 'nav-demo-lista', role: 'group', 'aria-label': 'Herramientas de demostración' },
+      enlace('/demo/buzon', 'Buzón de pruebas'),
+      enlace('/demo/retorno', 'Demo retorno'),
+    ),
   );
 
   navegacion.replaceChildren(

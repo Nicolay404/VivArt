@@ -17,8 +17,6 @@
   font-display: swap;
 }
 
-html { color-scheme: light; }
-
 :root {
   /* Colores de marca (inspirados en los mockups de Loja al atardecer) */
   --marca-oscuro: #3a1460;
@@ -82,6 +80,7 @@ html { color-scheme: light; }
 *, *::before, *::after { box-sizing: border-box; }
 
 html {
+  color-scheme: light;
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
 }
@@ -586,7 +585,7 @@ textarea[aria-invalid="true"] {
 }
 
 .pestana-hero {
-  background: rgb(255 255 255 / 10%);
+  background: color-mix(in srgb, rgb(255 255 255) 10%, transparent);
   border: 1.5px solid rgb(255 255 255 / 45%);
   color: #ffffff;
   backdrop-filter: blur(8px);
@@ -756,7 +755,7 @@ textarea[aria-invalid="true"] {
 .tarjeta-agenda:hover,
 .tarjeta-ahora:hover {
   transform: translateY(-2px);
-  box-shadow: var(--sombra);
+  box-shadow: 0 12px 26px -18px rgb(91 31 134 / 55%);
   border-color: var(--acento);
 }
 
@@ -1542,14 +1541,7 @@ h1, h2, h3,
   text-wrap: balance;
 }
 
-.hero-titulo { letter-spacing: -0.03em; }
-.marca-nombre { letter-spacing: 0.01em; }
-
-/* Tarjetas: se elevan un poco al pasar el cursor */
-.tarjeta-agenda,
-.tarjeta-ahora { transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease; }
-.tarjeta-agenda:hover,
-.tarjeta-ahora:hover { transform: translateY(-2px); box-shadow: 0 12px 26px -18px rgb(91 31 134 / 55%); }
+/* El espaciado propio de .hero-titulo y .marca-nombre está en diseno.css, que se carga después. */
 
 @media (prefers-reduced-motion: reduce) {
   .tarjeta-agenda:hover,
@@ -2692,7 +2684,7 @@ h1, h2, h3,
   align-items: center;
   gap: 0.35rem;
   font-weight: 600;
-  transition: all 0.15s ease;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
 }
 
 .boton-alternativas:hover {
@@ -2951,19 +2943,19 @@ h1, h2, h3,
 /* Colores de acento oficiales */
 .insignia-color-violeta {
   color: #3b0f66;
-  background: rgb(59 15 102 / 6%);
+  background: color-mix(in srgb, rgb(59 15 102) 6%, transparent);
 }
 .insignia-color-atardecer {
   color: #d97706;
-  background: rgb(217 119 6 / 8%);
+  background: color-mix(in srgb, rgb(217 119 6) 8%, transparent);
 }
 .insignia-color-terracota {
   color: #c2410c;
-  background: rgb(194 65 12 / 8%);
+  background: color-mix(in srgb, rgb(194 65 12) 8%, transparent);
 }
 .insignia-color-esmeralda {
   color: #0f766e;
-  background: rgb(15 118 110 / 8%);
+  background: color-mix(in srgb, rgb(15 118 110) 8%, transparent);
 }
 
 /* Rejilla y tarjetas de rutas públicas */
@@ -3116,6 +3108,8 @@ h1, h2, h3,
 .aviso-insignia-desbloqueada h3 {
   margin: 0;
   color: var(--ok);
+}
+
 /* ---------- Alforjita (spec 008): panel lateral en escritorio, pantalla completa en celular ---------- */
 
 .boton-alforjita {
