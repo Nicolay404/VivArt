@@ -49,6 +49,24 @@ const CABECERAS_SEGURAS = {
 
 const DIRECTORIO_WEB = fileURLToPath(new URL('../web/', import.meta.url));
 
+/** Sirve un video completo o la parte pedida con Range (206), o 416 si el rango no se puede servir. */
+function servirPorPartes(req, res, completa, tamano) {
+  const comunes = { 'content-type': TIPOS[extname(completa)], 'accept-ranges': 'bytes', 'cache-control': 'no-cache', ...CABECERAS_SEGURAS };
+  if (!req.headers.range) {
+    res.writeHead(200, { ...comunes, 'content-length': tamano });
+    if (req.method === 'HEAD') return res.end();
+    return createReadStream(completa).pipe(res);
+  }
+  const rango = rangoPedido(req.headers.range, tamano);
+  if (!rango) {
+    res.writeHead(416, { ...CABECERAS_SEGURAS, 'content-range': `bytes */${tamano}` });
+    return res.end();
+  }
+  res.writeHead(206, { ...comunes, 'content-length': rango.fin - rango.inicio + 1, 'content-range': `bytes ${rango.inicio}-${rango.fin}/${tamano}` });
+  if (req.method === 'HEAD') return res.end();
+  return createReadStream(completa, { start: rango.inicio, end: rango.fin }).pipe(res);
+}
+
 export function createEdge({
   webDir = DIRECTORIO_WEB,
   routes = [
@@ -119,23 +137,6 @@ export function createEdge({
       res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', ...CABECERAS_SEGURAS });
       return res.end('No encontrado');
     }
-  }
-
-  function servirPorPartes(req, res, completa, tamano) {
-    const comunes = { 'content-type': TIPOS[extname(completa)], 'accept-ranges': 'bytes', 'cache-control': 'no-cache', ...CABECERAS_SEGURAS };
-    if (!req.headers.range) {
-      res.writeHead(200, { ...comunes, 'content-length': tamano });
-      if (req.method === 'HEAD') return res.end();
-      return createReadStream(completa).pipe(res);
-    }
-    const rango = rangoPedido(req.headers.range, tamano);
-    if (!rango) {
-      res.writeHead(416, { ...CABECERAS_SEGURAS, 'content-range': `bytes */${tamano}` });
-      return res.end();
-    }
-    res.writeHead(206, { ...comunes, 'content-length': rango.fin - rango.inicio + 1, 'content-range': `bytes ${rango.inicio}-${rango.fin}/${tamano}` });
-    if (req.method === 'HEAD') return res.end();
-    return createReadStream(completa, { start: rango.inicio, end: rango.fin }).pipe(res);
   }
 
   return http.createServer((req, res) => {

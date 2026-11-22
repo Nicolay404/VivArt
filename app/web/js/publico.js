@@ -5,7 +5,6 @@ import { h, icono, esqueletoTarjetas, aviso } from './dom.js';
 import { apiProgramacion, apiParticipacion } from './api.js';
 import { agregarAlCarrito } from './carrito.js';
 import {
-  formatoFechaCorta,
   formatoFecha,
   formatoHorarioFuncion,
   formatoFranjaDias,
@@ -619,20 +618,17 @@ export async function pantallaAgenda() {
       return;
     }
 
+    const cabeceraSeccion = (titulo, descripcion) =>
+      h(
+        'div',
+        { class: 'ahora-seccion-cabecera' },
+        h('p', { class: 'eyebrow' }, 'Hoy · hora de Loja'),
+        h('h2', { class: 'titulo-seccion' }, titulo),
+        descripcion ? h('p', { class: 'ayuda' }, descripcion) : null,
+      );
     const seccion = (titulo, descripcion, tarjetas) =>
       tarjetas.length
-        ? h(
-            'section',
-            { class: 'ahora-seccion' },
-            h(
-              'div',
-              { class: 'ahora-seccion-cabecera' },
-              h('p', { class: 'eyebrow' }, 'Hoy · hora de Loja'),
-              h('h2', { class: 'titulo-seccion' }, titulo),
-              descripcion ? h('p', { class: 'ayuda' }, descripcion) : null,
-            ),
-            h('div', { class: 'grid-ahora' }, tarjetas),
-          )
+        ? h('section', { class: 'ahora-seccion' }, cabeceraSeccion(titulo, descripcion), h('div', { class: 'grid-ahora' }, tarjetas))
         : null;
 
     zonaResultados.replaceChildren(

@@ -90,6 +90,7 @@ function pintarNavegacion() {
 
   const cuentaItems = [];
   const enCarrito = unidadesEnCarrito();
+  const unidades = enCarrito === 1 ? 'entrada' : 'entradas';
   // Carrito como icono con contador; el nombre completo va en aria-label para lectores de pantalla.
   cuentaItems.push(
     h(
@@ -99,7 +100,7 @@ function pintarNavegacion() {
         'data-enlace': true,
         class: 'nav-carrito',
         'aria-current': actual === '/carrito' ? 'page' : null,
-        'aria-label': enCarrito ? `Carrito, ${enCarrito} ${enCarrito === 1 ? 'entrada' : 'entradas'}` : 'Carrito',
+        'aria-label': enCarrito ? `Carrito, ${enCarrito} ${unidades}` : 'Carrito',
         title: 'Carrito',
       },
       icono('carrito', 'icono-sm'),
