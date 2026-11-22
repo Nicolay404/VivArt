@@ -5,6 +5,15 @@ const MESES = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'o
 const DIAS_SEMANA = ['dom', 'lun', 'mar', 'mié', 'jue', 'vie', 'sáb'];
 const DIAS_ISO = { 1: 'lun', 2: 'mar', 3: 'mié', 4: 'jue', 5: 'vie', 6: 'sáb', 7: 'dom' };
 
+/** Partes de una fecha AAAA-MM-DD para mostrarla en grande (número, mes y día de la semana), sin husos del navegador. */
+export function partesFecha(isoDate) {
+  const partes = String(isoDate ?? '').split('-').map(Number);
+  if (partes.length !== 3 || partes.some(Number.isNaN)) return null;
+  const [anio, mes, dia] = partes;
+  const d = new Date(Date.UTC(anio, mes - 1, dia, 12, 0, 0));
+  return { dia, mes: MESES[mes - 1], semana: DIAS_SEMANA[d.getUTCDay()], anio };
+}
+
 /** Formatea AAAA-MM-DD sin aplicar husos horarios del navegador. */
 export function formatoFecha(isoDate) {
   if (!isoDate || typeof isoDate !== 'string') return 'Por confirmar';

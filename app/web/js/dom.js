@@ -50,6 +50,16 @@ const TRAZOS_MAPA = {
   accesible: [['circle', { cx: 12, cy: 4.5, r: 1.7 }], ['path', { d: 'M6 8.5h12M12 8.5v5.5M12 14l-3.5 6.5M12 14l3.5 6.5' }]],
   bano: [['rect', { x: 4, y: 3, width: 16, height: 18, rx: 2 }], ['circle', { cx: 12, cy: 8, r: 1.6 }], ['path', { d: 'M9 17v-4.5a3 3 0 0 1 6 0V17' }]],
   externo: [['path', { d: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5' }]],
+  // Iconos que Mi recorrido ya pedía y no existían (salían como un círculo vacío).
+  'flecha-izquierda': [['path', { d: 'M19 12H5M11 18l-6-6 6-6' }]],
+  basura: [['path', { d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' }]],
+  descargar: [['path', { d: 'M12 4v11M7 10l5 5 5-5M5 20h14' }]],
+  // Pausar y reanudar el video de la portada.
+  pausa: [['line', { x1: 9, y1: 5, x2: 9, y2: 19 }], ['line', { x1: 15, y1: 5, x2: 15, y2: 19 }]],
+  reproducir: [['path', { d: 'M7 5v14l12-7z' }]],
+  // Activar y quitar el sonido del video (los navegadores solo dejan sonar un video tras una acción de la persona).
+  sonido: [['path', { d: 'M4 9h4l5-4v14l-5-4H4z' }], ['path', { d: 'M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12' }]],
+  silencio: [['path', { d: 'M4 9h4l5-4v14l-5-4H4z' }], ['path', { d: 'M17 9l5 6M22 9l-5 6' }]],
   // Avatar neutro de Alforjita (spec 008): una alforja a línea, no la ilustración de la mascota (M-17).
   alforja: [
     ['path', { d: 'M4.5 9.5h15v9a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5z' }],

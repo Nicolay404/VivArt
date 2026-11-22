@@ -2,6 +2,7 @@
 // Es un enrutamiento sencillo, no un gateway dedicado: sin autenticación, sin lógica de negocio y sin dependencias.
 import http from 'node:http';
 import { readFile, stat } from 'node:fs/promises';
+import { createReadStream } from 'node:fs';
 import { extname, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -13,7 +14,29 @@ const TIPOS = {
   '.png': 'image/png',
   '.ico': 'image/x-icon',
   '.woff2': 'font/woff2',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
 };
+
+// Los videos se sirven por partes (cabecera Range): el navegador los pide así para empezar a reproducir,
+// avanzar y repetir en bucle sin descargar el archivo entero cada vez.
+const POR_PARTES = new Set(['.mp4', '.webm']);
+
+/** Interpreta «bytes=inicio-fin» (un solo rango). Devuelve { inicio, fin } o null si no se puede servir. */
+export function rangoPedido(cabecera, tamano) {
+  const m = /^bytes=(\d*)-(\d*)$/.exec(String(cabecera ?? '').trim());
+  if (!m || (m[1] === '' && m[2] === '')) return null;
+  let inicio;
+  let fin;
+  if (m[1] === '') {
+    inicio = Math.max(0, tamano - Number(m[2]));
+    fin = tamano - 1;
+  } else {
+    inicio = Number(m[1]);
+    fin = m[2] === '' ? tamano - 1 : Math.min(Number(m[2]), tamano - 1);
+  }
+  return inicio <= fin && inicio < tamano ? { inicio, fin } : null;
+}
 
 // Cabeceras seguras. `geolocation=()` deja explícito que VIVART no pide la ubicación (RNF-05).
 // La cámara solo se permite al propio sitio, para escanear entradas en el control de acceso (spec 005).
@@ -82,7 +105,9 @@ export function createEdge({
       return res.end();
     }
     try {
-      if (!(await stat(completa)).isFile()) throw new Error('no es archivo');
+      const info = await stat(completa);
+      if (!info.isFile()) throw new Error('no es archivo');
+      if (POR_PARTES.has(extname(completa))) return servirPorPartes(req, res, completa, info.size);
       const contenido = await readFile(completa);
       res.writeHead(200, {
         'content-type': TIPOS[extname(completa)] ?? 'application/octet-stream',
@@ -94,6 +119,23 @@ export function createEdge({
       res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', ...CABECERAS_SEGURAS });
       return res.end('No encontrado');
     }
+  }
+
+  function servirPorPartes(req, res, completa, tamano) {
+    const comunes = { 'content-type': TIPOS[extname(completa)], 'accept-ranges': 'bytes', 'cache-control': 'no-cache', ...CABECERAS_SEGURAS };
+    if (!req.headers.range) {
+      res.writeHead(200, { ...comunes, 'content-length': tamano });
+      if (req.method === 'HEAD') return res.end();
+      return createReadStream(completa).pipe(res);
+    }
+    const rango = rangoPedido(req.headers.range, tamano);
+    if (!rango) {
+      res.writeHead(416, { ...CABECERAS_SEGURAS, 'content-range': `bytes */${tamano}` });
+      return res.end();
+    }
+    res.writeHead(206, { ...comunes, 'content-length': rango.fin - rango.inicio + 1, 'content-range': `bytes ${rango.inicio}-${rango.fin}/${tamano}` });
+    if (req.method === 'HEAD') return res.end();
+    return createReadStream(completa, { start: rango.inicio, end: rango.fin }).pipe(res);
   }
 
   return http.createServer((req, res) => {

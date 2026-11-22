@@ -9,10 +9,39 @@ import {
   formatoFecha,
   formatoHorarioFuncion,
   formatoFranjaDias,
+  partesFecha,
   claseAcceso,
   iconoParaCategoria,
 } from './format.js';
 import { renderFicha } from './ficha-componente.js';
+
+/** Tono del bloque de fecha según la categoría: siempre el mismo para la misma categoría (solo decoración). */
+function tonoCategoria(nombre) {
+  let suma = 0;
+  for (const c of String(nombre)) suma += c.codePointAt(0);
+  return `tono-${(suma % 3) + 1}`;
+}
+
+/** Bloque con el día de la próxima función en grande, como en los carteles del festival. */
+function bloqueFecha(item, categoria) {
+  const p = item.nextDate ? partesFecha(item.nextDate) : null;
+  if (p) {
+    return h(
+      'div',
+      { class: `tarjeta-agenda-fecha ${tonoCategoria(categoria)}` },
+      h('span', { class: 'sr-only' }, 'Próxima función: '),
+      h('span', { class: 'fecha-semana' }, p.semana),
+      h('span', { class: 'fecha-dia' }, String(p.dia)),
+      h('span', { class: 'fecha-mes' }, p.mes),
+    );
+  }
+  return h(
+    'div',
+    { class: `tarjeta-agenda-fecha sin-dia ${tonoCategoria(categoria)}` },
+    icono(item.isPermanent ? 'reloj' : 'calendario', 'icono'),
+    h('span', { class: 'fecha-mes' }, item.isPermanent ? 'Por franja' : 'Por confirmar'),
+  );
+}
 
 function tarjetaAgenda(item) {
   const categoria = item.category?.name ?? 'Categoría por confirmar';
@@ -25,7 +54,12 @@ function tarjetaAgenda(item) {
     h(
       'a',
       { href: `/actividad/${encodeURIComponent(item.id)}`, 'data-enlace': true, class: 'tarjeta-agenda-enlace' },
+      bloqueFecha(item, categoria),
+      h('span', { class: 'tarjeta-agenda-flecha', 'aria-hidden': 'true' }, '↗'),
       h(
+        'div',
+        { class: 'tarjeta-agenda-cuerpo' },
+        h(
         'div',
         { class: 'tarjeta-agenda-top' },
         h(
@@ -40,18 +74,9 @@ function tarjetaAgenda(item) {
       item.artists?.length
         ? h('p', { class: 'tarjeta-agenda-artistas' }, item.artists.join(' · '))
         : null,
-      h(
-        'div',
-        { class: 'tarjeta-agenda-meta' },
-        item.nextDate
-          ? h('span', { class: 'meta-item' }, icono('calendario', 'icono-xs'), `Próxima: ${formatoFechaCorta(item.nextDate)}`)
-          : item.isPermanent
-            ? h('span', { class: 'meta-item' }, icono('reloj', 'icono-xs'), 'Visitas por franja')
-            : null,
-        sedesNombres.length
-          ? h('span', { class: 'meta-item' }, icono('sede', 'icono-xs'), sedesNombres.join(', '))
-          : null,
-      ),
+      sedesNombres.length
+        ? h('div', { class: 'tarjeta-agenda-meta' }, h('span', { class: 'meta-item' }, icono('sede', 'icono-xs'), sedesNombres.join(', ')))
+        : null,
       item.isPermanent || item.hasNotices
         ? h(
             'div',
@@ -60,7 +85,18 @@ function tarjetaAgenda(item) {
             item.hasNotices ? h('span', { class: 'chip-aviso' }, icono('aviso', 'icono-xs'), 'Tiene avisos') : null,
           )
         : null,
+      ),
     ),
+  );
+}
+
+/** Parte superior de las tarjetas de «¿Qué hay ahora?»: el estado en texto (nunca solo con color) y la flecha. */
+function topAhora(etiquetaEstado) {
+  return h(
+    'div',
+    { class: 'tarjeta-ahora-top' },
+    h('span', { class: 'estado-ahora' }, etiquetaEstado),
+    h('span', { class: 'tarjeta-ahora-flecha', 'aria-hidden': 'true' }, '↗'),
   );
 }
 
@@ -68,16 +104,12 @@ function tarjetaAhoraFuncion(entrada, etiquetaEstado, claseEstado) {
   const fn = entrada.function;
   return h(
     'article',
-    { class: 'tarjeta-ahora' },
+    { class: `tarjeta-ahora tarjeta-color ${claseEstado}` },
     h(
       'a',
       { href: `/actividad/${encodeURIComponent(entrada.activityId)}`, 'data-enlace': true, class: 'tarjeta-ahora-enlace' },
-      h(
-        'div',
-        { class: 'tarjeta-ahora-top' },
-        h('span', { class: 'hora-destacada' }, icono('reloj', 'icono-xs'), formatoHorarioFuncion(fn)),
-        h('span', { class: `insignia-estado ${claseEstado}` }, etiquetaEstado),
-      ),
+      topAhora(etiquetaEstado),
+      h('p', { class: 'hora-ahora' }, h('span', { class: 'sr-only' }, 'Hora: '), formatoHorarioFuncion(fn)),
       h('h3', { class: 'tarjeta-ahora-titulo' }, entrada.title),
       fn.venue
         ? h(
@@ -95,21 +127,112 @@ function tarjetaAhoraFranja(entrada) {
   const sl = entrada.slot;
   return h(
     'article',
-    { class: 'tarjeta-ahora' },
+    { class: 'tarjeta-ahora tarjeta-color estado-curso' },
     h(
       'a',
       { href: `/actividad/${encodeURIComponent(entrada.activityId)}`, 'data-enlace': true, class: 'tarjeta-ahora-enlace' },
-      h(
-        'div',
-        { class: 'tarjeta-ahora-top' },
-        h('span', { class: 'hora-destacada' }, icono('reloj', 'icono-xs'), `${sl.opens} – ${sl.closes}`),
-        h('span', { class: 'insignia-estado estado-curso' }, 'Abierto ahora'),
-      ),
+      topAhora('Abierto ahora'),
+      h('p', { class: 'hora-ahora' }, h('span', { class: 'sr-only' }, 'Horario: '), `${sl.opens} – ${sl.closes}`),
       h('h3', { class: 'tarjeta-ahora-titulo' }, entrada.title),
       h('p', { class: 'meta-item' }, icono('calendario', 'icono-xs'), formatoFranjaDias(sl)),
       sl.venue
         ? h('p', { class: 'meta-item' }, icono(sl.venue.kind === 'route' ? 'recorrido' : 'sede', 'icono-xs'), sl.venue.name)
         : null,
+    ),
+  );
+}
+
+/**
+ * Video de fondo de la portada: empieza en silencio (los navegadores no dejan que un video suene solo), en bucle, con
+ * botones para pausar (WCAG 2.2.2) y para activar el sonido. No se carga si la persona pidió reducir el movimiento, si su
+ * conexión ahorra datos o en pantallas de celular, para no gastar sus datos.
+ */
+function videoDePortada(src) {
+  const reducir = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+  const celular = globalThis.matchMedia?.('(max-width: 39.99rem)').matches;
+  if (reducir || celular || navigator.connection?.saveData) return null;
+  const video = document.createElement('video');
+  video.className = 'hero-video';
+  video.muted = true;
+  video.defaultMuted = true;
+  video.loop = true;
+  video.autoplay = true;
+  video.playsInline = true;
+  video.preload = 'auto';
+  video.setAttribute('aria-label', 'Video de ambiente del festival');
+  video.setAttribute('tabindex', '-1');
+  video.src = src;
+  const boton = h('button', { type: 'button', class: 'hero-video-pausa', 'aria-pressed': 'false' });
+  // Botones pequeños, solo con icono: su nombre va en aria-label (lectores de pantalla) y en title (al pasar el cursor).
+  const nombrar = (b, texto) => {
+    b.setAttribute('aria-label', texto);
+    b.setAttribute('title', texto);
+  };
+  const etiqueta = (pausado) => {
+    boton.setAttribute('aria-pressed', String(pausado));
+    nombrar(boton, pausado ? 'Reanudar video' : 'Pausar video');
+    boton.replaceChildren(icono(pausado ? 'reproducir' : 'pausa', 'icono-sm'));
+  };
+  etiqueta(false);
+  boton.addEventListener('click', () => {
+    if (video.paused) void video.play().catch(() => {});
+    else video.pause();
+  });
+  const sonido = h('button', { type: 'button', class: 'hero-video-pausa', 'aria-pressed': 'false' });
+  const etiquetaSonido = () => {
+    sonido.setAttribute('aria-pressed', String(!video.muted));
+    nombrar(sonido, video.muted ? 'Activar sonido' : 'Silenciar');
+    sonido.replaceChildren(icono(video.muted ? 'sonido' : 'silencio', 'icono-sm'));
+  };
+  etiquetaSonido();
+  sonido.addEventListener('click', () => {
+    video.muted = !video.muted;
+    // Si el navegador no deja que suene (no reconoce el clic como acción de la persona), sigue en silencio y en marcha.
+    if (!video.muted) {
+      void video.play().catch(() => {
+        video.muted = true;
+        void video.play().catch(() => {});
+      });
+    }
+    etiquetaSonido();
+  });
+  video.addEventListener('volumechange', etiquetaSonido);
+  const controles = h('div', { class: 'hero-video-controles', role: 'group', 'aria-label': 'Controles del video' }, boton, sonido);
+  video.addEventListener('play', () => etiqueta(false));
+  video.addEventListener('pause', () => etiqueta(true));
+  // Si el video no carga, la portada queda como antes, sin video ni botón.
+  video.addEventListener('error', () => {
+    video.remove();
+    controles.remove();
+  });
+  return { video, controles };
+}
+
+// PDF oficial de la programación, publicado por el festival. Se enlaza (no se copia al repositorio, M-04): así siempre
+// se descarga la versión vigente que publica el festival.
+const PDF_PROGRAMACION = 'https://festivaldeloja.com/wp-content/uploads/2026/11/PROGRAMACION-FIAVVL-2026-Final-Aprobada.pdf';
+const PDF_PROGRAMA_DE_MANO = 'https://festivaldeloja.com/wp-content/uploads/2026/11/PROGRAMA-DE-MANO-LOJA-2026-FINALA.pdf';
+
+function bloqueDescargaPdf() {
+  const externo = (href, clase, ...contenido) =>
+    h('a', { href, class: clase, target: '_blank', rel: 'noopener noreferrer' }, ...contenido, h('span', { class: 'sr-only' }, ' (abre el sitio del festival en otra pestaña)'));
+  return h(
+    'section',
+    { class: 'descarga-pdf', 'aria-labelledby': 'titulo-descarga-pdf' },
+    h('div', { class: 'descarga-pdf-mosaico', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'), h('span')),
+    h(
+      'div',
+      { class: 'descarga-pdf-texto' },
+      h('p', { class: 'eyebrow' }, 'Programación impresa'),
+      h('h2', { id: 'titulo-descarga-pdf', class: 'titulo-seccion' }, 'Llévate la programación'),
+      h('p', {}, 'Descarga el PDF oficial del festival con todas las funciones, sedes y horarios, para consultarlo sin conexión.'),
+      h(
+        'div',
+        { class: 'acciones-fila' },
+        externo(PDF_PROGRAMACION, 'boton boton-descarga', icono('descargar', 'icono-sm'), 'Descargar programación (PDF)'),
+        externo(PDF_PROGRAMA_DE_MANO, 'boton secundario', icono('externo', 'icono-sm'), 'Programa de mano'),
+      ),
+      h('p', { class: 'ayuda' }, 'Fuente: festivaldeloja.com. Si una función cambia, la Agenda muestra el aviso vigente.'),
     ),
   );
 }
@@ -142,7 +265,64 @@ export async function pantallaAgenda() {
 
   let categorias = [];
   let sedes = [];
+  let dias = [];
+  let hoyLoja = null;
   let consultaId = 0;
+  const zonaDias = h('nav', { class: 'selector-dias', 'aria-label': 'Días del festival' });
+  const zonaRango = h('div', { class: 'hero-rango', 'aria-hidden': 'true' });
+
+  /** Días con funciones publicadas, como en la programación impresa: un botón por día y «Todos». */
+  function pintarDias() {
+    zonaDias.hidden = estado.vista === 'ahora' || dias.length === 0;
+    if (zonaDias.hidden) return;
+    const elegir = (fecha) => {
+      estado.date = estado.date === fecha ? '' : fecha;
+      sincronizarUrl();
+      pintarDias();
+      pintarFiltros();
+      void cargarAgenda();
+    };
+    const boton = (fecha, contenido, etiqueta) =>
+      h(
+        'button',
+        {
+          type: 'button',
+          class: `dia-boton ${estado.date === fecha ? 'activo' : ''}`,
+          'aria-pressed': String(estado.date === fecha),
+          'aria-label': etiqueta,
+          onclick: () => elegir(fecha),
+        },
+        contenido,
+      );
+    zonaDias.replaceChildren(
+      h(
+        'div',
+        { class: 'selector-dias-interior' },
+        boton('', [h('span', { class: 'dia-numero' }, '★'), h('span', { class: 'dia-semana' }, 'Todos')], 'Todos los días'),
+        dias.map((d) => {
+          const p = partesFecha(d);
+          return boton(
+            d,
+            [
+              d === hoyLoja ? h('span', { class: 'dia-hoy' }, 'Hoy') : null,
+              h('span', { class: 'dia-numero' }, String(p.dia)),
+              h('span', { class: 'dia-semana' }, p.semana),
+            ],
+            `${formatoFecha(d)}${d === hoyLoja ? ' (hoy)' : ''}`,
+          );
+        }),
+      ),
+    );
+  }
+
+  /** Rango de la edición a partir de los días publicados («20—30 NOV 2026»); nunca se escribe a mano. */
+  function pintarRango() {
+    if (dias.length === 0) return zonaRango.replaceChildren();
+    const a = partesFecha(dias[0]);
+    const b = partesFecha(dias.at(-1));
+    const rango = a.mes === b.mes ? `${a.dia}—${b.dia}` : `${a.dia} ${a.mes}—${b.dia}`;
+    zonaRango.replaceChildren(h('span', { class: 'rango-dias' }, rango), h('span', { class: 'rango-mes' }, `${b.mes} ${b.anio}`));
+  }
 
   function sincronizarUrl() {
     const p = new URLSearchParams();
@@ -188,6 +368,7 @@ export async function pantallaAgenda() {
     btnTodo.classList.toggle('activa', estado.vista === 'todo');
     btnAhora.classList.toggle('activa', estado.vista === 'ahora');
     zonaFiltros.hidden = estado.vista === 'ahora';
+    pintarDias();
   }
 
   async function cambiarVista(nueva) {
@@ -206,6 +387,7 @@ export async function pantallaAgenda() {
     estado.access = '';
     sincronizarUrl();
     pintarFiltros();
+    pintarDias();
     void cargarAgenda();
   }
 
@@ -235,6 +417,7 @@ export async function pantallaAgenda() {
       onchange: () => {
         estado.date = inputFecha.value;
         sincronizarUrl();
+        pintarDias();
         void cargarAgenda();
       },
     });
@@ -359,6 +542,10 @@ export async function pantallaAgenda() {
     }
 
     zonaReloj.replaceChildren(...[barraReloj(r.datos.reference)].filter(Boolean));
+    if (hoyLoja !== r.datos.reference?.date) {
+      hoyLoja = r.datos.reference?.date ?? null;
+      pintarDias();
+    }
     const items = r.datos.items ?? [];
 
     if (items.length === 0) {
@@ -389,8 +576,8 @@ export async function pantallaAgenda() {
       h(
         'div',
         { class: 'resumen-resultados' },
-        h('h2', { class: 'sr-only' }, 'Actividades publicadas'),
-        h('p', { class: 'conteo-resultados' }, `${items.length} ${items.length === 1 ? 'actividad' : 'actividades'}`),
+        h('p', { class: 'eyebrow' }, estado.date ? formatoFecha(estado.date) : 'Programación publicada'),
+        h('h2', { class: 'titulo-seccion' }, `${items.length} ${items.length === 1 ? 'actividad' : 'actividades'}`),
       ),
       h('div', { class: 'grid-agenda' }, items.map(tarjetaAgenda)),
     );
@@ -437,7 +624,13 @@ export async function pantallaAgenda() {
         ? h(
             'section',
             { class: 'ahora-seccion' },
-            h('div', { class: 'ahora-seccion-cabecera' }, h('h2', {}, titulo), descripcion ? h('p', { class: 'ayuda' }, descripcion) : null),
+            h(
+              'div',
+              { class: 'ahora-seccion-cabecera' },
+              h('p', { class: 'eyebrow' }, 'Hoy · hora de Loja'),
+              h('h2', { class: 'titulo-seccion' }, titulo),
+              descripcion ? h('p', { class: 'ayuda' }, descripcion) : null,
+            ),
             h('div', { class: 'grid-ahora' }, tarjetas),
           )
         : null;
@@ -464,14 +657,17 @@ export async function pantallaAgenda() {
     );
   }
 
+  const fondo = videoDePortada('/video/video1.mp4');
   const hero = h(
     'section',
-    { class: 'hero-festival' },
+    { class: `hero-festival ${fondo ? 'con-video' : ''}` },
+    fondo?.video,
+    fondo?.controles,
     h(
       'div',
       { class: 'hero-contenido' },
       h('p', { class: 'hero-eyebrow' }, 'Festival Internacional de Artes Vivas de Loja'),
-      h('h1', { class: 'hero-titulo' }, 'Agenda cultural'),
+      h('h1', { class: 'hero-titulo' }, 'Agenda ', h('span', { class: 'resalte' }, 'cultural')),
       h('p', { class: 'hero-subtitulo' }, 'Consulta obras, conciertos, exposiciones y recorridos confirmados en hora local de Loja.'),
       h(
         'div',
@@ -507,15 +703,30 @@ export async function pantallaAgenda() {
       ),
       zonaReloj,
     ),
+    h(
+      'div',
+      { class: 'hero-mosaico', 'aria-hidden': 'true' },
+      ['m1', 'm2', 'm3', 'm4', 'm5', 'm6', 'm7', 'm8', 'm9'].map((c) => h('span', { class: c })),
+      zonaRango,
+    ),
   );
 
-  contenedor.append(hero, h('div', { class: 'hoja-contenido' }, zonaFiltros, zonaResultados));
+  contenedor.append(hero, zonaDias, h('div', { class: 'hoja-contenido' }, zonaFiltros, zonaResultados, bloqueDescargaPdf()));
 
   // Cargar catálogos para los filtros en paralelo con la vista inicial
   actualizarPestanas();
-  const [rCat, rSedes] = await Promise.all([apiProgramacion('GET', '/categories'), apiProgramacion('GET', '/venues')]);
+  const [rCat, rSedes, rMapa] = await Promise.all([
+    apiProgramacion('GET', '/categories'),
+    apiProgramacion('GET', '/venues'),
+    apiProgramacion('GET', '/map'),
+  ]);
   categorias = rCat.ok ? rCat.datos.items ?? [] : [];
   sedes = rSedes.ok ? rSedes.datos.items ?? [] : [];
+  // Días con funciones publicadas de la edición activa (los mismos del Mapa, spec 003). Sin ellos, no hay selector.
+  dias = rMapa.ok ? rMapa.datos.days ?? [] : [];
+  hoyLoja = rMapa.ok ? rMapa.datos.reference?.date ?? null : null;
+  pintarRango();
+  pintarDias();
   pintarFiltros();
 
   if (estado.vista === 'ahora') await cargarAhora();
