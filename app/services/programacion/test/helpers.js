@@ -104,11 +104,11 @@ export const participacionSinVentas = () => ({
 });
 
 /** Aplicación de pruebas con base propia, identidad simulada y reloj opcional. Por defecto, participación sin ventas. */
-export async function crearApp({ reloj, participacion = participacionSinVentas(), variables = {} } = {}) {
+export async function crearApp({ reloj, participacion = participacionSinVentas(), variables = {}, logger = false } = {}) {
   const config = configPrueba(variables, reloj ? { clock: reloj, clockFixed: true } : {});
   const identidad = identidadSimulada();
   const services = await createServices({ config, identidad, participacion });
-  const { app } = await buildApp({ config, services });
+  const { app } = await buildApp({ config, services, logger });
   abiertas.push({ app, esquema: config.dbSchema });
   return { app, services, identidad, config, reloj };
 }

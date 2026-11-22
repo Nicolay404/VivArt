@@ -2,7 +2,7 @@
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
-import { pantallaAgenda, pantallaFicha } from './js/publico.js';
+import { pantallaAgenda, pantallaFicha, pantallaProximamente } from './js/publico.js';
 import {
   registro,
   ingresar,
@@ -160,6 +160,18 @@ async function resolverRuta(ruta) {
     if (matchSello) return { ancho: 'completo', contenido: await pantallaSello({ ...ctx, id: decodeURIComponent(matchSello[1]) }) };
     if (matchCanje) return { ancho: 'completo', contenido: await pantallaCanje({ ...ctx, ref: decodeURIComponent(matchCanje[1]) }) };
     return { ancho: 'completo', contenido: await pantallaPasaporte(ctx) };
+  }
+
+  // Rutas culturales: llegan con el spec 007; Alforjita y el Pasaporte ya enlazan aquí.
+  if (ruta === '/rutas') {
+    return {
+      ancho: 'normal',
+      contenido: pantallaProximamente(
+        'Rutas culturales',
+        'Las rutas agruparán funciones del festival para que avances en ellas con los sellos de tu Pasaporte.',
+        'Llega con el spec 007.',
+      ),
+    };
   }
 
   const matchActividad = ruta.match(/^\/actividad\/([^/]+)$/);

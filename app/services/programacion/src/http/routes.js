@@ -11,7 +11,7 @@ const ACCESOS = new Set(['free', 'paid', 'unconfirmed']);
 const textoParam = (v, max = 200) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : undefined);
 
 export function registerRoutes(app, servicios, config) {
-  const { agenda, catalogs, editorial, changes, imports, mapa, sedes, permisos } = servicios;
+  const { agenda, catalogs, editorial, changes, imports, mapa, sedes, permisos, alforjita } = servicios;
   const sesion = createSession(servicios.identidad);
 
   // ---------- Público (FR-001 a FR-007) ----------
@@ -48,6 +48,10 @@ export function registerRoutes(app, servicios, config) {
     const foto = await mapa.foto(request.params.id);
     return reply.type(foto.mime).send(foto.bytes);
   });
+
+  // ---------- Alforjita (spec 008): pública y sin sesión. Es POST para que el texto viaje en el cuerpo y no quede
+  // en el registro de solicitudes, que guarda la URL. No se guarda nada (M-17). ----------
+  app.post('/assistant/answers', async (request) => alforjita.responder(cuerpo(request)));
 
   // ---------- Panel editorial ----------
   app.get('/panel/activities', async (request) => {

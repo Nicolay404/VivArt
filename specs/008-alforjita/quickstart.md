@@ -39,3 +39,12 @@ Para fijar el reloj en la demo, pon `CLOCK_FIXED=2026-11-21T17:00:00-05:00` en e
 ```bash
 docker compose logs programacion | grep -i "danza"   # no debe aparecer nada de lo escrito
 ```
+
+## Resultados de la verificación (2026-11-22)
+
+- `npm test` desde `app/`: 321 pruebas en verde (114 de identidad, 99 de programación, 64 de participación, 17 de la entrada común y 27 de la web), entre ellas 9 unitarias del intérprete, 12 de integración de Alforjita y 2 de punta a punta.
+- Chrome sin ventana a 360 px y a 1440 px, sobre la demo con `cargar-ejemplo.js`:
+  - `alforjita.js` no se descarga hasta pulsar el botón;
+  - con teclado: Enter abre el panel con el foco en el campo, Esc lo cierra y el foco vuelve al botón;
+  - preguntas rápidas, el ejemplo de la danza (sin coincidencias ese día, con «Sin “Danza”» y «Abrir la Agenda»), «quiero comprar una entrada», «mis sellos» y un texto sin sentido responden como se espera;
+  - el panel mide 360 px en celular y 420 px en escritorio, sin desplazamiento horizontal; 0 peticiones de ubicación, 0 datos en el almacenamiento del navegador y 0 errores de JavaScript.

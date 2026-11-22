@@ -50,6 +50,13 @@ const TRAZOS_MAPA = {
   accesible: [['circle', { cx: 12, cy: 4.5, r: 1.7 }], ['path', { d: 'M6 8.5h12M12 8.5v5.5M12 14l-3.5 6.5M12 14l3.5 6.5' }]],
   bano: [['rect', { x: 4, y: 3, width: 16, height: 18, rx: 2 }], ['circle', { cx: 12, cy: 8, r: 1.6 }], ['path', { d: 'M9 17v-4.5a3 3 0 0 1 6 0V17' }]],
   externo: [['path', { d: 'M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5' }]],
+  // Avatar neutro de Alforjita (spec 008): una alforja a línea, no la ilustración de la mascota (M-17).
+  alforja: [
+    ['path', { d: 'M4.5 9.5h15v9a2.5 2.5 0 0 1-2.5 2.5H7a2.5 2.5 0 0 1-2.5-2.5z' }],
+    ['path', { d: 'M8 9.5V7a4 4 0 0 1 8 0v2.5' }],
+    ['path', { d: 'M4.5 9.5 12 14l7.5-4.5' }],
+    ['circle', { cx: 12, cy: 14, r: 1 }],
+  ],
 };
 
 export function icono(nombre, clase = 'icono') {

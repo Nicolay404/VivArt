@@ -53,6 +53,11 @@ components:
         quick: { type: string, enum: [today, free_today, tonight, venue, changes, passport_routes] }
         venueId: { type: string }
         criteria: { $ref: '#/components/schemas/Criteria' }
+        intent:
+          type: string
+          enum: [search, price, end, accessibility]
+          default: search
+          description: Solo con criteria. Lo usan las opciones de «elegir» para pedir el precio, la hora de fin o la accesibilidad
     Criteria:
       type: object
       properties:
@@ -119,6 +124,21 @@ components:
           enum: [matches, no_matches, answer, unconfirmed, out_of_scope, info, not_understood, choose, past_day]
         reference: { $ref: '#/components/schemas/Reference' }
         message: { type: string, description: Nunca repite el texto escrito por el visitante }
+        topic:
+          type: string
+          enum: [buy, redeem, tickets, passport_personal, modify, others_data]
+          description: Solo en out_of_scope
+        accessibility:
+          type: array
+          description: Solo al preguntar por la accesibilidad de una sede (spec 003)
+          items:
+            type: object
+            properties:
+              feature: { type: string, enum: [step_free, accessible_toilet] }
+              label: { type: string }
+              status: { type: string, enum: [confirmed, unavailable, unconfirmed] }
+              source: { type: [string, 'null'] }
+              verifiedOn: { type: [string, 'null'], format: date }
         criteria:
           allOf: [{ $ref: '#/components/schemas/Criteria' }]
           description: Criterios aplicados, con nombres para describirlos
@@ -151,6 +171,9 @@ components:
               type: { type: string, enum: [venue, activity] }
               id: { type: string }
               name: { type: string }
+              request:
+                allOf: [{ $ref: '#/components/schemas/Query' }]
+                description: Cuerpo que la web envía al elegir esta opción
         links:
           type: array
           items: { $ref: '#/components/schemas/Link' }

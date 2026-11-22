@@ -15,6 +15,7 @@ import { createChanges } from './domain/changes.js';
 import { createImports } from './domain/imports.js';
 import { createMapa } from './domain/mapa.js';
 import { createSedes } from './domain/sedes.js';
+import { createAlforjita } from './domain/alforjita.js';
 
 /** Repositorios sobre una conexión (la base o una transacción). */
 export const crearRepos = (db) => ({
@@ -44,6 +45,7 @@ export async function createServices({ config, db, identidad, participacion }) {
   const imports = createImports({ db, crearRepos, permisos, editorial, clock });
   const mapa = createMapa({ repos, clock, clockFixed: config.clockFixed });
   const sedes = createSedes({ repos, permisos, auditar, clock });
+  const alforjita = createAlforjita({ agenda, catalogs, repos, clock, clockFixed: config.clockFixed });
 
-  return { db, repos, identidad, permisos, catalogs, agenda, editorial, changes, imports, mapa, sedes, clock };
+  return { db, repos, identidad, permisos, catalogs, agenda, editorial, changes, imports, mapa, sedes, alforjita, clock };
 }

@@ -75,6 +75,9 @@ export function createAgenda({ db, catalogs, clock, clockFixed = false }) {
   }
 
   return {
+    /** Lectura del catálogo publicado que usa la Agenda; Alforjita lee exactamente lo mismo (spec 008, FR-006). */
+    publicadas: () => publicadas(),
+
     async agenda(filtros = {}) {
       const ahora = clock();
       const hoy = enLoja(ahora).date;
