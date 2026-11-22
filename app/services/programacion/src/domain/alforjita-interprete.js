@@ -53,8 +53,9 @@ function extraer(estado, re) {
 }
 
 const contiene = (t, re) => re.test(t);
+const RESTO_DE_PALABRA = String.raw`\w*`;
 /** Expresión que encuentra cualquiera de las frases, como palabras completas dentro del texto preparado. */
-const alguna = (frases) => new RegExp(` (?:${frases.join('|').replaceAll('~', String.raw`\w*`)}) `);
+const alguna = (frases) => new RegExp(` (?:${frases.join('|').replaceAll('~', RESTO_DE_PALABRA)}) `);
 const escapar = (s) => s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 // ---------- Horas (M-14) ----------
