@@ -35,7 +35,7 @@ export function sumarDias(fecha, dias) {
 function preparar(texto) {
   let t = normalizar(texto)
     .replaceAll(/\S+@\S+/g, ' ') // correos: datos personales, no se usan
-    .replaceAll(/\d[\d\s-]{6,}\d/g, (m) => (/^\d{4}-\d{2}-\d{2}$/.test(m) ? m : ' ')) // teléfonos, cédulas: no se usan
+    .replaceAll(/\d(?:[ -]?\d){6,}/g, (m) => (/^\d{4}-\d{2}-\d{2}$/.test(m) ? m : ' ')) // teléfonos, cédulas: no se usan
     .replaceAll(/(\d)\s?([ap])\.?\s?m\b\.?/g, '$1 $2m ')
     .replaceAll(/(\d)h\b/g, '$1');
   t = t.replaceAll(/[¿?¡!,;"'()«»“”]/g, ' ').replaceAll(/\.(?!\d)/g, ' ');
@@ -51,36 +51,31 @@ function extraer(estado, re) {
 }
 
 const contiene = (t, re) => re.test(t);
+/** Expresión que encuentra cualquiera de las frases, como palabras completas dentro del texto preparado. */
+const alguna = (frases) => new RegExp(` (?:${frases.join('|')}) `);
 const escapar = (s) => s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 // ---------- Horas (M-14) ----------
 
 // Con cifras el artículo es opcional («después de 6»); con palabras es obligatorio («a la una»), para no leer «a una función».
 const NUM = String.raw`(?:las |la )?(\d{1,2})(?:(?::|h|\.)(\d{2}))?|(?:las |la )(${Object.keys(NUMEROS).join('|')})(?: y (media|cuarto))?`;
-const SUF = String.raw`(?: (am|pm|de la manana|de la madrugada|de la tarde|de la noche|horas|hrs|hr|h))?`;
-const RE_HORA = new RegExp(String.raw` (despues de|desde|a partir de|luego de|antes de|hasta|a) (?:${NUM})${SUF}(?= )`);
+const SUF = `(?: (am|pm|de la manana|de la madrugada|de la tarde|de la noche|horas|hrs|hr|h))?`;
+const RE_HORA = new RegExp(` (despues de|desde|a partir de|luego de|antes de|hasta|a) (?:${NUM})${SUF}(?= )`);
+const SUFIJOS_MANANA = new Set(['am', 'de la manana', 'de la madrugada']);
+const MINUTOS_PALABRA = { media: 30, cuarto: 15 };
+
+/** Hora y minutos tal como se escribieron (en cifras o en palabras). */
+function numeroDeHora(m) {
+  if (m[2] === undefined && m[4] !== undefined) return { h: NUMEROS[m[4]], min: MINUTOS_PALABRA[m[5]] ?? 0 };
+  return { h: Number(m[2]), min: m[3] ? Number(m[3]) : 0 };
+}
 
 /** Convierte la hora leída a 24 h: de 1 a 11 sin «de la mañana» ni «am» es de tarde o noche. */
 export function horaDe(m) {
-  let h;
-  let min = 0;
-  if (m[2] === undefined && m[4] !== undefined) {
-    h = NUMEROS[m[4]];
-    if (m[5] === 'media') min = 30;
-    if (m[5] === 'cuarto') min = 15;
-  } else {
-    h = Number(m[2]);
-    min = m[3] ? Number(m[3]) : 0;
-  }
-  const sufijo = m[6] ?? '';
+  const { h, min } = numeroDeHora(m);
   if (h > 23 || min > 59) return null;
-  if (sufijo === 'am' || sufijo === 'de la manana' || sufijo === 'de la madrugada') {
-    if (h > 12) return null;
-    if (h === 12) h = 0;
-  } else if (h >= 1 && h <= 11) {
-    h += 12;
-  }
-  return hhmm(h, min);
+  if (SUFIJOS_MANANA.has(m[6])) return h > 12 ? null : hhmm(h % 12, min);
+  return hhmm(h >= 1 && h <= 11 ? h + 12 : h, min);
 }
 
 function leerHoras(estado, criterios) {
@@ -177,6 +172,15 @@ const palabrasDistintivas = (nombre) => nombre.split(' ').filter((p) => p.length
  * después, una sede por su primera palabra distintiva (si es única) y un título si están todas sus palabras distintivas.
  */
 function leerNombres(estado, { categorias, sedes, actividades }) {
+  const encontrados = nombresCompletos(estado, { categorias, sedes, actividades });
+  if (encontrados.sede.length === 0) encontrados.sede = sedePorPrimeraPalabra(estado, sedes);
+  if (encontrados.actividad.length === 0) encontrados.actividad = titulosPorPalabras(estado, actividades);
+  if (encontrados.actividad.length === 0) encontrados.actividad = titulosAMedias(estado, actividades);
+  return encontrados;
+}
+
+/** Nombres que aparecen completos; gana el más largo y se borra del texto para no contarlo dos veces. */
+function nombresCompletos(estado, { categorias, sedes, actividades }) {
   const candidatos = [];
   for (const c of categorias) {
     const n = normalizar(c.name);
@@ -187,84 +191,105 @@ function leerNombres(estado, { categorias, sedes, actividades }) {
   candidatos.sort((x, y) => y.forma.length - x.forma.length);
 
   const encontrados = { categoria: [], sede: [], actividad: [] };
-  for (const c of candidatos) {
-    if (!c.forma) continue;
+  for (const c of candidatos.filter((x) => x.forma)) {
     if (estado.t.includes(` ${c.forma} `)) {
       encontrados[c.tipo].push(c.id);
       extraer(estado, new RegExp(` ${escapar(c.forma)} `));
     }
   }
-  if (encontrados.sede.length === 0) {
-    const porPrimera = new Map();
-    for (const s of sedes) {
-      const primera = palabrasDistintivas(normalizar(s.name))[0];
-      if (primera) porPrimera.set(primera, porPrimera.has(primera) ? null : s.id);
-    }
-    for (const [palabra, id] of porPrimera) {
-      if (id && estado.t.includes(` ${palabra} `)) {
-        encontrados.sede.push(id);
-        extraer(estado, new RegExp(` ${escapar(palabra)} `));
-        break;
-      }
-    }
-  }
-  if (encontrados.actividad.length === 0) {
-    for (const a of actividades) {
-      const palabras = palabrasDistintivas(normalizar(a.title));
-      if (palabras.length >= 2 && palabras.every((p) => estado.t.includes(` ${p} `))) encontrados.actividad.push(a.id);
-    }
-  }
-  if (encontrados.actividad.length === 0) {
-    // Título a medias («cantos de luna»): al menos dos palabras distintivas que salen en títulos, y los títulos que las
-    // tienen todas. Si hay varios, se pide elegir.
-    const enTitulos = new Set(actividades.flatMap((a) => palabrasDistintivas(normalizar(a.title))));
-    const pistas = [...new Set(palabrasDistintivas(estado.t.trim()))].filter((p) => enTitulos.has(p));
-    if (pistas.length >= 2) {
-      for (const a of actividades) {
-        const palabras = new Set(palabrasDistintivas(normalizar(a.title)));
-        if (pistas.every((p) => palabras.has(p))) encontrados.actividad.push(a.id);
-      }
-    }
-  }
   return encontrados;
+}
+
+/** Una sede por su primera palabra distintiva, si ninguna otra sede empieza igual («el museo»). */
+function sedePorPrimeraPalabra(estado, sedes) {
+  const porPrimera = new Map();
+  for (const s of sedes) {
+    const primera = palabrasDistintivas(normalizar(s.name))[0];
+    if (primera) porPrimera.set(primera, porPrimera.has(primera) ? null : s.id);
+  }
+  const elegida = [...porPrimera].find(([palabra, id]) => id && estado.t.includes(` ${palabra} `));
+  if (!elegida) return [];
+  extraer(estado, new RegExp(` ${escapar(elegida[0])} `));
+  return [elegida[1]];
+}
+
+/** Títulos con todas sus palabras distintivas en el texto, en cualquier orden. */
+function titulosPorPalabras(estado, actividades) {
+  return actividades
+    .filter((a) => {
+      const palabras = palabrasDistintivas(normalizar(a.title));
+      return palabras.length >= 2 && palabras.every((p) => estado.t.includes(` ${p} `));
+    })
+    .map((a) => a.id);
+}
+
+/**
+ * Título a medias («cantos de luna»): al menos dos palabras distintivas que salen en títulos, y los títulos que las
+ * tienen todas. Si hay varios, se pide elegir.
+ */
+function titulosAMedias(estado, actividades) {
+  const enTitulos = new Set(actividades.flatMap((a) => palabrasDistintivas(normalizar(a.title))));
+  const pistas = [...new Set(palabrasDistintivas(estado.t.trim()))].filter((p) => enTitulos.has(p));
+  if (pistas.length < 2) return [];
+  return actividades.filter((a) => pistas.every((p) => palabrasDistintivas(normalizar(a.title)).includes(p))).map((a) => a.id);
 }
 
 // ---------- Intenciones ----------
 
+// Las frases se escriben como listas y se convierten en expresiones con `alguna`: así cada lista se lee y se amplía fácil.
+const PARIENTES = ['amig\\w*', 'herman\\w*', 'mama', 'papa', 'novi\\w*', 'espos\\w*', 'hij\\w*', 'compan\\w*', 'pareja', 'famil\\w*'];
 const FUERA = [
-  ['others_data', / (?:de )?(mi|mis|tu|su) (amig\w*|herman\w*|mama|papa|novi\w*|espos\w*|hij\w*|compan\w*|pareja|famil\w*)| de otra persona | de otro usuario | de otra cuenta /],
-  ['tickets', / (mis|mi) (entradas?|boletos?|pedidos?|compras?|tickets?) /],
-  ['redeem', / (canje\w*|reclam\w*|escane\w*) /],
-  ['passport_personal', / (mis sellos?|mi sello|mi pasaporte|mi progreso|mis rutas|mi ruta|mis insignias?|mi insignia|cuantos sellos tengo) /],
-  ['buy', / (compr\w*|pagar|reserv\w*|carrito|adquir\w*) /],
-  ['modify', / (cambiar|modificar|editar|borrar|eliminar|publicar|agregar|anadir|cancelar|mover|reprogramar|subir) | (borrador\w*|propuestas?|sin publicar|no publicad\w*) /],
+  ['others_data', alguna([`(?:de )?(?:mi|mis|tu|su) (?:${PARIENTES.join('|')})`, 'de otra persona', 'de otro usuario', 'de otra cuenta'])],
+  ['tickets', alguna(['(?:mis|mi) (?:entradas?|boletos?|pedidos?|compras?|tickets?)'])],
+  ['redeem', alguna(['canje\\w*', 'reclam\\w*', 'escane\\w*'])],
+  ['passport_personal', alguna(['mis sellos?', 'mi sello', 'mi pasaporte', 'mi progreso', 'mis rutas', 'mi ruta', 'mis insignias?', 'mi insignia', 'cuantos sellos tengo'])],
+  ['buy', alguna(['compr\\w*', 'pagar', 'reserv\\w*', 'carrito', 'adquir\\w*'])],
+  [
+    'modify',
+    alguna([
+      ...['cambiar', 'modificar', 'editar', 'borrar', 'eliminar', 'publicar', 'agregar', 'anadir', 'cancelar', 'mover', 'reprogramar', 'subir'],
+      ...['borrador\\w*', 'propuestas?', 'sin publicar', 'no publicad\\w*'],
+    ]),
+  ],
 ];
-const RE_PASAPORTE = / (pasaportes?|sellos?|rutas?|insignias?) /;
-const RE_PRECIO = / (cuanto cuesta\w*|cuanto vale\w*|cuanto cobran|cuanto sale|precios?|costos?|tarifas?|valor de la entrada) /;
-const RE_FIN = / (a que hora (termina|acaba|finaliza|sale)|cuando (termina|acaba|finaliza)|hora de (fin|salida|termino)|cuanto dura|duracion|dura) /;
-const RE_ACCESIBLE = / (accesib\w*|sin escalones|escalon\w*|silla de ruedas|rampas?|banos? accesibles?|banos?|discapacidad|movilidad reducida) /;
-const RE_BANO = / banos? /;
-const RE_ESCALONES = / (sin escalones|escalon\w*|silla de ruedas|rampas?|movilidad reducida) /;
-const RE_CAMBIOS = / (cambios?|cancelad\w*|cancelaron|cancelo|reprogramad\w*|reprogramaron|reprogramo|suspendid\w*|avisos?) /;
-const RE_GENERICO = / (que hay|que puedo ver|funcion\w*|eventos?|actividad\w*|programacion|agenda|planes?|obras?|espectaculos?|presentacion\w*|show\w*) /;
+const RE_PASAPORTE = alguna(['pasaportes?', 'sellos?', 'rutas?', 'insignias?']);
+const RE_PRECIO = alguna(['cuanto cuesta\\w*', 'cuanto vale\\w*', 'cuanto cobran', 'cuanto sale', 'precios?', 'costos?', 'tarifas?', 'valor de la entrada']);
+const RE_FIN = alguna([
+  'a que hora (?:termina|acaba|finaliza|sale)',
+  'cuando (?:termina|acaba|finaliza)',
+  'hora de (?:fin|salida|termino)',
+  'cuanto dura',
+  'duracion',
+  'dura',
+]);
+const ESCALONES = ['sin escalones', 'escalon\\w*', 'silla de ruedas', 'rampas?', 'movilidad reducida'];
+const RE_ESCALONES = alguna(ESCALONES);
+const RE_BANO = alguna(['banos?']);
+const RE_ACCESIBLE = alguna(['accesib\\w*', ...ESCALONES, 'banos?(?: accesibles?)?', 'discapacidad']);
+const RE_CAMBIOS = alguna(['cambios?', 'cancelad\\w*', 'cancelaron', 'cancelo', 'reprogramad\\w*', 'reprogramaron', 'reprogramo', 'suspendid\\w*', 'avisos?']);
+const RE_GENERICO = alguna([
+  'que hay',
+  'que puedo ver',
+  'funcion\\w*',
+  'eventos?',
+  'actividad\\w*',
+  'programacion',
+  'agenda',
+  'planes?',
+  'obras?',
+  'espectaculos?',
+  'presentacion\\w*',
+  'show\\w*',
+]);
 
-/**
- * @param texto texto ya limpio (1–200 caracteres)
- * @param ctx { hoy: 'AAAA-MM-DD', categorias: [{id,name}], sedes: [{id,name}], actividades: [{id,title}] }
- * @returns { intent, criteria?, assumedDay?, activityIds?, venueIds?, features?, topic?, invalidDate? }
- */
-export function interpretar(texto, { hoy, categorias = [], sedes = [], actividades = [] }) {
-  const estado = { t: preparar(texto), hoy, diaExplicito: false, fechaInvalida: false };
-  const criterios = { date: null, from: null, until: null, categoryId: null, venueId: null, access: null, activityId: null };
-
-  const nombres = leerNombres(estado, { categorias, sedes, actividades });
+/** Intenciones que no son una búsqueda (fuera de alcance, precio, fin, accesibilidad, Pasaporte, cambios), o null. */
+function intencionDirecta(estado, nombres) {
   const resto = estado.t;
-
-  for (const [topic, re] of FUERA) {
-    if (contiene(resto, re)) return { intent: 'out_of_scope', topic, activityIds: nombres.actividad };
-  }
+  const fuera = FUERA.find(([, re]) => contiene(resto, re));
+  if (fuera) return { intent: 'out_of_scope', topic: fuera[0], activityIds: nombres.actividad };
   if (contiene(resto, RE_PRECIO) && !/ sin costo /.test(resto)) return { intent: 'price', activityIds: nombres.actividad };
   if (contiene(resto, RE_FIN)) {
+    const criterios = { date: null, from: null, until: null };
     leerHoras(estado, criterios);
     leerPartesDelDia(estado, criterios);
     leerDias(estado, criterios);
@@ -278,6 +303,21 @@ export function interpretar(texto, { hoy, categorias = [], sedes = [], actividad
   }
   if (contiene(resto, RE_PASAPORTE)) return { intent: 'passport_routes' };
   if (contiene(resto, RE_CAMBIOS) && nombres.actividad.length === 0) return { intent: 'changes' };
+  return null;
+}
+
+/**
+ * @param texto texto ya limpio (1–200 caracteres)
+ * @param ctx { hoy: 'AAAA-MM-DD', categorias: [{id,name}], sedes: [{id,name}], actividades: [{id,title}] }
+ * @returns { intent, criteria?, assumedDay?, activityIds?, venueIds?, features?, topic?, invalidDate? }
+ */
+export function interpretar(texto, { hoy, categorias = [], sedes = [], actividades = [] }) {
+  const estado = { t: preparar(texto), hoy, diaExplicito: false, fechaInvalida: false };
+  const criterios = { date: null, from: null, until: null, categoryId: null, venueId: null, access: null, activityId: null };
+
+  const nombres = leerNombres(estado, { categorias, sedes, actividades });
+  const directa = intencionDirecta(estado, nombres);
+  if (directa) return directa;
 
   leerHoras(estado, criterios);
   leerPartesDelDia(estado, criterios);
@@ -287,15 +327,16 @@ export function interpretar(texto, { hoy, categorias = [], sedes = [], actividad
   criterios.venueId = nombres.sede[0] ?? null;
   if (nombres.actividad.length === 1) criterios.activityId = nombres.actividad[0];
 
-  const reconocido =
-    estado.diaExplicito ||
-    criterios.from ||
-    criterios.until ||
-    criterios.categoryId ||
-    criterios.venueId ||
-    criterios.access ||
-    nombres.actividad.length > 0 ||
-    contiene(estado.t, RE_GENERICO);
+  const reconocido = [
+    estado.diaExplicito,
+    criterios.from,
+    criterios.until,
+    criterios.categoryId,
+    criterios.venueId,
+    criterios.access,
+    nombres.actividad.length > 0,
+    contiene(estado.t, RE_GENERICO),
+  ].some(Boolean);
   if (!reconocido) return { intent: 'not_understood', invalidDate: estado.fechaInvalida };
 
   // Sin día: hoy en hora de Loja (FR-007), salvo si se pregunta por una actividad concreta: entonces se buscan

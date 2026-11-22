@@ -54,7 +54,7 @@ async function preguntar(cuerpo, burbuja) {
   mensajes.push(pensando);
   pintar();
   const r = await consultar(cuerpo);
-  mensajes = mensajes.filter((m) => m !== pensando);
+  mensajes = mensajes.filter((m) => !m.pensando);
   if (r.ok) mensajes.push({ de: 'alforjita', datos: r.datos });
   else if (r.status === 422) mensajes.push({ de: 'alforjita', datos: { kind: 'invalid', message: mensajeValidacion(r.datos) } });
   else mensajes.push({ de: 'alforjita', falla: true });
@@ -69,14 +69,14 @@ function mensajeValidacion(datos) {
 
 // ---------- Pintado ----------
 
+function textoHorario(item) {
+  if (item.type === 'slot') return `Abierto de ${item.startTime} a ${item.endTime}`;
+  return item.endTime ? `${item.startTime} a ${item.endTime}` : item.startTime;
+}
+
 function tarjeta(item) {
   const estado = item.type === 'function' ? etiquetaTiempo(item.timeStatus) : null;
-  const horario =
-    item.type === 'slot'
-      ? `Abierto de ${item.startTime} a ${item.endTime}`
-      : item.endTime
-        ? `${item.startTime} a ${item.endTime}`
-        : item.startTime;
+  const horario = textoHorario(item);
   return h(
     'li',
     { class: 'alforjita-resultado' },

@@ -23,7 +23,11 @@ export function fechaLarga(fecha) {
 }
 
 const conMayuscula = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+const porTexto = (x, y) => x.localeCompare(y);
 const enlaceAgenda = { label: 'Abrir la Agenda', href: '/agenda' };
+const enlaceFicha = (id) => ({ label: 'Ver la ficha', href: `/actividad/${encodeURIComponent(id)}` });
+const vacio = () => ({ date: null, from: null, until: null, categoryId: null, venueId: null, access: null, activityId: null });
+const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
 
 const FUERA_DE_ALCANCE = {
   buy: {
@@ -67,20 +71,28 @@ const CARACTERISTICAS = {
 
 // ---------- Validación de la consulta ----------
 
+const ausente = (v) => v === null || v === undefined;
+
 function textoCorto(v, max = 100) {
   return typeof v === 'string' && v.trim() ? v.trim().slice(0, max) : null;
 }
 
+/** null si falta; el valor si es válido; undefined si es inválido. */
+function opcional(v, esValido) {
+  if (ausente(v)) return null;
+  return esValido(v) ? v : undefined;
+}
+
 function validarCriterios(c) {
   if (!c || typeof c !== 'object' || Array.isArray(c)) throw validation({ criteria: 'Criterios no válidos.' });
-  const hora = (v) => (v === null || v === undefined ? null : horaValida(v) || v === '24:00' ? v : undefined);
+  const esHora = (v) => horaValida(v) || v === '24:00';
   const r = {
-    date: c.date === null || c.date === undefined ? null : fechaValida(c.date) ? c.date : undefined,
-    from: hora(c.from),
-    until: hora(c.until),
+    date: opcional(c.date, fechaValida),
+    from: opcional(c.from, esHora),
+    until: opcional(c.until, esHora),
     categoryId: textoCorto(c.categoryId),
     venueId: textoCorto(c.venueId),
-    access: c.access === null || c.access === undefined ? null : ACCESOS.has(c.access) ? c.access : undefined,
+    access: opcional(c.access, (v) => ACCESOS.has(v)),
     activityId: textoCorto(c.activityId),
   };
   const malos = Object.entries(r).filter(([, v]) => v === undefined);
@@ -91,7 +103,7 @@ function validarCriterios(c) {
 /** Exactamente uno de `text`, `quick` o `criteria`. */
 export function validarConsulta(cuerpo) {
   const c = cuerpo && typeof cuerpo === 'object' && !Array.isArray(cuerpo) ? cuerpo : {};
-  const presentes = ['text', 'quick', 'criteria'].filter((k) => c[k] !== undefined && c[k] !== null);
+  const presentes = ['text', 'quick', 'criteria'].filter((k) => !ausente(c[k]));
   if (presentes.length !== 1) throw validation({ text: 'Escribe tu pregunta o elige una pregunta rápida.' });
   if (presentes[0] === 'text') {
     const texto = limpiarTexto(c.text);
@@ -113,11 +125,55 @@ const dentroDeHoras = (hora, c) => (!c.from || hora >= c.from) && (!c.until || h
 
 /** Primera fecha (desde `desde`) en que abre una franja, o null. Recorre como máximo un año. */
 function proximaFechaFranja(s, desde) {
-  if (Array.isArray(s.dates) && s.dates.length) return s.dates.filter((d) => d >= desde).sort()[0] ?? null;
+  if (Array.isArray(s.dates) && s.dates.length) return s.dates.filter((d) => d >= desde).sort(porTexto)[0] ?? null;
   if (!s.to || s.to < desde) return null;
-  let d = s.from > desde ? s.from : desde;
+  let d = desde;
+  if (s.from > d) d = s.from;
   for (let i = 0; i < 366 && d <= s.to; i += 1, d = sumarDias(d, 1)) if (franjaAplicaEn(s, d)) return d;
   return null;
+}
+
+function actividadCumple(a, c) {
+  if (c.activityId && a.id !== c.activityId) return false;
+  if (c.categoryId && a.content.categoryId !== c.categoryId) return false;
+  return !c.access || a.content.access.mode === c.access;
+}
+
+/** Para hoy solo vale lo que aún no empieza; si se pregunta por una actividad concreta, también lo empezado (RC-03). */
+function estadoAdmitido(estado, c) {
+  if (estado === 'upcoming') return true;
+  return Boolean(c.activityId) && (estado === 'start_passed' || estado === 'in_progress');
+}
+
+function funcionesQueCumplen(a, c, ahora, hoy) {
+  const r = [];
+  for (const f of a.functions) {
+    if (f.status === 'cancelled') continue;
+    const enFecha = c.date ? f.date === c.date : f.date >= hoy;
+    if (!enFecha || (c.venueId && f.venueId !== c.venueId) || !dentroDeHoras(f.startTime, c)) continue;
+    const estado = estadoTemporal(f, ahora, a.durationMinutes);
+    if (f.date === hoy && !estadoAdmitido(estado, c)) continue;
+    r.push({ tipo: 'function', actividad: a, funcion: f, date: f.date, hora: f.startTime, estado });
+  }
+  return r;
+}
+
+function fechaDeFranja(s, c, hoy) {
+  if (!c.date) return proximaFechaFranja(s, hoy);
+  return franjaAplicaEn(s, c.date) ? c.date : null;
+}
+
+function franjasQueCumplen(a, c, ref) {
+  const r = [];
+  for (const s of a.slots) {
+    if (c.venueId && s.venueId !== c.venueId) continue;
+    const fecha = fechaDeFranja(s, c, ref.date);
+    if (!fecha || fecha < ref.date) continue;
+    const fueraDeHoras = (c.from && s.closes <= c.from) || (c.until && s.opens >= c.until);
+    if (fueraDeHoras || (fecha === ref.date && s.closes <= ref.time)) continue;
+    r.push({ tipo: 'slot', actividad: a, franja: s, date: fecha, hora: s.opens, estado: null });
+  }
+  return r;
 }
 
 /**
@@ -126,42 +182,21 @@ function proximaFechaFranja(s, desde) {
  */
 export function seleccionar(actividades, c, ahora) {
   const ref = enLoja(ahora);
-  const hoy = ref.date;
-  const resultado = [];
-  for (const a of actividades) {
-    if (c.activityId && a.id !== c.activityId) continue;
-    if (c.categoryId && a.content.categoryId !== c.categoryId) continue;
-    if (c.access && a.content.access.mode !== c.access) continue;
-    for (const f of a.functions) {
-      if (f.status === 'cancelled') continue;
-      if (c.date ? f.date !== c.date : f.date < hoy) continue;
-      if (c.venueId && f.venueId !== c.venueId) continue;
-      if (!dentroDeHoras(f.startTime, c)) continue;
-      const estado = estadoTemporal(f, ahora, a.durationMinutes);
-      if (f.date === hoy && estado !== 'upcoming' && !(c.activityId && estado === 'start_passed') && !(c.activityId && estado === 'in_progress')) {
-        continue;
-      }
-      resultado.push({ tipo: 'function', actividad: a, funcion: f, date: f.date, hora: f.startTime, estado });
-    }
-    for (const s of a.slots) {
-      if (c.venueId && s.venueId !== c.venueId) continue;
-      const fecha = c.date ? (franjaAplicaEn(s, c.date) ? c.date : null) : proximaFechaFranja(s, hoy);
-      if (!fecha || fecha < hoy) continue;
-      if ((c.from && s.closes <= c.from) || (c.until && s.opens >= c.until)) continue;
-      if (fecha === hoy && s.closes <= ref.time) continue;
-      resultado.push({ tipo: 'slot', actividad: a, franja: s, date: fecha, hora: s.opens, estado: null });
-    }
-  }
-  return resultado.sort((x, y) => x.date.localeCompare(y.date) || x.hora.localeCompare(y.hora) || x.actividad.content.title.localeCompare(y.actividad.content.title, 'es'));
+  const resultado = actividades
+    .filter((a) => actividadCumple(a, c))
+    .flatMap((a) => [...funcionesQueCumplen(a, c, ahora, ref.date), ...franjasQueCumplen(a, c, ref)]);
+  return resultado.sort(
+    (x, y) => x.date.localeCompare(y.date) || x.hora.localeCompare(y.hora) || x.actividad.content.title.localeCompare(y.actividad.content.title, 'es'),
+  );
 }
 
 // ---------- Presentación ----------
 
-function item(r, mapas, aviso = null) {
+function baseItem(r, mapas) {
   const a = r.actividad;
   const venueId = r.tipo === 'function' ? r.funcion.venueId : r.franja.venueId;
   const v = mapas.venues.get(venueId);
-  const base = {
+  return {
     type: r.tipo,
     activityId: a.id,
     title: a.content.title,
@@ -170,9 +205,13 @@ function item(r, mapas, aviso = null) {
     venue: v ? { id: v.id, name: v.name, kind: v.kind } : null,
     access: { mode: a.content.access.mode, priceUsd: a.content.access.priceUsd ?? null, label: etiquetaAcceso(a.content.access) },
   };
+}
+
+function item(r, mapas, aviso = null) {
+  const base = baseItem(r, mapas);
   if (r.tipo === 'slot') return { ...base, functionId: null, startTime: r.franja.opens, endTime: r.franja.closes, timeStatus: null, notice: null };
   const f = r.funcion;
-  const fin = finConocido(f, a.durationMinutes);
+  const fin = finConocido(f, r.actividad.durationMinutes);
   return {
     ...base,
     functionId: f.id,
@@ -183,293 +222,334 @@ function item(r, mapas, aviso = null) {
   };
 }
 
-function etiquetas(c, mapas, actividades, hoy) {
-  const l = [];
-  if (c.date) l.push(c.date === hoy ? `hoy, ${fechaLarga(c.date)}` : fechaLarga(c.date));
-  else l.push('desde hoy');
-  if (c.from && c.until) l.push(`de ${c.from} a ${c.until === '24:00' ? '24:00' : c.until}`);
-  else if (c.from) l.push(`desde las ${c.from}`);
-  else if (c.until) l.push(`antes de las ${c.until}`);
-  if (c.categoryId) l.push(mapas.categories.get(c.categoryId)?.name ?? 'categoría desconocida');
-  if (c.venueId) l.push(mapas.venues.get(c.venueId)?.name ?? 'sede desconocida');
-  if (c.access) l.push(c.access === 'free' ? 'gratuitas' : 'de pago');
-  if (c.activityId) l.push(`«${actividades.find((a) => a.id === c.activityId)?.content.title ?? 'actividad'}»`);
-  return l;
+function etiquetaHoras(c) {
+  if (c.from && c.until) return `de ${c.from} a ${c.until}`;
+  if (c.from) return `desde las ${c.from}`;
+  if (c.until) return `antes de las ${c.until}`;
+  return null;
+}
+
+function etiquetaDia(c, hoy) {
+  if (!c.date) return 'desde hoy';
+  return c.date === hoy ? `hoy, ${fechaLarga(c.date)}` : fechaLarga(c.date);
+}
+
+function etiquetas(c, ctx) {
+  const titulo = c.activityId && ctx.actividades.find((a) => a.id === c.activityId)?.content.title;
+  return [
+    etiquetaDia(c, ctx.hoy),
+    etiquetaHoras(c),
+    c.categoryId && (ctx.mapas.categories.get(c.categoryId)?.name ?? 'categoría desconocida'),
+    c.venueId && (ctx.mapas.venues.get(c.venueId)?.name ?? 'sede desconocida'),
+    c.access && { free: 'gratuitas', paid: 'de pago' }[c.access],
+    c.activityId && `«${titulo ?? 'actividad'}»`,
+  ].filter(Boolean);
 }
 
 function urlAgenda(c, actividades) {
   const p = new URLSearchParams();
-  if (c.date) p.set('date', c.date);
-  if (c.categoryId) p.set('categoryId', c.categoryId);
-  if (c.venueId) p.set('venueId', c.venueId);
-  if (c.access) p.set('access', c.access);
+  for (const campo of ['date', 'categoryId', 'venueId', 'access']) if (c[campo]) p.set(campo, c[campo]);
   const titulo = c.activityId && actividades.find((a) => a.id === c.activityId)?.content.title;
   if (titulo) p.set('q', titulo);
   const qs = p.toString();
   return qs ? `/agenda?${qs}` : '/agenda';
 }
 
-const plural = (n, uno, varios) => `${n} ${n === 1 ? uno : varios}`;
+// ---------- Respuestas (cada una recibe el contexto de la consulta) ----------
 
-export function createAlforjita({ agenda, catalogs, repos, clock, clockFixed = false }) {
-  /** Lee el catálogo; si la base falla, la respuesta es «falla del servicio» (FR-014). */
-  async function leer(lectura) {
-    try {
-      return await lectura();
-    } catch (e) {
-      if (e instanceof AppError) throw e;
-      throw new AppError(503, 'catalog_unavailable', 'No pude consultar la programación en este momento. Puedes revisar la Agenda.');
-    }
+/** Días (posteriores a `desde`) con resultados para los mismos criterios: «¿quieres consultar otro día?» (FR-007). */
+function otrosDias(ctx, c, desde, max = 3) {
+  const dias = new Set();
+  for (const a of ctx.actividades) {
+    for (const f of a.functions) if (f.status !== 'cancelled' && f.date > desde) dias.add(f.date);
   }
-
-  async function contexto() {
-    const [todas, mapas] = await leer(() => Promise.all([agenda.publicadas(), catalogs.mapas()]));
-    const ahora = clock();
-    return { actividades: todas.filter((a) => a.editionActive), mapas, ahora, hoy: enLoja(ahora).date, reference: referencia(clock, clockFixed) };
+  const r = [];
+  for (const d of [...dias].sort(porTexto)) {
+    if (r.length >= max) break;
+    const cd = { ...c, date: d };
+    if (seleccionar(ctx.actividades, cd, ctx.ahora).length) r.push({ label: conMayuscula(fechaLarga(d)), criteria: cd });
   }
+  return r;
+}
 
-  /** Días (posteriores a `desde`) con resultados para los mismos criterios: «¿quieres consultar otro día?» (FR-007). */
-  function otrosDias(ctx, c, desde, max = 3) {
-    const dias = new Set();
-    for (const a of ctx.actividades) {
-      for (const f of a.functions) if (f.status !== 'cancelled' && f.date > desde) dias.add(f.date);
-    }
-    const r = [];
-    for (const d of [...dias].sort()) {
-      if (r.length >= max) break;
-      const cd = { ...c, date: d };
-      if (seleccionar(ctx.actividades, cd, ctx.ahora).length) r.push({ label: conMayuscula(fechaLarga(d)), criteria: cd });
-    }
-    return r;
-  }
-
-  function buscar(ctx, c, { assumedDay = false, intro = null } = {}) {
-    const base = { reference: ctx.reference, criteria: c, criteriaLabels: etiquetas(c, ctx.mapas, ctx.actividades, ctx.hoy), assumedDay };
-    const suposicion = assumedDay ? `Asumí hoy, ${fechaLarga(ctx.hoy)} (hora de Loja). ` : '';
-    if (c.date && c.date < ctx.hoy) {
-      return {
-        ...base,
-        kind: 'past_day',
-        message: `El ${fechaLarga(c.date)} ya pasó. ¿Quieres consultar hoy u otro día?`,
-        suggestions: [{ label: 'Hoy', criteria: { ...c, date: ctx.hoy } }, ...otrosDias(ctx, c, ctx.hoy)],
-        links: [enlaceAgenda],
-      };
-    }
-    const todos = seleccionar(ctx.actividades, c, ctx.ahora);
-    const agendaUrl = urlAgenda(c, ctx.actividades);
-    if (todos.length === 0) {
-      const sugerencias = [];
-      const quitar = [
-        ['from', 'Sin límite de hora', { from: null, until: null }],
-        ['categoryId', `Sin «${ctx.mapas.categories.get(c.categoryId)?.name ?? ''}»`, { categoryId: null }],
-        ['venueId', `En cualquier sede`, { venueId: null }],
-        ['access', 'Gratuitas y de pago', { access: null }],
-      ];
-      for (const [campo, label, cambio] of quitar) {
-        const activo = campo === 'from' ? c.from || c.until : c[campo];
-        if (!activo) continue;
-        const cc = { ...c, ...cambio };
-        if (seleccionar(ctx.actividades, cc, ctx.ahora).length) sugerencias.push({ label, criteria: cc });
-      }
-      const dias = c.date ? otrosDias(ctx, c, c.date) : [];
-      const enDia = c.date === ctx.hoy ? 'Hoy no encontré' : 'No encontré';
-      return {
-        ...base,
-        kind: 'no_matches',
-        message: `${suposicion}${enDia} funciones con estos criterios: ${base.criteriaLabels.join(', ')}.${
-          dias.length ? ' ¿Quieres consultar otro día?' : ''
-        } También puedes quitar un criterio o abrir la Agenda.`,
-        suggestions: [...sugerencias, ...dias],
-        items: [],
-        total: 0,
-        agendaUrl,
-        links: [{ label: 'Abrir la Agenda', href: agendaUrl }],
-      };
-    }
-    return {
-      ...base,
-      kind: 'matches',
-      message: `${suposicion}${intro ?? `Encontré ${plural(todos.length, 'resultado', 'resultados')}`} (${base.criteriaLabels.join(', ')}).${
-        todos.length > MAX_RESULTADOS ? ` Te muestro los ${MAX_RESULTADOS} primeros; el resto está en la Agenda.` : ''
-      }`,
-      items: todos.slice(0, MAX_RESULTADOS).map((r) => item(r, ctx.mapas)),
-      total: todos.length,
-      agendaUrl,
-    };
-  }
-
-  function elegirActividad(ctx, ids, pedir) {
-    return {
-      reference: ctx.reference,
-      kind: 'choose',
-      message: '¿De cuál actividad hablas? Elige una:',
-      options: ids.slice(0, MAX_RESULTADOS).map((id) => {
-        const t = ctx.actividades.find((a) => a.id === id).content.title;
-        return { type: 'activity', id, name: t, request: pedir(id, t) };
-      }),
-    };
-  }
-
-  const pedirNombre = (ctx, que) => ({
-    reference: ctx.reference,
-    kind: 'not_understood',
-    message: `No reconocí de qué actividad quieres saber ${que}. Escribe su título como aparece en la Agenda.`,
+function diaPasado(ctx, c, base) {
+  return {
+    ...base,
+    kind: 'past_day',
+    message: `El ${fechaLarga(c.date)} ya pasó. ¿Quieres consultar hoy u otro día?`,
+    suggestions: [{ label: 'Hoy', criteria: { ...c, date: ctx.hoy } }, ...otrosDias(ctx, c, ctx.hoy)],
     links: [enlaceAgenda],
-  });
+  };
+}
 
-  function precio(ctx, ids) {
-    if (ids.length === 0) return pedirNombre(ctx, 'el precio');
-    if (ids.length > 1) return elegirActividad(ctx, ids, (id) => ({ criteria: { activityId: id }, intent: 'price' }));
-    const a = ctx.actividades.find((x) => x.id === ids[0]);
-    const { mode, priceUsd } = a.content.access;
-    const t = `«${a.content.title}»`;
-    const links = [{ label: 'Ver la ficha', href: `/actividad/${encodeURIComponent(a.id)}` }];
-    if (mode === 'free') return { reference: ctx.reference, kind: 'answer', message: `${t} es gratuita.`, links };
-    if (mode === 'paid' && priceUsd !== null && priceUsd !== undefined) {
-      return { reference: ctx.reference, kind: 'answer', message: `${t} es de pago: ${etiquetaAcceso(a.content.access).replace('De pago: ', '')}.`, links };
-    }
-    if (mode === 'paid') {
-      return { reference: ctx.reference, kind: 'unconfirmed', missing: ['price'], message: `${t} es de pago, pero su precio aún no está confirmado.`, links };
-    }
-    return {
-      reference: ctx.reference,
-      kind: 'unconfirmed',
-      missing: ['access'],
-      message: `Aún no está confirmado si ${t} es gratuita o de pago, ni su precio.`,
-      links,
-    };
-  }
+/** Quitar un criterio a la vez, solo si así hay resultados (FR-011). */
+function relajar(ctx, c) {
+  const quitar = [
+    [c.from || c.until, 'Sin límite de hora', { from: null, until: null }],
+    [c.categoryId, `Sin «${ctx.mapas.categories.get(c.categoryId)?.name ?? ''}»`, { categoryId: null }],
+    [c.venueId, 'En cualquier sede', { venueId: null }],
+    [c.access, 'Gratuitas y de pago', { access: null }],
+  ];
+  return quitar
+    .filter(([activo]) => activo)
+    .map(([, label, cambio]) => ({ label, criteria: { ...c, ...cambio } }))
+    .filter((s) => seleccionar(ctx.actividades, s.criteria, ctx.ahora).length > 0);
+}
 
-  function fin(ctx, ids, fecha) {
-    if (ids.length === 0) return pedirNombre(ctx, 'la hora de fin');
-    if (ids.length > 1) return elegirActividad(ctx, ids, (id) => ({ criteria: { activityId: id, date: fecha ?? null }, intent: 'end' }));
-    const a = ctx.actividades.find((x) => x.id === ids[0]);
-    const t = `«${a.content.title}»`;
-    const links = [{ label: 'Ver la ficha', href: `/actividad/${encodeURIComponent(a.id)}` }];
-    const funciones = seleccionar([a], { activityId: a.id, date: fecha ?? null }, ctx.ahora).filter((r) => r.tipo === 'function');
-    if (funciones.length === 0) {
-      return { reference: ctx.reference, kind: 'no_matches', message: `${t} no tiene funciones próximas.`, items: [], total: 0, links };
-    }
-    const items = funciones.slice(0, MAX_RESULTADOS).map((r) => item(r, ctx.mapas));
-    const sinFin = items.filter((i) => !i.endTime);
-    const missing = sinFin.length ? (a.durationMinutes ? ['end'] : ['end', 'duration']) : [];
-    if (sinFin.length === items.length) {
-      return {
-        reference: ctx.reference,
-        kind: 'unconfirmed',
-        missing,
-        message: `La hora de fin de ${t} no está confirmada${a.durationMinutes ? '' : ', ni su duración'}. No puedo calcularla.`,
-        items,
-        total: funciones.length,
-        links,
-      };
-    }
-    return {
-      reference: ctx.reference,
-      kind: 'answer',
-      missing,
-      message: sinFin.length
-        ? `Estas son las funciones de ${t}. En algunas la hora de fin no está confirmada.`
-        : `Estas son las funciones de ${t} con su hora de fin.`,
-      items,
-      total: funciones.length,
-      links,
-    };
-  }
+function sinCoincidencias(ctx, c, base, suposicion, agendaUrl) {
+  const dias = c.date ? otrosDias(ctx, c, c.date) : [];
+  const enDia = c.date === ctx.hoy ? 'Hoy no encontré' : 'No encontré';
+  const otroDia = dias.length ? ' ¿Quieres consultar otro día?' : '';
+  return {
+    ...base,
+    kind: 'no_matches',
+    message: `${suposicion}${enDia} funciones con estos criterios: ${base.criteriaLabels.join(', ')}.${otroDia} También puedes quitar un criterio o abrir la Agenda.`,
+    suggestions: [...relajar(ctx, c), ...dias],
+    items: [],
+    total: 0,
+    agendaUrl,
+    links: [{ label: 'Abrir la Agenda', href: agendaUrl }],
+  };
+}
 
-  async function accesibilidad(ctx, venueIds, features) {
-    if (venueIds.length !== 1) {
-      const sedes = [...ctx.mapas.venues.values()].sort((x, y) => x.name.localeCompare(y.name, 'es'));
-      return {
-        reference: ctx.reference,
-        kind: 'choose',
-        message: '¿De qué sede quieres saber la accesibilidad? Elige una:',
-        options: sedes.map((s) => ({ type: 'venue', id: s.id, name: s.name, request: { intent: 'accessibility', criteria: { venueId: s.id } } })),
-      };
-    }
-    const sede = ctx.mapas.venues.get(venueIds[0]);
-    const datos = (await leer(() => repos.sedes.accessibility([sede.id]))).get(sede.id) ?? {};
-    const accessibility = features.map((k) => {
-      const d = datos[k];
-      const status = d?.status ?? 'unconfirmed';
-      return { feature: k, label: CARACTERISTICAS[k], status, source: status === 'unconfirmed' ? null : d.source, verifiedOn: status === 'unconfirmed' ? null : d.verifiedOn };
-    });
-    const frases = accessibility.map((x) => {
-      if (x.status === 'confirmed') return `Tiene ${x.label} (confirmado: ${x.source}, ${x.verifiedOn}).`;
-      if (x.status === 'unavailable') return `No tiene ${x.label} (según ${x.source}, ${x.verifiedOn}).`;
-      return `El ${x.label} está por confirmar: no lo doy por disponible.`;
-    });
-    const missing = accessibility.filter((x) => x.status === 'unconfirmed').map((x) => x.feature);
-    return {
-      reference: ctx.reference,
-      kind: missing.length ? 'unconfirmed' : 'answer',
-      missing,
-      message: `${sede.name}: ${frases.join(' ')}`,
-      accessibility,
-      links: [{ label: 'Ver sedes en el Mapa', href: '/mapa' }],
-    };
-  }
+function buscar(ctx, c, { assumedDay = false, intro = null } = {}) {
+  const base = { reference: ctx.reference, criteria: c, criteriaLabels: etiquetas(c, ctx), assumedDay };
+  const suposicion = assumedDay ? `Asumí hoy, ${fechaLarga(ctx.hoy)} (hora de Loja). ` : '';
+  if (c.date && c.date < ctx.hoy) return diaPasado(ctx, c, base);
+  const todos = seleccionar(ctx.actividades, c, ctx.ahora);
+  const agendaUrl = urlAgenda(c, ctx.actividades);
+  if (todos.length === 0) return sinCoincidencias(ctx, c, base, suposicion, agendaUrl);
+  const inicio = intro ?? `Encontré ${plural(todos.length, 'resultado', 'resultados')}`;
+  const recorte = todos.length > MAX_RESULTADOS ? ` Te muestro los ${MAX_RESULTADOS} primeros; el resto está en la Agenda.` : '';
+  return {
+    ...base,
+    kind: 'matches',
+    message: `${suposicion}${inicio} (${base.criteriaLabels.join(', ')}).${recorte}`,
+    items: todos.slice(0, MAX_RESULTADOS).map((r) => item(r, ctx.mapas)),
+    total: todos.length,
+    agendaUrl,
+  };
+}
 
-  function cambios(ctx) {
-    const lista = [];
-    for (const a of ctx.actividades) {
-      const vistos = new Set();
-      for (const n of a.notices) {
-        if (!n.functionId || !['cancelled', 'rescheduled'].includes(n.kind) || vistos.has(n.functionId)) continue;
-        vistos.add(n.functionId); // los avisos llegan del más reciente al más antiguo: se queda el último
-        const f = a.functions.find((x) => x.id === n.functionId);
-        if (!f || f.date < ctx.hoy) continue;
-        const estado = f.status === 'cancelled' ? 'cancelled' : estadoTemporal(f, ctx.ahora, a.durationMinutes);
-        lista.push({ r: { tipo: 'function', actividad: a, funcion: f, date: f.date, hora: f.startTime, estado }, aviso: n });
-      }
-    }
-    lista.sort((x, y) => y.aviso.at.localeCompare(x.aviso.at));
-    const base = { reference: ctx.reference, criteriaLabels: ['desde hoy', 'canceladas o reprogramadas'], agendaUrl: '/agenda' };
-    if (lista.length === 0) {
-      return { ...base, kind: 'no_matches', message: 'No hay funciones canceladas ni reprogramadas de hoy en adelante.', items: [], total: 0, links: [enlaceAgenda] };
-    }
-    return {
-      ...base,
-      kind: 'matches',
-      message: `Hay ${plural(lista.length, 'función cancelada o reprogramada', 'funciones canceladas o reprogramadas')} de hoy en adelante; la más reciente primero.`,
-      items: lista.slice(0, MAX_RESULTADOS).map((x) => item(x.r, ctx.mapas, x.aviso)),
-      total: lista.length,
-    };
-  }
-
-  const info = (ctx) => ({
+function elegirActividad(ctx, ids, pedir) {
+  return {
     reference: ctx.reference,
-    kind: 'info',
-    message: PASAPORTE_Y_RUTAS,
-    links: [{ label: 'Ver el Pasaporte y las rutas', href: '/pasaporte' }],
-  });
+    kind: 'choose',
+    message: '¿De cuál actividad hablas? Elige una:',
+    options: ids.slice(0, MAX_RESULTADOS).map((id) => {
+      const t = ctx.actividades.find((a) => a.id === id).content.title;
+      return { type: 'activity', id, name: t, request: pedir(id, t) };
+    }),
+  };
+}
 
-  const noEntendida = (ctx, fechaInvalida = false) => ({
+function elegirSede(ctx, message, pedir) {
+  const sedes = [...ctx.mapas.venues.values()].sort((x, y) => x.name.localeCompare(y.name, 'es'));
+  return {
     reference: ctx.reference,
-    kind: 'not_understood',
-    message: fechaInvalida ? 'Esa fecha no existe en el calendario. Prueba con otro día o con una de estas preguntas.' : NO_ENTENDIDA,
-    links: [enlaceAgenda],
-  });
+    kind: 'choose',
+    message,
+    options: sedes.map((s) => ({ type: 'venue', id: s.id, name: s.name, request: pedir(s.id) })),
+  };
+}
 
-  async function rapida(ctx, quick, venueId) {
-    const hoy = ctx.hoy;
-    if (quick === 'today') return buscar(ctx, { ...vacio(), date: hoy }, { intro: 'Esto hay hoy desde ahora' });
-    if (quick === 'free_today') return buscar(ctx, { ...vacio(), date: hoy, access: 'free' }, { intro: 'Esto hay gratis hoy' });
-    if (quick === 'tonight') return buscar(ctx, { ...vacio(), date: hoy, from: '18:00' }, { intro: 'Esto hay esta noche' });
-    if (quick === 'changes') return cambios(ctx);
-    if (quick === 'passport_routes') return info(ctx);
-    // venue
-    if (!venueId) {
-      const sedes = [...ctx.mapas.venues.values()].sort((x, y) => x.name.localeCompare(y.name, 'es'));
-      return {
-        reference: ctx.reference,
-        kind: 'choose',
-        message: '¿Qué sede te interesa? Elige una:',
-        options: sedes.map((s) => ({ type: 'venue', id: s.id, name: s.name, request: { quick: 'venue', venueId: s.id } })),
-      };
-    }
+const pedirNombre = (ctx, que) => ({
+  reference: ctx.reference,
+  kind: 'not_understood',
+  message: `No reconocí de qué actividad quieres saber ${que}. Escribe su título como aparece en la Agenda.`,
+  links: [enlaceAgenda],
+});
+
+function precio(ctx, ids) {
+  if (ids.length === 0) return pedirNombre(ctx, 'el precio');
+  if (ids.length > 1) return elegirActividad(ctx, ids, (id) => ({ criteria: { activityId: id }, intent: 'price' }));
+  const a = ctx.actividades.find((x) => x.id === ids[0]);
+  const { mode, priceUsd } = a.content.access;
+  const t = `«${a.content.title}»`;
+  const base = { reference: ctx.reference, links: [enlaceFicha(a.id)] };
+  if (mode === 'free') return { ...base, kind: 'answer', message: `${t} es gratuita.` };
+  if (mode === 'paid' && !ausente(priceUsd)) {
+    return { ...base, kind: 'answer', message: `${t} es de pago: ${etiquetaAcceso(a.content.access).replace('De pago: ', '')}.` };
+  }
+  if (mode === 'paid') return { ...base, kind: 'unconfirmed', missing: ['price'], message: `${t} es de pago, pero su precio aún no está confirmado.` };
+  return { ...base, kind: 'unconfirmed', missing: ['access'], message: `Aún no está confirmado si ${t} es gratuita o de pago, ni su precio.` };
+}
+
+function mensajeFin(t, sinFin, items, conDuracion) {
+  if (sinFin.length === items.length) {
+    const ni = conDuracion ? '' : ', ni su duración';
+    return { kind: 'unconfirmed', message: `La hora de fin de ${t} no está confirmada${ni}. No puedo calcularla.` };
+  }
+  if (sinFin.length) return { kind: 'answer', message: `Estas son las funciones de ${t}. En algunas la hora de fin no está confirmada.` };
+  return { kind: 'answer', message: `Estas son las funciones de ${t} con su hora de fin.` };
+}
+
+function fin(ctx, ids, fecha) {
+  if (ids.length === 0) return pedirNombre(ctx, 'la hora de fin');
+  if (ids.length > 1) return elegirActividad(ctx, ids, (id) => ({ criteria: { activityId: id, date: fecha ?? null }, intent: 'end' }));
+  const a = ctx.actividades.find((x) => x.id === ids[0]);
+  const t = `«${a.content.title}»`;
+  const links = [enlaceFicha(a.id)];
+  const funciones = seleccionar([a], { ...vacio(), activityId: a.id, date: fecha ?? null }, ctx.ahora).filter((r) => r.tipo === 'function');
+  if (funciones.length === 0) {
+    return { reference: ctx.reference, kind: 'no_matches', message: `${t} no tiene funciones próximas.`, items: [], total: 0, links };
+  }
+  const items = funciones.slice(0, MAX_RESULTADOS).map((r) => item(r, ctx.mapas));
+  const sinFin = items.filter((i) => !i.endTime);
+  let missing = [];
+  if (sinFin.length) missing = a.durationMinutes ? ['end'] : ['end', 'duration'];
+  return { reference: ctx.reference, ...mensajeFin(t, sinFin, items, Boolean(a.durationMinutes)), missing, items, total: funciones.length, links };
+}
+
+function fraseAccesibilidad(x) {
+  if (x.status === 'confirmed') return `Tiene ${x.label} (confirmado: ${x.source}, ${x.verifiedOn}).`;
+  if (x.status === 'unavailable') return `No tiene ${x.label} (según ${x.source}, ${x.verifiedOn}).`;
+  return `El ${x.label} está por confirmar: no lo doy por disponible.`;
+}
+
+async function accesibilidad(ctx, venueIds, features) {
+  if (venueIds.length !== 1) {
+    return elegirSede(ctx, '¿De qué sede quieres saber la accesibilidad? Elige una:', (id) => ({ intent: 'accessibility', criteria: { venueId: id } }));
+  }
+  const sede = ctx.mapas.venues.get(venueIds[0]);
+  const datos = (await ctx.leer(() => ctx.repos.sedes.accessibility([sede.id]))).get(sede.id) ?? {};
+  const accessibility = features.map((k) => {
+    const status = datos[k]?.status ?? 'unconfirmed';
+    const conocido = status !== 'unconfirmed';
+    return { feature: k, label: CARACTERISTICAS[k], status, source: conocido ? datos[k].source : null, verifiedOn: conocido ? datos[k].verifiedOn : null };
+  });
+  const missing = accessibility.filter((x) => x.status === 'unconfirmed').map((x) => x.feature);
+  return {
+    reference: ctx.reference,
+    kind: missing.length ? 'unconfirmed' : 'answer',
+    missing,
+    message: `${sede.name}: ${accessibility.map(fraseAccesibilidad).join(' ')}`,
+    accessibility,
+    links: [{ label: 'Ver sedes en el Mapa', href: '/mapa' }],
+  };
+}
+
+/** Último aviso público de cancelación o reprogramación de cada función de hoy en adelante. */
+function avisosVigentes(ctx, a) {
+  const r = [];
+  const vistos = new Set();
+  for (const n of a.notices) {
+    if (!n.functionId || !['cancelled', 'rescheduled'].includes(n.kind) || vistos.has(n.functionId)) continue;
+    vistos.add(n.functionId); // los avisos llegan del más reciente al más antiguo: se queda el último
+    const f = a.functions.find((x) => x.id === n.functionId);
+    if (!f || f.date < ctx.hoy) continue;
+    const estado = f.status === 'cancelled' ? 'cancelled' : estadoTemporal(f, ctx.ahora, a.durationMinutes);
+    r.push({ r: { tipo: 'function', actividad: a, funcion: f, date: f.date, hora: f.startTime, estado }, aviso: n });
+  }
+  return r;
+}
+
+function cambios(ctx) {
+  const lista = ctx.actividades.flatMap((a) => avisosVigentes(ctx, a)).sort((x, y) => y.aviso.at.localeCompare(x.aviso.at));
+  const base = { reference: ctx.reference, criteriaLabels: ['desde hoy', 'canceladas o reprogramadas'], agendaUrl: '/agenda' };
+  if (lista.length === 0) {
+    return { ...base, kind: 'no_matches', message: 'No hay funciones canceladas ni reprogramadas de hoy en adelante.', items: [], total: 0, links: [enlaceAgenda] };
+  }
+  return {
+    ...base,
+    kind: 'matches',
+    message: `Hay ${plural(lista.length, 'función cancelada o reprogramada', 'funciones canceladas o reprogramadas')} de hoy en adelante; la más reciente primero.`,
+    items: lista.slice(0, MAX_RESULTADOS).map((x) => item(x.r, ctx.mapas, x.aviso)),
+    total: lista.length,
+  };
+}
+
+const info = (ctx) => ({
+  reference: ctx.reference,
+  kind: 'info',
+  message: PASAPORTE_Y_RUTAS,
+  links: [{ label: 'Ver el Pasaporte y las rutas', href: '/pasaporte' }],
+});
+
+const noEntendida = (ctx, fechaInvalida = false) => ({
+  reference: ctx.reference,
+  kind: 'not_understood',
+  message: fechaInvalida ? 'Esa fecha no existe en el calendario. Prueba con otro día o con una de estas preguntas.' : NO_ENTENDIDA,
+  links: [enlaceAgenda],
+});
+
+function fueraDeAlcance(ctx, topic, activityIds) {
+  const fa = FUERA_DE_ALCANCE[topic];
+  const ficha = topic === 'buy' && activityIds.length === 1 ? [enlaceFicha(activityIds[0])] : [];
+  return { reference: ctx.reference, kind: 'out_of_scope', topic, message: fa.message, links: [...ficha, ...fa.links] };
+}
+
+const RAPIDAS = {
+  today: (ctx) => buscar(ctx, { ...vacio(), date: ctx.hoy }, { intro: 'Esto hay hoy desde ahora' }),
+  free_today: (ctx) => buscar(ctx, { ...vacio(), date: ctx.hoy, access: 'free' }, { intro: 'Esto hay gratis hoy' }),
+  tonight: (ctx) => buscar(ctx, { ...vacio(), date: ctx.hoy, from: '18:00' }, { intro: 'Esto hay esta noche' }),
+  changes: cambios,
+  passport_routes: info,
+  venue: (ctx, venueId) => {
+    if (!venueId) return elegirSede(ctx, '¿Qué sede te interesa? Elige una:', (id) => ({ quick: 'venue', venueId: id }));
     if (!ctx.mapas.venues.has(venueId)) throw validation({ venueId: 'Esa sede no está registrada.' });
     return buscar(ctx, { ...vacio(), venueId }, { intro: 'Esto hay en esa sede de hoy en adelante' });
+  },
+};
+
+function porCriterios(ctx, criterios, intencion) {
+  const c = { ...vacio(), ...criterios };
+  if (c.activityId && !ctx.actividades.some((a) => a.id === c.activityId)) throw validation({ 'criteria.activityId': 'Esa actividad no está publicada.' });
+  const ids = c.activityId ? [c.activityId] : [];
+  if (intencion === 'price') return precio(ctx, ids);
+  if (intencion === 'end') return fin(ctx, ids, c.date);
+  if (intencion === 'accessibility') {
+    if (!c.venueId || !ctx.mapas.venues.has(c.venueId)) throw validation({ 'criteria.venueId': 'Esa sede no está registrada.' });
+    return accesibilidad(ctx, [c.venueId], Object.keys(CARACTERISTICAS));
+  }
+  return buscar(ctx, c);
+}
+
+function responderTexto(ctx, texto) {
+  const r = interpretar(texto, {
+    hoy: ctx.hoy,
+    categorias: [...ctx.mapas.categories.values()],
+    sedes: [...ctx.mapas.venues.values()],
+    actividades: ctx.actividades.map((a) => ({ id: a.id, title: a.content.title })),
+  });
+  const respuestas = {
+    out_of_scope: () => fueraDeAlcance(ctx, r.topic, r.activityIds),
+    passport_routes: () => info(ctx),
+    price: () => precio(ctx, r.activityIds),
+    end: () => fin(ctx, r.activityIds, r.date),
+    accessibility: () => accesibilidad(ctx, r.venueIds, r.features),
+    changes: () => cambios(ctx),
+    search: () =>
+      r.activityIds.length > 1 && !r.criteria.activityId
+        ? elegirActividad(ctx, r.activityIds, (id) => ({ criteria: { ...r.criteria, activityId: id } }))
+        : buscar(ctx, r.criteria, { assumedDay: r.assumedDay }),
+  };
+  return (respuestas[r.intent] ?? (() => noEntendida(ctx, r.invalidDate)))();
+}
+
+/** Lee del catálogo; si la base falla, la respuesta es «falla del servicio» (FR-014). */
+async function leerCatalogo(lectura) {
+  try {
+    return await lectura();
+  } catch (e) {
+    if (e instanceof AppError) throw e;
+    throw new AppError(503, 'catalog_unavailable', 'No pude consultar la programación en este momento. Puedes revisar la Agenda.');
+  }
+}
+
+export function createAlforjita({ agenda, catalogs, repos, clock, clockFixed = false }) {
+  async function contexto() {
+    const [todas, mapas] = await leerCatalogo(() => Promise.all([agenda.publicadas(), catalogs.mapas()]));
+    const ahora = clock();
+    return {
+      actividades: todas.filter((a) => a.editionActive),
+      mapas,
+      ahora,
+      hoy: enLoja(ahora).date,
+      reference: referencia(clock, clockFixed),
+      repos,
+      leer: leerCatalogo,
+    };
   }
 
   return {
@@ -477,55 +557,9 @@ export function createAlforjita({ agenda, catalogs, repos, clock, clockFixed = f
     async responder(cuerpo) {
       const consulta = validarConsulta(cuerpo);
       const ctx = await contexto();
-
-      if (consulta.quick) return rapida(ctx, consulta.quick, consulta.venueId);
-
-      if (consulta.criteria) {
-        const c = { ...vacio(), ...consulta.criteria };
-        if (c.activityId && !ctx.actividades.some((a) => a.id === c.activityId)) throw validation({ 'criteria.activityId': 'Esa actividad no está publicada.' });
-        const intencion = consulta.intent;
-        if (intencion === 'price') return precio(ctx, c.activityId ? [c.activityId] : []);
-        if (intencion === 'end') return fin(ctx, c.activityId ? [c.activityId] : [], c.date);
-        if (intencion === 'accessibility') {
-          if (!c.venueId || !ctx.mapas.venues.has(c.venueId)) throw validation({ 'criteria.venueId': 'Esa sede no está registrada.' });
-          return accesibilidad(ctx, [c.venueId], Object.keys(CARACTERISTICAS));
-        }
-        return buscar(ctx, c);
-      }
-
-      const r = interpretar(consulta.text, {
-        hoy: ctx.hoy,
-        categorias: [...ctx.mapas.categories.values()],
-        sedes: [...ctx.mapas.venues.values()],
-        actividades: ctx.actividades.map((a) => ({ id: a.id, title: a.content.title })),
-      });
-      switch (r.intent) {
-        case 'out_of_scope': {
-          const fa = FUERA_DE_ALCANCE[r.topic];
-          const ficha =
-            r.topic === 'buy' && r.activityIds.length === 1 ? [{ label: 'Ver la ficha', href: `/actividad/${encodeURIComponent(r.activityIds[0])}` }] : [];
-          return { reference: ctx.reference, kind: 'out_of_scope', topic: r.topic, message: fa.message, links: [...ficha, ...fa.links] };
-        }
-        case 'passport_routes':
-          return info(ctx);
-        case 'price':
-          return precio(ctx, r.activityIds);
-        case 'end':
-          return fin(ctx, r.activityIds, r.date);
-        case 'accessibility':
-          return accesibilidad(ctx, r.venueIds, r.features);
-        case 'changes':
-          return cambios(ctx);
-        case 'search':
-          if (r.activityIds.length > 1 && !r.criteria.activityId) {
-            return elegirActividad(ctx, r.activityIds, (id) => ({ criteria: { ...r.criteria, activityId: id } }));
-          }
-          return buscar(ctx, r.criteria, { assumedDay: r.assumedDay });
-        default:
-          return noEntendida(ctx, r.invalidDate);
-      }
+      if (consulta.quick) return RAPIDAS[consulta.quick](ctx, consulta.venueId);
+      if (consulta.criteria) return porCriterios(ctx, consulta.criteria, consulta.intent);
+      return responderTexto(ctx, consulta.text);
     },
   };
 }
-
-const vacio = () => ({ date: null, from: null, until: null, categoryId: null, venueId: null, access: null, activityId: null });
