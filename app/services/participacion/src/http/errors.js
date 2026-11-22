@@ -10,6 +10,7 @@ export class AppError extends Error {
 }
 
 export const validation = (fields, message = 'Revisa los datos marcados.') => new AppError(422, 'validation', message, { fields });
+export const badRequest = (message = 'Solicitud no válida.') => new AppError(400, 'bad_request', message);
 export const unauthenticated = () => new AppError(401, 'unauthenticated', 'Inicia sesión para continuar.');
 export const notFound = (message = 'No se encontró lo que buscas.') => new AppError(404, 'not_found', message);
 export const conflict = (code, message, extra = {}) => new AppError(409, code, message, extra);

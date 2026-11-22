@@ -1,0 +1,470 @@
+openapi: 3.0.3
+info:
+  title: API de Rutas Culturales e Insignias (Servicio de Participación)
+  description: Contrato HTTP para la consulta pública de rutas, progreso del usuario, insignias obtenidas y gestión administrativa de rutas en VIVART.
+  version: 1.0.0
+paths:
+  /passport/routes:
+    get:
+      summary: Lista pública de rutas culturales
+      description: Devuelve todas las rutas publicadas. Si el visitante tiene sesión, incluye su progreso actual y estado de insignia.
+      responses:
+        '200':
+          description: Listado de rutas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RouteSummary'
+
+  /passport/routes/{id}:
+    get:
+      summary: Detalle de una ruta cultural
+      description: Muestra la información de la ruta, sus funciones elegibles, estado de cancelación, estado «Ruta en revisión», y si hay sesión, el progreso y qué funciones ya tienen sello.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalle de la ruta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RouteDetail'
+        '404':
+          description: Ruta no encontrada o no publicada
+
+  /passport/badges:
+    get:
+      summary: Insignias de la persona autenticada
+      description: Devuelve las insignias obtenidas por el usuario logueado en las distintas rutas.
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Lista de insignias ganadas
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserBadge'
+        '401':
+          description: Sesión no iniciada
+
+  /panel/routes:
+    get:
+      summary: Listado administrativo de rutas
+      description: Solo para administradores. Lista todas las rutas (borrador y publicadas), indicando si están en revisión.
+      security:
+        - sessionCookie: []
+      responses:
+        '200':
+          description: Listado administrativo
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - items
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AdminRouteItem'
+        '401':
+          description: No autenticado
+        '403':
+          description: Requiere rol de administrador
+    post:
+      summary: Crear una ruta cultural
+      description: Solo para administradores. Crea una ruta y asocia sus funciones elegibles (que deben tener Pasaporte habilitado).
+      security:
+        - sessionCookie: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRouteInput'
+      responses:
+        '201':
+          description: Ruta creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRouteItem'
+        '400':
+          description: Datos inválidos o meta inalcanzable (goal > elegibles)
+        '403':
+          description: Requiere rol de administrador
+
+  /panel/routes/{id}:
+    get:
+      summary: Detalle administrativo de una ruta
+      description: Devuelve todos los campos de la ruta para el formulario de edición.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Detalle administrativo
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRouteDetail'
+        '404':
+          description: Ruta no encontrada
+    put:
+      summary: Editar una ruta cultural
+      description: Permite modificar título, descripción, insignia, meta, funciones elegibles y estado de publicación. No retira insignias ya otorgadas.
+      security:
+        - sessionCookie: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRouteInput'
+      responses:
+        '200':
+          description: Ruta actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminRouteDetail'
+        '400':
+          description: Datos inválidos o meta inalcanzable
+        '403':
+          description: Requiere rol de administrador
+
+components:
+  securitySchemes:
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: sid
+
+  schemas:
+    BadgeTemplate:
+      type: object
+      required:
+        - title
+        - description
+        - icon
+        - color
+      properties:
+        title:
+          type: string
+          example: 'Explorador Escénico'
+        description:
+          type: string
+          example: 'Completaste 3 funciones de teatro o danza en el festival.'
+        icon:
+          type: string
+          enum: [teatro, musica, danza, artes-vivas, patrimonio, estrella, brujula]
+          example: 'teatro'
+        color:
+          type: string
+          enum: [violeta, atardecer, terracota, esmeralda]
+          example: 'violeta'
+
+    RouteSummary:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - goal
+        - badge
+        - inReview
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        goal:
+          type: integer
+        badge:
+          $ref: '#/components/schemas/BadgeTemplate'
+        inReview:
+          type: boolean
+          description: True si las funciones activas restantes son menores que la meta.
+        progress:
+          type: object
+          nullable: true
+          properties:
+            current:
+              type: integer
+            goal:
+              type: integer
+            formatted:
+              type: string
+              example: '2 de 3'
+            completed:
+              type: boolean
+            unlockedBadge:
+              type: boolean
+
+    RouteFunctionItem:
+      type: object
+      required:
+        - functionId
+        - title
+        - date
+        - startTime
+        - status
+      properties:
+        functionId:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+        startTime:
+          type: string
+        venueName:
+          type: string
+        status:
+          type: string
+          enum: [active, cancelled]
+        hasStamp:
+          type: boolean
+          nullable: true
+          description: True si el usuario autenticado ya canjeó el sello de esta función.
+
+    RouteDetail:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - goal
+        - badge
+        - inReview
+        - functions
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        goal:
+          type: integer
+        badge:
+          $ref: '#/components/schemas/BadgeTemplate'
+        inReview:
+          type: boolean
+        progress:
+          type: object
+          nullable: true
+          properties:
+            current:
+              type: integer
+            goal:
+              type: integer
+            formatted:
+              type: string
+            completed:
+              type: boolean
+            unlockedBadge:
+              type: boolean
+            unlockedAt:
+              type: string
+              nullable: true
+        functions:
+          type: array
+          items:
+            $ref: '#/components/schemas/RouteFunctionItem'
+
+    UserBadge:
+      type: object
+      required:
+        - id
+        - routeId
+        - routeTitle
+        - title
+        - description
+        - icon
+        - color
+        - unlockedAt
+      properties:
+        id:
+          type: string
+        routeId:
+          type: string
+        routeTitle:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        icon:
+          type: string
+        color:
+          type: string
+        unlockedAt:
+          type: string
+
+    CreateRouteInput:
+      type: object
+      required:
+        - title
+        - description
+        - goal
+        - badgeTitle
+        - badgeDescription
+        - badgeIcon
+        - badgeColor
+        - functionIds
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        goal:
+          type: integer
+        badgeTitle:
+          type: string
+        badgeDescription:
+          type: string
+        badgeIcon:
+          type: string
+          enum: [teatro, musica, danza, artes-vivas, patrimonio, estrella, brujula]
+        badgeColor:
+          type: string
+          enum: [violeta, atardecer, terracota, esmeralda]
+        functionIds:
+          type: array
+          items:
+            type: string
+        publish:
+          type: boolean
+          default: false
+
+    UpdateRouteInput:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        goal:
+          type: integer
+        badgeTitle:
+          type: string
+        badgeDescription:
+          type: string
+        badgeIcon:
+          type: string
+          enum: [teatro, musica, danza, artes-vivas, patrimonio, estrella, brujula]
+        badgeColor:
+          type: string
+          enum: [violeta, atardecer, terracota, esmeralda]
+        functionIds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+          enum: [draft, published]
+
+    AdminRouteItem:
+      type: object
+      required:
+        - id
+        - title
+        - goal
+        - functionsCount
+        - status
+        - inReview
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        goal:
+          type: integer
+        functionsCount:
+          type: integer
+        status:
+          type: string
+          enum: [draft, published]
+        inReview:
+          type: boolean
+        badgeTitle:
+          type: string
+        updatedAt:
+          type: string
+
+    AdminRouteDetail:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - goal
+        - status
+        - badgeTitle
+        - badgeDescription
+        - badgeIcon
+        - badgeColor
+        - functionIds
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        goal:
+          type: integer
+        status:
+          type: string
+          enum: [draft, published]
+        badgeTitle:
+          type: string
+        badgeDescription:
+          type: string
+        badgeIcon:
+          type: string
+        badgeColor:
+          type: string
+        functionIds:
+          type: array
+          items:
+            type: string
+        inReview:
+          type: boolean
+        createdAt:
+          type: string
+        updatedAt:
+          type: string

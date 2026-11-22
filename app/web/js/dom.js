@@ -187,6 +187,17 @@ export function icono(nombre, clase = 'icono') {
       trazo('path', { d: 'M12 3 4.5 6.2v5.6c0 4.6 3.2 8.2 7.5 9.2 4.3-1 7.5-4.6 7.5-9.2V6.2L12 3z' });
       trazo('polyline', { points: '9 12 11 14 15.5 9.5' });
       break;
+    case 'artes-vivas':
+      trazo('circle', { cx: 12, cy: 12, r: 9 });
+      trazo('path', { d: 'M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1' });
+      break;
+    case 'patrimonio':
+      trazo('path', { d: 'M3 21h18M5 21V10M9 21V10M15 21V10M19 21V10M2 10l10-7 10 7H2z' });
+      break;
+    case 'brujula':
+      trazo('circle', { cx: 12, cy: 12, r: 9 });
+      trazo('polygon', { points: '14.5 9.5 12 17 9.5 14.5 7 12 14.5 9.5' });
+      break;
     default:
       trazo('circle', { cx: 12, cy: 12, r: 8 });
       break;

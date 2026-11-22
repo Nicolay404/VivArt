@@ -30,7 +30,7 @@ Función pura `interpretar(texto, { hoy, categorias, sedes, titulos })`. Normali
    - «mis entradas», «mi pedido» → Mis entradas; «mis sellos», «mi pasaporte», «mi progreso», «mis rutas» → Pasaporte;
    - cambiar, modificar, editar, borrar, publicar, cancelar una función o actividad, «borrador», «propuesta» → no puede; la programación la gestiona el equipo del festival en el panel interno.
    - datos de otra persona (correo, «de mi amigo», «de otra persona») → no consulta datos personales.
-2. **Pasaporte y rutas** (FR-017): «pasaporte», «sello», «ruta», «insignia» sin posesivo → texto fijo y enlaces a `/pasaporte` y `/rutas`.
+2. **Pasaporte y rutas** (FR-017): «pasaporte», «sello», «ruta», «insignia» sin posesivo → texto fijo y enlace a `/pasaporte`, donde están las rutas públicas (spec 007).
 3. **Dato de una actividad** (FR-012): «cuánto cuesta», «precio», «cuánto vale» → precio; «a qué hora termina», «cuándo termina», «cuánto dura», «duración» → fin; requieren reconocer un título.
 4. **Accesibilidad de una sede** (FR-012): «accesible», «accesibilidad», «sin escalones», «silla de ruedas», «rampa», «baño accesible» → características de la sede reconocida (o de todas las que coincidan si no se nombra ninguna: se pide elegir).
 5. **Búsqueda con criterios**: día, horas, categoría, sede, acceso y título. Si no se reconoce **ningún** criterio ni intención → «no entendida» (FR-021): preguntas guiadas y enlace a la Agenda, sin inventar.
@@ -62,7 +62,7 @@ Función pura `interpretar(texto, { hoy, categorias, sedes, titulos })`. Normali
 | `unconfirmed` | Se preguntó un dato que no está confirmado | qué dato falta (`price`, `access`, `end`, `duration`, `step_free`, `accessible_toilet`) y la ficha; la ausencia de precio nunca dice «gratuita» |
 | `answer` | Se preguntó un dato que sí está confirmado | el dato (precio en USD, hora de fin, característica confirmada o no disponible) con fuente y fecha si es accesibilidad |
 | `out_of_scope` | Comprar, canjear, modificar, datos personales | explicación y `links` a la pantalla adecuada |
-| `info` | Pasaporte y rutas | texto fijo y `links` a `/pasaporte` y `/rutas` |
+| `info` | Pasaporte y rutas | texto fijo y `links` a `/pasaporte`, con las rutas públicas (spec 007) |
 | `not_understood` | Ningún criterio ni intención | preguntas guiadas (las rápidas) y «Abrir la Agenda» |
 | `choose` | Falta elegir sede o actividad (varias coinciden, o «¿Qué hay en una sede?») | `options` con id y nombre |
 | `past_day` | El día pedido ya pasó | oferta de hoy y próximos días |
@@ -89,7 +89,6 @@ Las preguntas son fijas en el código y sus resultados salen del catálogo (FR-0
 - **Conversación**: lista con `aria-live="polite"`. Las burbujas del visitante muestran su texto con `textContent` (nunca HTML). Las respuestas son tarjetas con enlaces a las fichas; al seguir un enlace se cierra el panel y la ficha conserva «Volver a la Agenda».
 - **Memoria**: la conversación vive en una variable del módulo mientras la pestaña está abierta (sobrevive a ir a una ficha y volver), y se borra al recargar o cerrar la pestaña, o con «Nueva conversación». No usa `localStorage` ni `sessionStorage` ni cookies.
 - **Sin ubicación ni datos personales**: el panel no tiene campos de datos personales ni pide permisos del navegador.
-- **`/rutas`**: `pantallaProximamente('Rutas culturales', …, 'Llega con el spec 007.')`.
 
 ## D-09. Pruebas (mapa de criterios de éxito)
 

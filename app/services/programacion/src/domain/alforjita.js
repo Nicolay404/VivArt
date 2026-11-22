@@ -55,7 +55,7 @@ const FUERA_DE_ALCANCE = {
 };
 
 const PASAPORTE_Y_RUTAS =
-  'El Pasaporte Vivo reúne los sellos que consigues en el festival: en las funciones que lo tienen, escaneas con tu cuenta su QR del Pasaporte y obtienes un sello, uno por persona y función, sin necesidad de comprar entrada. Las rutas culturales agruparán funciones del festival para que avances en ellas con tus sellos; estarán disponibles pronto.';
+  'El Pasaporte Vivo reúne los sellos que consigues en el festival: en las funciones que lo tienen, escaneas con tu cuenta su QR del Pasaporte y obtienes un sello, uno por persona y función, sin necesidad de comprar entrada. Las rutas culturales agrupan funciones del festival: cada ruta tiene su meta, avanzas con los sellos de sus funciones y, al alcanzarla, desbloqueas su insignia. Las rutas se pueden consultar sin cuenta en la página del Pasaporte.';
 
 const NO_ENTENDIDA =
   'No entendí la pregunta. Puedo buscar funciones por día, hora, categoría, sede o si son gratuitas. Prueba con una de estas preguntas o revisa la Agenda.';
@@ -441,10 +441,7 @@ export function createAlforjita({ agenda, catalogs, repos, clock, clockFixed = f
     reference: ctx.reference,
     kind: 'info',
     message: PASAPORTE_Y_RUTAS,
-    links: [
-      { label: 'Ir al Pasaporte', href: '/pasaporte' },
-      { label: 'Rutas culturales', href: '/rutas' },
-    ],
+    links: [{ label: 'Ver el Pasaporte y las rutas', href: '/pasaporte' }],
   });
 
   const noEntendida = (ctx, fechaInvalida = false) => ({

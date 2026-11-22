@@ -64,9 +64,9 @@
 
 **Independent Test**: intentar cada acción prohibida y comprobar el rechazo.
 
-- [x] T018 [P] [US4] Pruebas `S/test/integration/alforjita.test.js` (cuarta parte): comprar, canjear, «mis entradas», «mis sellos», «mi progreso», cambiar la programación y datos de otra persona → `out_of_scope` con enlaces; Pasaporte y rutas → `info` con `/pasaporte` y `/rutas`; un borrador, una versión pendiente y una archivada con títulos únicos nunca aparecen; la respuesta no contiene el texto escrito (SC-006)
+- [x] T018 [P] [US4] Pruebas `S/test/integration/alforjita.test.js` (cuarta parte): comprar, canjear, «mis entradas», «mis sellos», «mi progreso», cambiar la programación y datos de otra persona → `out_of_scope` con enlaces; Pasaporte y rutas → `info` con `/pasaporte`; un borrador, una versión pendiente y una archivada con títulos únicos nunca aparecen; la respuesta no contiene el texto escrito (SC-006)
 - [x] T019 [P] [US4] Prueba de registro en `S/test/integration/alforjita.test.js`: app construida con un registro capturado; una frase única no aparece en el registro ni en ninguna tabla tras preguntarla (SC-012)
-- [x] T020 [US4] Ruta `/rutas` en `W/app.js` con `pantallaProximamente` («Llega con el spec 007»)
+- [x] T020 [US4] Enlace de Pasaporte y rutas a `/pasaporte`, donde el spec 007 (ya en `main`) muestra las rutas públicas; no hace falta una página `/rutas`
 
 ## Phase 7: User Story 5 - Preguntas rápidas fijas (P3)
 

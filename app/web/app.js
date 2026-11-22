@@ -2,7 +2,7 @@
 // Módulos ES sin dependencias ni compilación. Sin inserción de HTML dinámico ni geolocalización.
 import { h, icono, aviso } from './js/dom.js';
 import { apiIdentidad } from './js/api.js';
-import { pantallaAgenda, pantallaFicha, pantallaProximamente } from './js/publico.js';
+import { pantallaAgenda, pantallaFicha } from './js/publico.js';
 import {
   registro,
   ingresar,
@@ -152,26 +152,16 @@ async function resolverRuta(ruta) {
       };
     }
   }
-  // Pasaporte Vivo (spec 006): colección, detalle del sello y canje. Se importa solo al abrir la pestaña.
+  // Pasaporte Vivo (spec 006) y Rutas (spec 007): colección, detalle del sello, canje y ruta cultural.
   const matchSello = ruta.match(/^\/pasaporte\/sello\/([^/]+)$/);
   const matchCanje = ruta.match(/^\/pasaporte\/canje\/([^/]+)$/);
-  if (ruta === '/pasaporte' || matchSello || matchCanje) {
-    const { pantallaPasaporte, pantallaSello, pantallaCanje } = await import('./js/pasaporte.js');
+  const matchRuta = ruta.match(/^\/pasaporte\/ruta\/([^/]+)$/);
+  if (ruta === '/pasaporte' || matchSello || matchCanje || matchRuta) {
+    const { pantallaPasaporte, pantallaSello, pantallaCanje, pantallaRuta } = await import('./js/pasaporte.js');
     if (matchSello) return { ancho: 'completo', contenido: await pantallaSello({ ...ctx, id: decodeURIComponent(matchSello[1]) }) };
     if (matchCanje) return { ancho: 'completo', contenido: await pantallaCanje({ ...ctx, ref: decodeURIComponent(matchCanje[1]) }) };
+    if (matchRuta) return { ancho: 'completo', contenido: await pantallaRuta({ ...ctx, id: decodeURIComponent(matchRuta[1]) }) };
     return { ancho: 'completo', contenido: await pantallaPasaporte(ctx) };
-  }
-
-  // Rutas culturales: llegan con el spec 007; Alforjita y el Pasaporte ya enlazan aquí.
-  if (ruta === '/rutas') {
-    return {
-      ancho: 'normal',
-      contenido: pantallaProximamente(
-        'Rutas culturales',
-        'Las rutas agruparán funciones del festival para que avances en ellas con los sellos de tu Pasaporte.',
-        'Llega con el spec 007.',
-      ),
-    };
   }
 
   const matchActividad = ruta.match(/^\/actividad\/([^/]+)$/);
@@ -195,6 +185,13 @@ async function resolverRuta(ruta) {
       ? await pantallaPanelPasaporteActividad({ ...ctx, id: decodeURIComponent(matchPanelPasaporte[1]) })
       : await pantallaPanelPasaporte(ctx);
     return { ancho: 'panel', contenido };
+  }
+  const matchPanelRutaEditar = ruta.match(/^\/panel\/rutas\/editar\/([^/]+)$/);
+  if (ruta === '/panel/rutas' || ruta === '/panel/rutas/nueva' || matchPanelRutaEditar) {
+    const { pantallaPanelRutas, pantallaPanelRutaFormulario } = await import('./js/panel-rutas.js');
+    if (ruta === '/panel/rutas/nueva') return { ancho: 'panel', contenido: await pantallaPanelRutaFormulario({ ...ctx, id: 'nueva' }) };
+    if (matchPanelRutaEditar) return { ancho: 'panel', contenido: await pantallaPanelRutaFormulario({ ...ctx, id: decodeURIComponent(matchPanelRutaEditar[1]) }) };
+    return { ancho: 'panel', contenido: await pantallaPanelRutas(ctx) };
   }
   const matchVentas = ruta.match(/^\/panel\/ventas\/actividad\/([^/]+)$/);
   if (matchVentas) return { ancho: 'panel', contenido: await pantallaVentasActividad({ ...ctx, id: decodeURIComponent(matchVentas[1]) }) };

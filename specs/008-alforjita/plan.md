@@ -11,7 +11,7 @@ Alforjita **no crea un servicio nuevo**. La arquitectura la asigna al **servicio
 - **Intérprete de reglas simples** (sin IA generativa): convierte una pregunta rápida o un texto libre de hasta 200 caracteres en criterios (día, horas, categoría, sede, acceso, título) o en una intención (precio, hora de fin, accesibilidad, Pasaporte y rutas, fuera de alcance). Las categorías, sedes y títulos se reconocen por su nombre en el catálogo, sin listas manuales.
 - **Respuestas sobre el catálogo vigente**: se leen las mismas actividades publicadas que usa la Agenda (la misma función interna), así que no hay catálogo propio. Cada respuesta es de un tipo: coincidencias, sin coincidencias, dato no confirmado, fuera de alcance, no entendida o información (Pasaporte y rutas). La falla del servicio la muestra la web cuando la API no responde.
 - **Una sola ruta pública sin sesión**: `POST /assistant/answers`. Va por POST para que el texto escrito viaje en el cuerpo y **no quede en el registro de solicitudes** (el servidor registra la URL). Nada se guarda en la base.
-- **Interfaz web**: el botón «Pregúntale a Alforjita» en la Agenda abre un panel (`<dialog>`), lateral en escritorio y a pantalla completa en celular, con preguntas rápidas, campo de texto y respuestas con enlaces a las fichas. El módulo se importa al abrir el panel, para que la Agenda no lo espere (RNF-07). Se añade la página `/rutas` con «Próximamente», que el spec 007 sustituirá.
+- **Interfaz web**: el botón «Pregúntale a Alforjita» en la Agenda abre un panel (`<dialog>`), lateral en escritorio y a pantalla completa en celular, con preguntas rápidas, campo de texto y respuestas con enlaces a las fichas. El módulo se importa al abrir el panel, para que la Agenda no lo espere (RNF-07). Pasaporte y rutas se enlazan a `/pasaporte`, donde el spec 007 muestra las rutas públicas.
 
 ## Technical Context
 
@@ -36,7 +36,7 @@ Alforjita **no crea un servicio nuevo**. La arquitectura la asigna al **servicio
 - Reloj común en hora de Loja, fijable solo en pruebas y demo (RC-07, RNF-10).
 - Cuerpos de solicitud solo en JSON y con `Origin` permitido (defensa CSRF actual).
 
-**Scale/Scope**: MVP académico. 1 endpoint público nuevo, 0 tablas nuevas, 2 módulos de dominio nuevos, 1 módulo web nuevo y 1 ruta web nueva (`/rutas`)
+**Scale/Scope**: MVP académico. 1 endpoint público nuevo, 0 tablas nuevas, 2 módulos de dominio nuevos, 1 módulo web nuevo
 
 ## Constitution Check
 
@@ -52,7 +52,7 @@ Alforjita **no crea un servicio nuevo**. La arquitectura la asigna al **servicio
 | Flujo: una rama por spec | **Cumple.** Todo en `008-alforjita` |
 | Sin coautoría de IA; secretos fuera de Git | **Cumple.** No hay secretos nuevos |
 
-**Cambios en otros specs:** ninguno de contrato. Dentro del servicio de programación, `createAgenda` expone la lectura de actividades publicadas que ya usa, para que Alforjita lea exactamente lo mismo (FR-006). La web añade `/rutas` («Próximamente»), que el spec 007 reemplazará; no se toca la Agenda salvo para añadir el botón.
+**Cambios en otros specs:** ninguno de contrato. Dentro del servicio de programación, `createAgenda` expone la lectura de actividades publicadas que ya usa, para que Alforjita lea exactamente lo mismo (FR-006). La web no toca la Agenda salvo para añadir el botón.
 
 **Re-evaluación tras el diseño (Fase 1):** sin cambios. No se añadió servicio, tabla, librería externa ni acceso a datos de otro servicio.
 
@@ -94,7 +94,6 @@ app/
     ├── js/alforjita.js                  # NUEVO: panel de conversación; se importa al abrirlo
     ├── js/publico.js                    # botón «Pregúntale a Alforjita» en la cabecera de la Agenda
     ├── js/dom.js                        # icono neutro «alforja» en la tabla de trazos
-    ├── app.js                           # ruta /rutas («Próximamente») y enlace del menú sin cambios
     └── styles.css                       # estilos del panel con los tokens existentes
 ```
 

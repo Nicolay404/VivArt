@@ -105,7 +105,7 @@ test('SC-008, RNF-07: con programación caída la web y la Agenda se sirven; Alf
   const puertoCaida = await escuchar(caida);
   try {
     const nav = navegador(() => `http://127.0.0.1:${puertoCaida}`);
-    for (const ruta of ['/agenda', '/rutas', '/app.js', '/js/alforjita.js']) assert.equal((await nav(ruta)).status, 200, ruta);
+    for (const ruta of ['/agenda', '/pasaporte', '/app.js', '/js/alforjita.js']) assert.equal((await nav(ruta)).status, 200, ruta);
     assert.equal((await nav('/api/programacion/assistant/answers', { metodo: 'POST', cuerpo: { quick: 'today' } })).status, 502);
   } finally {
     caida.close();

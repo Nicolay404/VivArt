@@ -91,7 +91,7 @@ test('SC-001, FR-002, FR-024: cada pregunta rápida responde sin sesión con fic
 
   const info = await preguntar(ctx, { quick: 'passport_routes' });
   assert.equal(info.json.kind, 'info');
-  assert.deepEqual(info.json.links.map((l) => l.href), ['/pasaporte', '/rutas']);
+  assert.deepEqual(info.json.links.map((l) => l.href), ['/pasaporte']);
   assert.equal((await preguntar(ctx, { quick: 'borradores' })).status, 422);
   assert.ok(c.desfile);
 });
