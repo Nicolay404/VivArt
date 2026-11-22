@@ -34,7 +34,9 @@ export function sumarDias(fecha, dias) {
 /** Texto preparado para buscar frases completas: sin tildes, sin signos y con un espacio a cada lado. */
 function preparar(texto) {
   let t = normalizar(texto)
-    .replaceAll(/\S+@\S+/g, ' ') // correos: datos personales, no se usan
+    .split(' ')
+    .filter((palabra) => !palabra.includes('@')) // correos: datos personales, no se usan
+    .join(' ')
     .replaceAll(/\d(?:[ -]?\d){6,}/g, (m) => (/^\d{4}-\d{2}-\d{2}$/.test(m) ? m : ' ')) // teléfonos, cédulas: no se usan
     .replaceAll(/(\d)\s?([ap])\.?\s?m\b\.?/g, '$1 $2m ')
     .replaceAll(/(\d)h\b/g, '$1');
@@ -52,7 +54,7 @@ function extraer(estado, re) {
 
 const contiene = (t, re) => re.test(t);
 /** Expresión que encuentra cualquiera de las frases, como palabras completas dentro del texto preparado. */
-const alguna = (frases) => new RegExp(` (?:${frases.join('|')}) `);
+const alguna = (frases) => new RegExp(` (?:${frases.join('|').replaceAll('~', String.raw`\w*`)}) `);
 const escapar = (s) => s.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 // ---------- Horas (M-14) ----------
@@ -237,23 +239,37 @@ function titulosAMedias(estado, actividades) {
 // ---------- Intenciones ----------
 
 // Las frases se escriben como listas y se convierten en expresiones con `alguna`: así cada lista se lee y se amplía fácil.
-const PARIENTES = ['amig\\w*', 'herman\\w*', 'mama', 'papa', 'novi\\w*', 'espos\\w*', 'hij\\w*', 'compan\\w*', 'pareja', 'famil\\w*'];
+const PARIENTES = ['amig~', 'herman~', 'mama', 'papa', 'novi~', 'espos~', 'hij~', 'compan~', 'pareja', 'famil~'];
 const FUERA = [
   ['others_data', alguna([`(?:de )?(?:mi|mis|tu|su) (?:${PARIENTES.join('|')})`, 'de otra persona', 'de otro usuario', 'de otra cuenta'])],
   ['tickets', alguna(['(?:mis|mi) (?:entradas?|boletos?|pedidos?|compras?|tickets?)'])],
-  ['redeem', alguna(['canje\\w*', 'reclam\\w*', 'escane\\w*'])],
+  ['redeem', alguna(['canje~', 'reclam~', 'escane~'])],
   ['passport_personal', alguna(['mis sellos?', 'mi sello', 'mi pasaporte', 'mi progreso', 'mis rutas', 'mi ruta', 'mis insignias?', 'mi insignia', 'cuantos sellos tengo'])],
-  ['buy', alguna(['compr\\w*', 'pagar', 'reserv\\w*', 'carrito', 'adquir\\w*'])],
+  ['buy', alguna(['compr~', 'pagar', 'reserv~', 'carrito', 'adquir~'])],
   [
     'modify',
     alguna([
-      ...['cambiar', 'modificar', 'editar', 'borrar', 'eliminar', 'publicar', 'agregar', 'anadir', 'cancelar', 'mover', 'reprogramar', 'subir'],
-      ...['borrador\\w*', 'propuestas?', 'sin publicar', 'no publicad\\w*'],
+      'cambiar',
+      'modificar',
+      'editar',
+      'borrar',
+      'eliminar',
+      'publicar',
+      'agregar',
+      'anadir',
+      'cancelar',
+      'mover',
+      'reprogramar',
+      'subir',
+      'borrador~',
+      'propuestas?',
+      'sin publicar',
+      'no publicad~',
     ]),
   ],
 ];
 const RE_PASAPORTE = alguna(['pasaportes?', 'sellos?', 'rutas?', 'insignias?']);
-const RE_PRECIO = alguna(['cuanto cuesta\\w*', 'cuanto vale\\w*', 'cuanto cobran', 'cuanto sale', 'precios?', 'costos?', 'tarifas?', 'valor de la entrada']);
+const RE_PRECIO = alguna(['cuanto cuesta~', 'cuanto vale~', 'cuanto cobran', 'cuanto sale', 'precios?', 'costos?', 'tarifas?', 'valor de la entrada']);
 const RE_FIN = alguna([
   'a que hora (?:termina|acaba|finaliza|sale)',
   'cuando (?:termina|acaba|finaliza)',
@@ -262,24 +278,24 @@ const RE_FIN = alguna([
   'duracion',
   'dura',
 ]);
-const ESCALONES = ['sin escalones', 'escalon\\w*', 'silla de ruedas', 'rampas?', 'movilidad reducida'];
+const ESCALONES = ['sin escalones', 'escalon~', 'silla de ruedas', 'rampas?', 'movilidad reducida'];
 const RE_ESCALONES = alguna(ESCALONES);
 const RE_BANO = alguna(['banos?']);
-const RE_ACCESIBLE = alguna(['accesib\\w*', ...ESCALONES, 'banos?(?: accesibles?)?', 'discapacidad']);
-const RE_CAMBIOS = alguna(['cambios?', 'cancelad\\w*', 'cancelaron', 'cancelo', 'reprogramad\\w*', 'reprogramaron', 'reprogramo', 'suspendid\\w*', 'avisos?']);
+const RE_ACCESIBLE = alguna(['accesib~', ...ESCALONES, 'banos?(?: accesibles?)?', 'discapacidad']);
+const RE_CAMBIOS = alguna(['cambios?', 'cancelad~', 'cancelaron', 'cancelo', 'reprogramad~', 'reprogramaron', 'reprogramo', 'suspendid~', 'avisos?']);
 const RE_GENERICO = alguna([
   'que hay',
   'que puedo ver',
-  'funcion\\w*',
+  'funcion~',
   'eventos?',
-  'actividad\\w*',
+  'actividad~',
   'programacion',
   'agenda',
   'planes?',
   'obras?',
   'espectaculos?',
-  'presentacion\\w*',
-  'show\\w*',
+  'presentacion~',
+  'show~',
 ]);
 
 /** Intenciones que no son una búsqueda (fuera de alcance, precio, fin, accesibilidad, Pasaporte, cambios), o null. */
