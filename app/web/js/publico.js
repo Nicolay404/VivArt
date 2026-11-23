@@ -162,16 +162,16 @@ function tarjetaAhoraFranja(entrada) {
  * botones para pausar (WCAG 2.2.2) y para activar el sonido. No se carga si la persona pidió reducir el movimiento, si su
  * conexión ahorra datos o en pantallas de celular, para no gastar sus datos.
  */
-function videoDePortada(src) {
+export function videoDePortada(src) {
   const reducir = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
   const celular = globalThis.matchMedia?.('(max-width: 39.99rem)').matches;
-  if (reducir || celular || navigator.connection?.saveData) return null;
+  if (celular || navigator.connection?.saveData) return null;
   const video = document.createElement('video');
   video.className = 'hero-video';
   video.muted = true;
   video.defaultMuted = true;
   video.loop = true;
-  video.autoplay = true;
+  video.autoplay = !reducir;
   video.playsInline = true;
   video.preload = 'auto';
   video.setAttribute('aria-label', 'Video de ambiente del festival');
@@ -188,7 +188,11 @@ function videoDePortada(src) {
     nombrar(boton, pausado ? 'Reanudar video' : 'Pausar video');
     boton.replaceChildren(icono(pausado ? 'reproducir' : 'pausa', 'icono-sm'));
   };
-  etiqueta(false);
+  etiqueta(Boolean(reducir));
+  if (!reducir) {
+    // Asegura el arranque incluso si el navegador espera a que el nodo esté en el documento.
+    queueMicrotask(() => void video.play().catch(() => etiqueta(true)));
+  }
   boton.addEventListener('click', () => {
     if (video.paused) void video.play().catch(() => {});
     else video.pause();

@@ -166,7 +166,7 @@ async function resolverRuta(ruta) {
   if (ruta === '/' || ruta === '/agenda') return { ancho: 'completo', contenido: await pantallaAgenda() };
   if (ruta === '/recorrido') {
     const { pantallaRecorrido } = await import('./js/recorrido.js');
-    return { ancho: 'normal', contenido: await pantallaRecorrido(ctx) };
+    return { ancho: 'completo', contenido: await pantallaRecorrido(ctx) };
   }
   if (ruta === '/mapa') {
     // El mapa se importa solo al abrir la pestaña: la Agenda y las fichas no lo esperan (spec 003, FR-004).
