@@ -54,6 +54,11 @@ const TRAZOS_MAPA = {
   'flecha-izquierda': [['path', { d: 'M19 12H5M11 18l-6-6 6-6' }]],
   basura: [['path', { d: 'M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3' }]],
   descargar: [['path', { d: 'M12 4v11M7 10l5 5 5-5M5 20h14' }]],
+  // Familias de las portadas ilustradas de la Agenda.
+  circo: [['path', { d: 'M3 20h18M4 20 12 4l8 16M12 4v16M8.5 20 12 13l3.5 7' }], ['path', { d: 'M12 4l3-1.5' }]],
+  libro: [['path', { d: 'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z' }], ['path', { d: 'M4 20.5A2.5 2.5 0 0 1 6.5 18H20v3H6.5M9 7.5h7M9 11h5' }]],
+  feria: [['path', { d: 'M3 9 5 4h14l2 5' }], ['path', { d: 'M3 9a3 3 0 0 0 6 0 3 3 0 0 0 6 0 3 3 0 0 0 6 0' }], ['path', { d: 'M5 11.5V20h14v-8.5M10 20v-5h4v5' }]],
+  comunidad: [['circle', { cx: 8, cy: 8, r: 2.6 }], ['circle', { cx: 16.5, cy: 9, r: 2.2 }], ['path', { d: 'M3 19a5 5 0 0 1 10 0M13.5 19a4 4 0 0 1 7.5-1.8' }]],
   // Pausar y reanudar el video de la portada.
   pausa: [['line', { x1: 9, y1: 5, x2: 9, y2: 19 }], ['line', { x1: 15, y1: 5, x2: 15, y2: 19 }]],
   reproducir: [['path', { d: 'M7 5v14l12-7z' }]],

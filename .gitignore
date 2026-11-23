@@ -1,6 +1,9 @@
 # Fuente de programación: se conserva en una carpeta compartida, no en Git.
 # Ver context/assets/README.md. Se ignora solo este archivo; los mockups y el afiche sí se versionan.
 /context/assets/PROGRAMACION 2026 digital.pdf
+# Programación en hoja de cálculo: misma regla que el PDF (M-04), solo para cargar la demo local.
+/context/assets/*.csv
+/context/assets/*.xlsx
 
 # Integraciones de agentes de Spec Kit: se instalan en local, no se versionan.
 # La base neutra (.specify/) sí se versiona. Ver AGENTS.md.

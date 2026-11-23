@@ -230,79 +230,26 @@
 /* Selector de días, como la barra de días de la programación impresa */
 
 .selector-dias {
-  background: var(--fondo-noche);
   color: #ffffff;
   position: relative;
   z-index: 1;
+  background:
+    radial-gradient(120% 140% at 0% 0%, color-mix(in srgb, var(--marca-primario) 35%, transparent), transparent 55%),
+    var(--fondo-noche);
+  border-top: 1px solid rgb(255 255 255 / 8%);
 }
 
 .selector-dias-interior {
   max-width: var(--ancho-max);
   margin: 0 auto;
   display: flex;
-  gap: 0.25rem;
   overflow-x: auto;
-  padding: 0.6rem 1rem;
   scrollbar-width: thin;
-}
-
-.dia-boton {
-  position: relative;
-  flex: 0 0 auto;
-  display: grid;
-  justify-items: center;
-  min-width: 3.6rem;
-  min-height: 3.6rem;
-  padding: 0.65rem 0.5rem 0.4rem;
-  border: 0;
-  border-radius: var(--radio-sm);
-  background: transparent;
-  color: #ffffff;
-  box-shadow: none;
-}
-
-.dia-boton:hover:not([disabled]) {
-  background: color-mix(in srgb, rgb(255 255 255) 10%, transparent);
-  color: #ffffff;
-}
-
-.dia-boton.activo,
-.dia-boton.activo:hover:not([disabled]) {
-  background: var(--marca-ambar);
-  color: var(--marca-oscuro);
-}
-
-.dia-numero {
-  font-family: var(--fuente-titulos);
-  font-weight: 800;
-  font-size: 1.45rem;
-  line-height: 1;
-}
-
-.dia-semana {
-  font-size: 0.72rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-}
-
-.dia-hoy {
-  position: absolute;
-  top: -0.05rem;
-  right: 0.1rem;
-  padding: 0 0.35rem;
-  border-radius: var(--radio-pill);
-  background: var(--marca-ambar);
-  color: var(--marca-oscuro);
-  font-size: 0.62rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.dia-boton.activo .dia-hoy {
-  background: var(--marca-oscuro);
-  color: var(--marca-ambar);
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1rem 1rem 1.1rem;
+  scroll-snap-type: x proximity;
+  scroll-padding-inline: 1rem;
 }
 
 /* La hoja de contenido ya no se monta sobre el hero: las secciones son planas, como en el festival */
@@ -340,10 +287,11 @@
 
 .tarjeta-agenda-enlace {
   position: relative;
-  grid-template-columns: 4.75rem minmax(0, 1fr);
   gap: 0;
   padding: 0;
   align-items: stretch;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr;
 }
 
 .tarjeta-agenda-fecha {
@@ -352,9 +300,19 @@
   align-items: center;
   justify-content: center;
   gap: 0.1rem;
-  padding: 0.85rem 0.25rem;
-  color: #ffffff;
   text-align: center;
+  grid-column: 1;
+  grid-row: 1;
+  align-self: end;
+  justify-self: start;
+  z-index: 1;
+  margin: 0 0 -1.4rem 1rem;
+  width: 4rem;
+  padding: 0.45rem 0.25rem 0.5rem;
+  border-radius: 0.6rem;
+  background: var(--superficie);
+  color: var(--marca-oscuro);
+  box-shadow: 0 8px 18px -8px rgb(25 16 43 / 55%);
 }
 
 .tarjeta-agenda-fecha.tono-1 {
@@ -396,8 +354,10 @@
   display: grid;
   gap: 0.5rem;
   align-content: start;
-  padding: 1rem 2.75rem 1rem 1rem;
   min-width: 0;
+  grid-column: 1;
+  grid-row: 2;
+  padding: 1.8rem 1rem 1.1rem;
 }
 
 .tarjeta-agenda-titulo {
@@ -413,10 +373,11 @@
   place-items: center;
   width: 2.1rem;
   height: 2.1rem;
-  background: var(--acento-suave);
-  color: var(--acento);
   font-weight: 800;
   transition: background-color 0.15s ease, color 0.15s ease;
+  z-index: 1;
+  background: rgb(255 255 255 / 85%);
+  color: var(--marca-oscuro);
 }
 
 .tarjeta-agenda:hover .tarjeta-agenda-flecha,
@@ -1340,31 +1301,73 @@
 
   /* Tarjetas: suben en cascada al aparecer */
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > * {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > * {
     animation: vivart-subir 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(2) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(2) {
     animation-delay: 0.05s;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(3) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(3) {
     animation-delay: 0.1s;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(4) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(4) {
     animation-delay: 0.15s;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(5) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(5) {
     animation-delay: 0.2s;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(6) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(6) {
     animation-delay: 0.25s;
   }
 
-  :is(.grid-agenda, .grid-ahora, .lista-horarios, .rejilla-sellos, .rejilla-rutas, .recorrido-lista, .lista-funciones-elegibles) > :nth-child(n + 7) {
+  :is(.grid-agenda,
+  .grid-ahora,
+  .lista-horarios,
+  .rejilla-sellos,
+  .rejilla-rutas,
+  .recorrido-lista,
+  .lista-funciones-elegibles) > :nth-child(n + 7) {
     animation-delay: 0.3s;
   }
 
@@ -1430,18 +1433,6 @@
   }
 
   /* Selector de días: el día elegido salta y el de «Hoy» late suavemente */
-
-  .dia-boton {
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
-  }
-
-  .dia-boton.activo {
-    animation: vivart-cuadro 0.3s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-
-  .dia-hoy {
-    animation: vivart-pulso 2.4s ease-out 1s 3;
-  }
 
   /* Navegación: la línea ámbar de la página actual aparece desde el centro */
 
@@ -1518,110 +1509,6 @@
 }
 
 /* ---------- Descarga del PDF oficial de la programación ---------- */
-
-.descarga-pdf {
-  display: grid;
-  grid-template-columns: 1fr;
-  overflow: hidden;
-  border-radius: var(--radio-sm);
-  background: var(--marca-oscuro);
-  color: #ffffff;
-  margin-bottom: 1.5rem;
-}
-
-.descarga-pdf-mosaico {
-  display: grid;
-  grid-template-columns: 2fr 1fr 3fr 1fr;
-  min-height: 0.6rem;
-}
-
-.descarga-pdf-mosaico span:nth-child(1) {
-  background: var(--marca-primario);
-}
-
-.descarga-pdf-mosaico span:nth-child(2) {
-  background: var(--marca-ambar);
-}
-
-.descarga-pdf-mosaico span:nth-child(3) {
-  background: var(--marca-magenta);
-}
-
-.descarga-pdf-mosaico span:nth-child(4) {
-  background: var(--marca-calido);
-}
-
-.descarga-pdf-texto {
-  display: grid;
-  gap: 0.6rem;
-  padding: 1.5rem 1.25rem 1.6rem;
-}
-
-.descarga-pdf-texto > p {
-  margin: 0;
-  color: #e9dcf7;
-  max-width: 40rem;
-}
-
-.descarga-pdf .eyebrow {
-  color: var(--marca-ambar);
-}
-
-.descarga-pdf .titulo-seccion {
-  color: #ffffff;
-}
-
-.descarga-pdf .ayuda {
-  color: #cdb9e6;
-  font-size: 0.85rem;
-}
-
-.descarga-pdf .acciones-fila {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.6rem;
-  margin-top: 0.35rem;
-}
-
-.boton-descarga {
-  background: var(--marca-ambar);
-  color: var(--marca-oscuro);
-  border-color: var(--marca-ambar);
-  font-weight: 800;
-}
-
-.boton-descarga:hover {
-  background: #ffffff;
-  color: var(--marca-oscuro);
-  border-color: #ffffff;
-}
-
-.descarga-pdf .boton.secundario {
-  background: transparent;
-  color: #ffffff;
-  border-color: rgb(255 255 255 / 55%);
-}
-
-.descarga-pdf .boton.secundario:hover {
-  background: color-mix(in srgb, rgb(255 255 255) 12%, transparent);
-  color: #ffffff;
-  border-color: #ffffff;
-}
-
-@media (min-width: 56rem) {
-  .descarga-pdf {
-    grid-template-columns: 9rem 1fr;
-  }
-
-  .descarga-pdf-mosaico {
-    grid-template-columns: 1fr;
-    grid-template-rows: 2fr 1fr 3fr 1fr;
-  }
-
-  .descarga-pdf-texto {
-    padding: 2rem 2rem 2.1rem;
-  }
-}
 
 /* Controles del video: dos botones redondos y discretos, solo con icono */
 
@@ -1978,4 +1865,801 @@
   .nav-contador {
     animation: vivart-cuadro 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
   }
+}
+
+/* =====================================================================================================
+   Selector de días como boletos de teatro (diseño propio de VIVART): mes, número grande, línea troquelada con
+   muescas y día de la semana. El día elegido es un boleto ámbar «arrancado» del taco; hoy lleva un sello.
+   ===================================================================================================== */
+
+.selector-dias-titulo {
+  flex: 0 0 auto;
+  margin: 0 0.35rem 0 0;
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 0.95rem;
+  line-height: 1.05;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--marca-ambar);
+}
+
+/* El boleto */
+
+.dia-boleto {
+  --muesca: 0.45rem;
+  --corte: 3.62rem;
+  position: relative;
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  justify-items: center;
+  align-content: start;
+  width: 4.4rem;
+  min-height: 5.6rem;
+  padding: 0.45rem 0.3rem 0.5rem;
+  border: 1px solid rgb(255 255 255 / 16%);
+  border-radius: 0.7rem;
+  background: linear-gradient(165deg, rgb(255 255 255 / 12%), rgb(255 255 255 / 4%));
+  color: #ffffff;
+  box-shadow: none;
+  scroll-snap-align: start;
+  overflow: visible;
+}
+
+/* Muescas a los lados, a la altura del troquel: círculos del color de la barra */
+
+.dia-boleto::before,
+.dia-boleto::after {
+  content: "";
+  position: absolute;
+  top: calc(var(--corte) - var(--muesca));
+  width: calc(var(--muesca) * 2);
+  height: calc(var(--muesca) * 2);
+  border-radius: 50%;
+  background: var(--fondo-noche);
+  border: 1px solid rgb(255 255 255 / 16%);
+}
+
+.dia-boleto::before {
+  left: calc(var(--muesca) * -1 - 1px);
+  clip-path: inset(0 0 0 50%);
+}
+
+.dia-boleto::after {
+  right: calc(var(--muesca) * -1 - 1px);
+  clip-path: inset(0 50% 0 0);
+}
+
+.boleto-mes {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: rgb(255 255 255 / 70%);
+}
+
+.boleto-numero {
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 1.75rem;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.boleto-corte {
+  display: block;
+  justify-self: stretch;
+  width: 100%;
+  margin: 0.35rem 0 0.3rem;
+  border-top: 2px dashed rgb(255 255 255 / 28%);
+}
+
+.boleto-semana {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* «Todo el festival»: boleto ancho */
+
+.dia-boleto.boleto-todos {
+  width: 6.6rem;
+}
+
+.boleto-texto {
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  padding-top: 0.2rem;
+}
+
+/* Hover: el boleto asoma del taco */
+
+.dia-boleto:hover:not([disabled]) {
+  background: linear-gradient(165deg, rgb(255 255 255 / 20%), rgb(255 255 255 / 8%));
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 35%);
+}
+
+/* Día elegido: boleto ámbar, inclinado y levantado */
+
+.dia-boleto.activo,
+.dia-boleto.activo:hover:not([disabled]) {
+  background: linear-gradient(165deg, #ffc266, var(--marca-ambar));
+  border-color: #ffd699;
+  color: var(--marca-oscuro);
+  box-shadow: 0 12px 22px -10px rgb(245 158 45 / 75%);
+}
+
+.dia-boleto.activo .boleto-mes {
+  color: color-mix(in srgb, var(--marca-oscuro) 75%, transparent);
+}
+
+.dia-boleto.activo .boleto-corte {
+  border-top-color: color-mix(in srgb, var(--marca-oscuro) 35%, transparent);
+}
+
+.dia-boleto.activo::before,
+.dia-boleto.activo::after {
+  border-color: #ffd699;
+}
+
+/* Hoy: sello redondo girado */
+
+.boleto-sello {
+  position: absolute;
+  top: -0.85rem;
+  right: -0.75rem;
+  display: grid;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: var(--marca-magenta);
+  color: #ffffff;
+  font-size: 0.6rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transform: rotate(14deg);
+  box-shadow: 0 0 0 2px var(--fondo-noche), inset 0 0 0 1.5px rgb(255 255 255 / 55%);
+  z-index: 1;
+}
+
+.dia-boleto.es-hoy:not(.activo) {
+  border-color: color-mix(in srgb, var(--marca-magenta) 70%, white);
+}
+
+@media (min-width: 56rem) {
+  .selector-dias-interior {
+    padding: 1.1rem 2rem 1.2rem;
+    gap: 0.75rem;
+  }
+
+  .dia-boleto {
+    width: 4.8rem;
+  }
+
+  .dia-boleto.boleto-todos {
+    width: 7rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dia-boleto {
+    transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), background-color 0.2s ease, box-shadow 0.25s ease, border-color 0.2s ease;
+  }
+
+  .dia-boleto:hover:not([disabled]) {
+    transform: translateY(-3px) rotate(-2deg);
+  }
+
+  .dia-boleto.activo,
+  .dia-boleto.activo:hover:not([disabled]) {
+    transform: translateY(-5px) rotate(-4deg);
+  }
+
+  .dia-boleto:active:not([disabled]) {
+    transform: translateY(-1px) rotate(-1deg) scale(0.97);
+  }
+
+  .boleto-sello {
+    animation: vivart-sello 0.6s 0.4s cubic-bezier(0.2, 0.7, 0.2, 1.4) backwards;
+  }
+
+  @keyframes vivart-sello {
+    from { opacity: 0; transform: rotate(-30deg) scale(1.8); }
+    to { opacity: 1; transform: rotate(14deg) scale(1); }
+  }
+}
+
+/* En el celular no hay sitio para el título: los boletos ya se explican solos */
+
+@media (max-width: 39.99rem) {
+  .selector-dias-titulo {
+    display: none;
+  }
+}
+
+/* ---------- Boletos en una barra lateral junto a los filtros (escritorio); tira deslizable en el celular ---------- */
+
+.agenda-con-dias {
+  align-items: start;
+}
+
+.agenda-principal {
+  display: grid;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.agenda-con-dias > .selector-dias {
+  border-radius: var(--radio-sm);
+  min-width: 0;
+  order: -1;
+}
+
+.agenda-con-dias > .selector-dias .selector-dias-interior {
+  padding: 0.9rem 0.9rem 1rem;
+}
+
+@media (min-width: 56rem) {
+  .agenda-con-dias {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+    gap: 1.5rem;
+  }
+
+  .agenda-con-dias > .selector-dias {
+    order: 0;
+    position: sticky;
+    top: 5.5rem;
+    max-height: calc(100vh - 7rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: 1px solid rgb(255 255 255 / 8%);
+    box-shadow: var(--sombra);
+    scrollbar-width: thin;
+  }
+
+  .agenda-con-dias:has(> .selector-dias[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .agenda-con-dias > .selector-dias .selector-dias-interior {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem 0.6rem;
+    overflow: visible;
+    padding: 1rem 0.95rem 1.1rem;
+  }
+
+  .agenda-con-dias .selector-dias-titulo {
+    grid-column: 1 / -1;
+    margin: 0 0 0.2rem;
+    font-size: 1.05rem;
+  }
+
+  .agenda-con-dias .selector-dias-titulo br {
+    display: none;
+  }
+
+  /* Boletos algo más bajos en la barra, para que quepan todos los días sin desplazarse */
+
+  .agenda-con-dias .dia-boleto {
+    width: auto;
+    min-height: 5rem;
+    --corte: 3.3rem;
+    padding-top: 0.35rem;
+  }
+
+  .agenda-con-dias .boleto-numero {
+    font-size: 1.45rem;
+  }
+
+  .agenda-con-dias .boleto-mes,
+  .agenda-con-dias .boleto-semana {
+    letter-spacing: 0.08em;
+  }
+
+  .agenda-con-dias .boleto-corte {
+    margin: 0.25rem 0 0.25rem;
+  }
+
+  .agenda-con-dias .dia-boleto.boleto-todos {
+    grid-column: 1 / -1;
+    width: auto;
+  }
+}
+
+/* =====================================================================================================
+   Portadas ilustradas de la Agenda: cada familia de categorías tiene su degradado de la paleta de VIVART, un
+   patrón geométrico y un icono grande a línea. Son decoración (aria-hidden) y no aparentan ser fotos de obras.
+   ===================================================================================================== */
+
+.tarjeta-portada {
+  position: relative;
+  grid-column: 1;
+  grid-row: 1;
+  height: 7.5rem;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--p1), var(--p2));
+  color: #ffffff;
+}
+
+.portada-patron {
+  position: absolute;
+  inset: 0;
+  opacity: 0.22;
+  background-image:
+    radial-gradient(circle at 1px 1px, #ffffff 1.2px, transparent 1.6px),
+    linear-gradient(115deg, transparent 0 62%, rgb(255 255 255 / 35%) 62% 63%, transparent 63% 100%);
+  background-size: 14px 14px, 100% 100%;
+}
+
+.portada-icono {
+  position: absolute;
+  right: 0.9rem;
+  bottom: -0.6rem;
+  width: 6.2rem;
+  height: 6.2rem;
+  stroke-width: 1.3;
+  opacity: 0.9;
+  transform: rotate(-8deg);
+}
+
+/* El día, como un boleto blanco sobre la portada */
+
+.tarjeta-agenda-fecha.tono-1,
+.tarjeta-agenda-fecha.tono-2,
+.tarjeta-agenda-fecha.tono-3 {
+  background: var(--superficie);
+}
+
+.tarjeta-agenda-fecha .fecha-semana,
+.tarjeta-agenda-fecha .fecha-mes {
+  color: var(--marca-magenta);
+}
+
+.tarjeta-agenda-fecha .fecha-dia {
+  font-size: 1.9rem;
+}
+
+.tarjeta-agenda-fecha.sin-dia {
+  color: var(--suave);
+}
+
+/* Familias (solo la paleta de VIVART) */
+
+.portada-teatro {
+  --p1: var(--marca-primario);
+  --p2: var(--marca-magenta);
+}
+
+.portada-musica {
+  --p1: var(--marca-magenta);
+  --p2: var(--marca-calido);
+}
+
+.portada-danza {
+  --p1: var(--marca-calido);
+  --p2: color-mix(in srgb, var(--marca-ambar) 85%, var(--marca-calido));
+}
+
+.portada-circo {
+  --p1: color-mix(in srgb, var(--marca-ambar) 80%, var(--marca-calido));
+  --p2: var(--marca-magenta);
+}
+
+.portada-visual {
+  --p1: var(--marca-oscuro);
+  --p2: var(--marca-primario);
+}
+
+.portada-letras {
+  --p1: var(--violeta-claro);
+  --p2: var(--marca-primario);
+}
+
+.portada-feria {
+  --p1: var(--marca-calido);
+  --p2: var(--marca-oscuro);
+}
+
+.portada-comunidad {
+  --p1: var(--marca-primario);
+  --p2: color-mix(in srgb, var(--marca-ambar) 75%, var(--marca-primario));
+}
+
+.portada-otras {
+  --p1: var(--marca-oscuro);
+  --p2: var(--marca-magenta);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .portada-icono {
+    transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .tarjeta-agenda:hover .portada-icono {
+    transform: rotate(0deg) scale(1.08);
+  }
+
+  .tarjeta-agenda:hover .fecha-dia {
+    transform: none;
+  }
+}
+
+/* =====================================================================================================
+   «Llévate la programación»: texto a la izquierda y un programa de mano ilustrado (tres hojas en abanico)
+   a la derecha, sobre el violeta de VIVART con un brillo ámbar y el patrón de puntos de las portadas.
+   ===================================================================================================== */
+
+.descarga-pdf {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  overflow: hidden;
+  isolation: isolate;
+  margin-bottom: 1.5rem;
+  border-radius: var(--radio);
+  color: #ffffff;
+  background:
+    radial-gradient(60% 90% at 85% 50%, color-mix(in srgb, var(--marca-ambar) 32%, transparent), transparent 70%),
+    radial-gradient(50% 80% at 10% 0%, color-mix(in srgb, var(--marca-primario) 55%, transparent), transparent 70%),
+    var(--marca-oscuro);
+  width: 100%;
+  justify-self: center;
+  max-width: none;
+}
+
+.descarga-pdf::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.14;
+  background-image: radial-gradient(circle at 1px 1px, #ffffff 1.2px, transparent 1.6px);
+  background-size: 16px 16px;
+}
+
+.descarga-pdf-texto {
+  display: grid;
+  align-content: center;
+  padding: 1.5rem 1.25rem 0.5rem;
+  gap: 0.5rem;
+}
+
+.descarga-pdf-texto > p {
+  margin: 0;
+  max-width: 36rem;
+  color: #e9dcf7;
+  font-size: 0.95rem;
+}
+
+.descarga-pdf .eyebrow {
+  color: var(--marca-ambar);
+}
+
+.descarga-pdf .titulo-seccion {
+  color: #ffffff;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+}
+
+.descarga-pdf .ayuda {
+  color: #cdb9e6;
+  font-size: 0.82rem;
+}
+
+.descarga-pdf-datos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.descarga-pdf-datos li {
+  padding: 0.2rem 0.7rem;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: var(--radio-pill);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f3ecfb;
+}
+
+.descarga-pdf .acciones-fila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
+}
+
+.boton-descarga {
+  background: var(--marca-ambar);
+  color: var(--marca-oscuro);
+  border-color: var(--marca-ambar);
+  font-weight: 800;
+  box-shadow: 0 10px 24px -12px rgb(245 158 45 / 80%);
+}
+
+.boton-descarga:hover {
+  background: #ffffff;
+  color: var(--marca-oscuro);
+  border-color: #ffffff;
+}
+
+.descarga-pdf .boton.secundario {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 55%);
+}
+
+.descarga-pdf .boton.secundario:hover {
+  background: color-mix(in srgb, rgb(255 255 255) 12%, transparent);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+/* El programa de mano */
+
+.folleto {
+  position: relative;
+  height: 13rem;
+  margin: 0 1.25rem 1.5rem;
+}
+
+.folleto-hoja {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+  width: 9.5rem;
+  height: 12.5rem;
+  margin-left: -4.75rem;
+  padding: 0 0.8rem 0.9rem;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background: #fbf7ff;
+  box-shadow: 0 18px 30px -14px rgb(10 3 20 / 75%);
+  transform-origin: 50% 100%;
+}
+
+.hoja-atras {
+  transform: rotate(-14deg) translateX(-2.2rem);
+  background: #efe6fa;
+}
+
+.hoja-medio {
+  transform: rotate(-4deg) translateX(-0.6rem);
+  background: #f6effd;
+}
+
+.hoja-frente {
+  transform: rotate(8deg) translateX(1.6rem);
+}
+
+.folleto-banda {
+  display: block;
+  height: 2.1rem;
+  margin: 0 -0.8rem 0.35rem;
+  background: linear-gradient(120deg, var(--marca-primario), var(--marca-magenta));
+}
+
+.hoja-atras .folleto-banda {
+  background: linear-gradient(120deg, var(--marca-calido), var(--marca-ambar));
+}
+
+.hoja-medio .folleto-banda {
+  background: linear-gradient(120deg, var(--marca-magenta), var(--marca-calido));
+}
+
+.folleto-marca {
+  margin-top: -2.05rem;
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  padding: 0.55rem 0 0.9rem;
+}
+
+.folleto-titulo {
+  font-family: var(--fuente-titulos);
+  font-weight: 800;
+  font-size: 1.05rem;
+  line-height: 1;
+  color: var(--marca-oscuro);
+  letter-spacing: -0.02em;
+}
+
+.folleto-linea {
+  display: block;
+  height: 0.32rem;
+  border-radius: 1rem;
+  background: #d8c8ec;
+}
+
+.folleto-linea.l0 {
+  width: 100%;
+}
+
+.folleto-linea.l1 {
+  width: 82%;
+}
+
+.folleto-linea.l2 {
+  width: 64%;
+}
+
+.folleto-sello {
+  position: absolute;
+  right: 0.6rem;
+  bottom: 0.6rem;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--marca-ambar);
+  color: var(--marca-oscuro);
+}
+
+@media (min-width: 48rem) {
+  .descarga-pdf-texto {
+    padding: 2.25rem 2rem 2.25rem 2.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .folleto-hoja {
+    transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .descarga-pdf:hover .hoja-atras {
+    transform: rotate(-20deg) translateX(-3.4rem);
+  }
+
+  .descarga-pdf:hover .hoja-medio {
+    transform: rotate(-6deg) translateX(-1rem) translateY(-0.3rem);
+  }
+
+  .descarga-pdf:hover .hoja-frente {
+    transform: rotate(12deg) translateX(2.6rem) translateY(-0.5rem);
+  }
+}
+
+/* ---------- Programa de mano: sección más estrecha y dos fichas de descarga iguales ---------- */
+
+.archivos-pdf {
+  display: grid;
+  gap: 0.6rem;
+  padding: 0;
+  list-style: none;
+  margin: 0 1.25rem 1.5rem;
+  max-width: none;
+}
+
+.archivo-pdf {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: var(--toque);
+  padding: 0.6rem 0.75rem;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, rgb(255 255 255) 8%, transparent);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.archivo-pdf:hover {
+  background: color-mix(in srgb, rgb(255 255 255) 14%, transparent);
+  color: #ffffff;
+  border-color: rgb(255 255 255 / 40%);
+}
+
+.archivo-pdf-icono {
+  display: grid;
+  place-items: center;
+  width: 2.6rem;
+  height: 3rem;
+  border-radius: 0.4rem 0.9rem 0.4rem 0.4rem;
+  background: #fbf7ff;
+  color: var(--marca-magenta);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+}
+
+.archivo-pdf-texto {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.archivo-pdf-texto strong {
+  font-family: var(--fuente-titulos);
+  font-size: 1.02rem;
+}
+
+.archivo-pdf-texto span {
+  font-size: 0.8rem;
+  color: #d9c8ef;
+}
+
+.archivo-pdf-accion {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: var(--radio-pill);
+  background: var(--marca-ambar);
+  color: var(--marca-oscuro);
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.archivo-pdf:hover .archivo-pdf-accion {
+  background: #ffffff;
+}
+
+@media (max-width: 30rem) {
+  .archivo-pdf {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .archivo-pdf-accion {
+    grid-column: 1 / -1;
+    justify-content: center;
+  }
+}
+
+/* Sección compacta: el abanico de hojas, algo más pequeño */
+
+/* ---------- Programa de mano en horizontal: ancho completo y poca altura ---------- */
+
+@media (min-width: 48rem) {
+  .descarga-pdf {
+    grid-template-columns: minmax(0, 1.25fr) minmax(17rem, 1fr) 9rem;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.4rem 1.75rem;
+  }
+
+  .descarga-pdf-texto {
+    padding: 0;
+  }
+
+  .archivos-pdf {
+    margin: 0;
+  }
+
+  .descarga-pdf .folleto {
+    height: 8.5rem;
+    margin: 0;
+    transform: scale(0.62);
+    transform-origin: center;
+  }
+}
+
+@media (min-width: 48rem) and (max-width: 74rem) {
+  /* Sin sitio para las hojas: se quitan y quedan texto y descargas */
+
+  .descarga-pdf {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 1fr);
+  }
+
+  .descarga-pdf .folleto {
+    display: none;
+  }
+}
+
+/* En el celular, sin las hojas ilustradas: la sección queda baja */
+@media (max-width: 47.99rem) {
+  .descarga-pdf .folleto { display: none; }
 }

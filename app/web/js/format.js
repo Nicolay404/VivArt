@@ -114,6 +114,45 @@ export function etiquetaEstadoEditorial(item) {
   return mapa[item.editorialState] ?? { texto: 'Borrador', clase: 'ed-borrador' };
 }
 
+// Las 70+ categorías del catálogo se agrupan en pocas familias visuales para las portadas ilustradas.
+// Gana la palabra clave que aparece antes en el nombre («Danza - Teatro» es danza; «Teatro - Danza», teatro).
+const FAMILIAS = [
+  ['circo', ['circo', 'titere', 'muneco', 'clown', 'fuego', 'suspension', 'giocoleria', 'malabar']],
+  ['danza', ['danza', 'baile']],
+  ['musica', ['music', 'conciert', 'batucada', 'opera', 'banda', 'orquesta']],
+  ['teatro', ['teatr', 'monologo', 'comedia', 'performance', 'escen', 'obra de']],
+  ['visual', ['expos', 'instalacion', 'visual', 'plastic', 'pintura', 'escultur', 'mural', 'body paint', 'audiovisual', 'pelicula', 'arcilla', 'arte']],
+  ['letras', ['literatur', 'escritura', 'conversatorio', 'lanzamiento', 'libro', 'lectura']],
+  ['feria', ['feria', 'emprend', 'artesan']],
+  ['comunidad', ['recreativ', 'comunitari', 'educativ', 'taller', 'demostracion', 'muestra', 'actividad cultural']],
+];
+export const ICONO_FAMILIA = {
+  circo: 'circo',
+  danza: 'danza',
+  musica: 'musica',
+  teatro: 'teatro',
+  visual: 'arte',
+  letras: 'libro',
+  feria: 'feria',
+  comunidad: 'comunidad',
+  otras: 'artes-vivas',
+};
+
+export function familiaDeCategoria(nombre) {
+  const n = String(nombre ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+  let mejor = { familia: 'otras', posicion: Infinity };
+  for (const [familia, claves] of FAMILIAS) {
+    for (const clave of claves) {
+      const i = n.indexOf(clave);
+      if (i !== -1 && i < mejor.posicion) mejor = { familia, posicion: i };
+    }
+  }
+  return mejor.familia;
+}
+
 export function iconoParaCategoria(nombre) {
   const n = String(nombre ?? '')
     .toLowerCase()

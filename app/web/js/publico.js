@@ -9,6 +9,8 @@ import {
   formatoHorarioFuncion,
   formatoFranjaDias,
   partesFecha,
+  familiaDeCategoria,
+  ICONO_FAMILIA,
   claseAcceso,
   iconoParaCategoria,
 } from './format.js';
@@ -22,13 +24,15 @@ function tonoCategoria(nombre) {
 }
 
 /** Bloque con el día de la próxima función en grande, como en los carteles del festival. */
-function bloqueFecha(item, categoria) {
-  const p = item.nextDate ? partesFecha(item.nextDate) : null;
+/** Con un día elegido en la Agenda, la tarjeta muestra ese día (la actividad ocurre ese día); si no, su próxima fecha. */
+function bloqueFecha(item, categoria, diaElegido = '') {
+  const fecha = diaElegido || item.nextDate;
+  const p = fecha ? partesFecha(fecha) : null;
   if (p) {
     return h(
       'div',
       { class: `tarjeta-agenda-fecha ${tonoCategoria(categoria)}` },
-      h('span', { class: 'sr-only' }, 'Próxima función: '),
+      h('span', { class: 'sr-only' }, diaElegido ? 'Día: ' : 'Próxima función: '),
       h('span', { class: 'fecha-semana' }, p.semana),
       h('span', { class: 'fecha-dia' }, String(p.dia)),
       h('span', { class: 'fecha-mes' }, p.mes),
@@ -42,18 +46,30 @@ function bloqueFecha(item, categoria) {
   );
 }
 
-function tarjetaAgenda(item) {
+/** Portada ilustrada de la familia de la categoría: degradado de la paleta, patrón e icono. No aparenta ser una foto. */
+function portadaIlustrada(familia) {
+  return h(
+    'div',
+    { class: `tarjeta-portada portada-${familia}`, 'aria-hidden': 'true' },
+    h('span', { class: 'portada-patron' }),
+    icono(ICONO_FAMILIA[familia], 'portada-icono'),
+  );
+}
+
+function tarjetaAgenda(item, diaElegido = '') {
   const categoria = item.category?.name ?? 'Categoría por confirmar';
   const sedesNombres = [...new Set((item.venues ?? []).map((v) => v.name))];
   const acceso = item.access ?? { mode: 'unconfirmed', label: 'Acceso por confirmar' };
+  const familia = familiaDeCategoria(item.category?.name);
 
   return h(
     'article',
-    { class: 'tarjeta-agenda' },
+    { class: `tarjeta-agenda familia-${familia}` },
     h(
       'a',
       { href: `/actividad/${encodeURIComponent(item.id)}`, 'data-enlace': true, class: 'tarjeta-agenda-enlace' },
-      bloqueFecha(item, categoria),
+      portadaIlustrada(familia),
+      bloqueFecha(item, categoria, diaElegido),
       h('span', { class: 'tarjeta-agenda-flecha', 'aria-hidden': 'true' }, '↗'),
       h(
         'div',
@@ -64,7 +80,7 @@ function tarjetaAgenda(item) {
         h(
           'span',
           { class: `chip-categoria ${!item.category ? 'dato-pendiente-chip' : ''}` },
-          icono(iconoParaCategoria(categoria), 'icono-xs'),
+          icono(ICONO_FAMILIA[familia], 'icono-xs'),
           categoria,
         ),
         h('span', { class: `insignia-acceso ${claseAcceso(acceso.mode)}` }, acceso.label),
@@ -212,27 +228,64 @@ function videoDePortada(src) {
 const PDF_PROGRAMACION = 'https://festivaldeloja.com/wp-content/uploads/2026/11/PROGRAMACION-FIAVVL-2026-Final-Aprobada.pdf';
 const PDF_PROGRAMA_DE_MANO = 'https://festivaldeloja.com/wp-content/uploads/2026/11/PROGRAMA-DE-MANO-LOJA-2026-FINALA.pdf';
 
+/** Programa de mano dibujado con código: tres hojas en abanico. Solo decoración. */
+function folletoIlustrado() {
+  const lineas = (n) => Array.from({ length: n }, (_, k) => h('span', { class: `folleto-linea l${k % 3}` }));
+  return h(
+    'div',
+    { class: 'folleto', 'aria-hidden': 'true' },
+    h('div', { class: 'folleto-hoja hoja-atras' }, h('span', { class: 'folleto-banda' }), lineas(6)),
+    h('div', { class: 'folleto-hoja hoja-medio' }, h('span', { class: 'folleto-banda' }), lineas(6)),
+    h(
+      'div',
+      { class: 'folleto-hoja hoja-frente' },
+      h('span', { class: 'folleto-banda' }),
+      h('span', { class: 'folleto-marca' }, 'VIVART'),
+      h('span', { class: 'folleto-titulo' }, 'Programa', h('br'), 'de mano'),
+      lineas(4),
+      h('span', { class: 'folleto-sello' }, icono('descargar', 'icono-sm')),
+    ),
+  );
+}
+
+/** Un PDF oficial para descargar: nombre, tamaño y páginas (comprobados con los archivos). Se abre en otra pestaña. */
+function archivoPdf(href, nombre, datos) {
+  return h(
+    'li',
+    {},
+    h(
+      'a',
+      { href, class: 'archivo-pdf', target: '_blank', rel: 'noopener noreferrer' },
+      h('span', { class: 'archivo-pdf-icono', 'aria-hidden': 'true' }, 'PDF'),
+      h('span', { class: 'archivo-pdf-texto' }, h('strong', {}, nombre), h('span', {}, datos)),
+      h('span', { class: 'archivo-pdf-accion' }, 'Descargar', icono('descargar', 'icono-sm')),
+      h('span', { class: 'sr-only' }, ' (abre el sitio del festival en otra pestaña)'),
+    ),
+  );
+}
+
 function bloqueDescargaPdf() {
-  const externo = (href, clase, ...contenido) =>
-    h('a', { href, class: clase, target: '_blank', rel: 'noopener noreferrer' }, ...contenido, h('span', { class: 'sr-only' }, ' (abre el sitio del festival en otra pestaña)'));
   return h(
     'section',
     { class: 'descarga-pdf', 'aria-labelledby': 'titulo-descarga-pdf' },
-    h('div', { class: 'descarga-pdf-mosaico', 'aria-hidden': 'true' }, h('span'), h('span'), h('span'), h('span')),
     h(
       'div',
       { class: 'descarga-pdf-texto' },
-      h('p', { class: 'eyebrow' }, 'Programación impresa'),
-      h('h2', { id: 'titulo-descarga-pdf', class: 'titulo-seccion' }, 'Llévate la programación'),
-      h('p', {}, 'Descarga el PDF oficial del festival con todas las funciones, sedes y horarios, para consultarlo sin conexión.'),
+      h('p', { class: 'eyebrow' }, 'Programa de mano'),
+      h('h2', { id: 'titulo-descarga-pdf', class: 'titulo-seccion' }, 'Descarga aquí tu ', h('span', { class: 'resalte' }, 'programa de mano')),
       h(
-        'div',
-        { class: 'acciones-fila' },
-        externo(PDF_PROGRAMACION, 'boton boton-descarga', icono('descargar', 'icono-sm'), 'Descargar programación (PDF)'),
-        externo(PDF_PROGRAMA_DE_MANO, 'boton secundario', icono('externo', 'icono-sm'), 'Programa de mano'),
+        'p',
+        {},
+        'Encuentra aquí todas las funciones, actividades y espacios del FIAVL. ¡No te pierdas nada de esta gran celebración de las artes vivas!',
       ),
-      h('p', { class: 'ayuda' }, 'Fuente: festivaldeloja.com. Si una función cambia, la Agenda muestra el aviso vigente.'),
     ),
+    h(
+      'ul',
+      { class: 'archivos-pdf' },
+      archivoPdf(PDF_PROGRAMA_DE_MANO, 'Programa de mano', '8,1 MB · 44 páginas'),
+      archivoPdf(PDF_PROGRAMACION, 'Programación completa', '7,3 MB · 43 páginas'),
+    ),
+    folletoIlustrado(),
   );
 }
 
@@ -281,33 +334,50 @@ export async function pantallaAgenda() {
       pintarFiltros();
       void cargarAgenda();
     };
-    const boton = (fecha, contenido, etiqueta) =>
+    const boleto = (fecha, contenido, etiqueta, clase = '') =>
       h(
         'button',
         {
           type: 'button',
-          class: `dia-boton ${estado.date === fecha ? 'activo' : ''}`,
+          class: `dia-boleto ${clase} ${estado.date === fecha ? 'activo' : ''}`,
           'aria-pressed': String(estado.date === fecha),
           'aria-label': etiqueta,
           onclick: () => elegir(fecha),
         },
         contenido,
       );
+    const primero = partesFecha(dias[0]);
+    const ultimo = partesFecha(dias.at(-1));
     zonaDias.replaceChildren(
       h(
         'div',
         { class: 'selector-dias-interior' },
-        boton('', [h('span', { class: 'dia-numero' }, '★'), h('span', { class: 'dia-semana' }, 'Todos')], 'Todos los días'),
+        h('p', { class: 'selector-dias-titulo', 'aria-hidden': 'true' }, 'Elige ', h('br'), 'tu día'),
+        boleto(
+          '',
+          [
+            h('span', { class: 'boleto-mes' }, 'Todo el'),
+            h('span', { class: 'boleto-numero boleto-texto' }, 'Festival'),
+            h('span', { class: 'boleto-corte', 'aria-hidden': 'true' }),
+            h('span', { class: 'boleto-semana' }, `${primero.dia}–${ultimo.dia} ${ultimo.mes}`),
+          ],
+          'Todo el festival',
+          'boleto-todos',
+        ),
         dias.map((d) => {
           const p = partesFecha(d);
-          return boton(
+          const esHoy = d === hoyLoja;
+          return boleto(
             d,
             [
-              d === hoyLoja ? h('span', { class: 'dia-hoy' }, 'Hoy') : null,
-              h('span', { class: 'dia-numero' }, String(p.dia)),
-              h('span', { class: 'dia-semana' }, p.semana),
+              h('span', { class: 'boleto-mes' }, p.mes),
+              h('span', { class: 'boleto-numero' }, String(p.dia)),
+              h('span', { class: 'boleto-corte', 'aria-hidden': 'true' }),
+              h('span', { class: 'boleto-semana' }, p.semana),
+              esHoy ? h('span', { class: 'boleto-sello', 'aria-hidden': 'true' }, 'Hoy') : null,
             ],
-            `${formatoFecha(d)}${d === hoyLoja ? ' (hoy)' : ''}`,
+            `${formatoFecha(d)}${esHoy ? ' (hoy)' : ''}`,
+            esHoy ? 'es-hoy' : '',
           );
         }),
       ),
@@ -578,7 +648,7 @@ export async function pantallaAgenda() {
         h('p', { class: 'eyebrow' }, estado.date ? formatoFecha(estado.date) : 'Programación publicada'),
         h('h2', { class: 'titulo-seccion' }, `${items.length} ${items.length === 1 ? 'actividad' : 'actividades'}`),
       ),
-      h('div', { class: 'grid-agenda' }, items.map(tarjetaAgenda)),
+      h('div', { class: 'grid-agenda' }, items.map((item) => tarjetaAgenda(item, estado.date))),
     );
   }
 
@@ -707,7 +777,16 @@ export async function pantallaAgenda() {
     ),
   );
 
-  contenedor.append(hero, zonaDias, h('div', { class: 'hoja-contenido' }, zonaFiltros, zonaResultados, bloqueDescargaPdf()));
+  // Los días van en una barra lateral a la derecha de los filtros y los resultados (en el celular, una tira encima).
+  contenedor.append(
+    hero,
+    h(
+      'div',
+      { class: 'hoja-contenido agenda-con-dias' },
+      h('div', { class: 'agenda-principal' }, zonaFiltros, zonaResultados, bloqueDescargaPdf()),
+      zonaDias,
+    ),
+  );
 
   // Cargar catálogos para los filtros en paralelo con la vista inicial
   actualizarPestanas();
