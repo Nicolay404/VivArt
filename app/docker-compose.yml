@@ -83,6 +83,20 @@ services:
       - "3002"
     restart: unless-stopped
 
+  # Carga la programación oficial FIAVL 2026 en la demo en cada arranque (idempotente: si ya está, no hace nada) y termina.
+  programacion-cargar:
+    build: ./services/programacion
+    command: ["node", "bin/cargar-programacion.js"]
+    environment:
+      DATABASE_URL: postgres://programacion:${PROGRAMACION_DB_PASSWORD}@db:5432/programacion
+      IDENTIDAD_URL: http://identidad:3001
+      IDENTIDAD_SERVICE_KEY: ${PROGRAMACION_SERVICE_KEY}
+      SERVICE_KEYS: participacion:${PARTICIPACION_SERVICE_KEY}
+    depends_on:
+      programacion:
+        condition: service_healthy
+    restart: "no"
+
   participacion:
     build: ./services/participacion
     environment:

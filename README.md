@@ -22,6 +22,8 @@ docker compose exec -e MAIL_TRANSPORT=console identidad node bin/crear-primer-ad
 docker compose exec programacion node bin/cargar-ejemplo.js   # opcional: actividades FICTICIAS para ver la Agenda
 ```
 
+`docker compose up` carga sola la programación oficial FIAVL 2026 (243 actividades, convertidas del CSV del festival, en `app/services/programacion/ejemplos/programacion-fiavl-2026.json`) y la publica. Solo lo hace la primera vez y nunca pisa correcciones hechas desde el panel. La primera vez también saca de la Agenda la edición de ejemplo ficticia, sin borrarla (se reactiva desde el panel). Las sedes solo llevan la dirección que trae el CSV; destino, accesibilidad y marcador del mapa quedan por confirmar.
+
 Si ya tenías la demo de antes, vuelve a ejecutar `node preparar-entorno.mjs`: solo añade las variables nuevas y no toca las tuyas. Tus datos se conservan.
 
 Abre http://localhost:8080 y activa el administrador con el enlace que imprime el último comando. Los correos de la demo llegan a http://localhost:8080/demo/buzon (no se envía ninguno real). Cada persona tiene su propia base de datos: las cuentas no se comparten por Git.

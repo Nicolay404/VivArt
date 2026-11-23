@@ -1,0 +1,6139 @@
+{
+ "formato": "vivart-programacion/1",
+ "edicion": "Programación FIAVL 2026",
+ "nota": "Cargado desde el CSV de la programación 2026 (fuente: PROGRAMACION_2026_digital.pdf). Filas sin categoría no cargadas.",
+ "registros": [
+  {
+   "clave": "prog2026-001",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 13"
+   },
+   "revisado": true,
+   "titulo": "Territorios Vivos: Formas de Habitar el Ecuador",
+   "artistas": [
+    "Santiago González"
+   ],
+   "categoria": "Exposición - Instalación Visual",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Museo Puerta de La Ciudad",
+     "fechas": [
+      "2026-11-12",
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "09:00",
+     "cierra": "21:30"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-002",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 14"
+   },
+   "revisado": true,
+   "titulo": "Lo que Somos",
+   "artistas": [
+    "Colectivo Artístico Cuervo Mutante"
+   ],
+   "categoria": "Muralismo",
+   "descripcion": "Evento permanente.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-13",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "09:00",
+     "sede": "Plaza Cristóbal Ojeda Dávila"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-003",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 44"
+   },
+   "revisado": true,
+   "titulo": "Ahí viene el Monstruo",
+   "artistas": [
+    "Taripak Ideas Productora Cultural"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "10:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-004",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 107, 155, 196, 21, 235, 280, 325, 371, 428, 45, 475, 60"
+   },
+   "revisado": true,
+   "titulo": "Buddy Bears",
+   "artistas": [],
+   "categoria": "Exposición",
+   "descripcion": "Procedencia: Alemania - Ecuador · Evento permanente.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-13",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-005",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 47, 50"
+   },
+   "revisado": true,
+   "titulo": "Zombi Manifiesto",
+   "artistas": [
+    "Santiago Sanguineti"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Uruguay · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "11:00",
+     "sede": "Teatro Bolívar"
+    },
+    {
+     "fecha": "2026-11-12",
+     "hora": "20:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-006",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 48"
+   },
+   "revisado": true,
+   "titulo": "Ceremonia Inauguración",
+   "artistas": [
+    "Obra Inaugural / El Cura sin Cabeza / Cano Artes Escénicas"
+   ],
+   "categoria": "Teatro Musical",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "15:00",
+     "sede": "Teatro Nacional"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-007",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 51"
+   },
+   "revisado": true,
+   "titulo": "AU-D",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "21:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-008",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 52"
+   },
+   "revisado": true,
+   "titulo": "Angel Velásquez y su Orquesta",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-12",
+     "hora": "22:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-009",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 12"
+   },
+   "revisado": true,
+   "titulo": "Árbol Familiar",
+   "artistas": [
+    "Colectivo Artístico Raíz Compartida"
+   ],
+   "categoria": "Interdisciplinario",
+   "descripcion": "Evento permanente.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "08:00",
+     "sede": "Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-010",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 24"
+   },
+   "revisado": true,
+   "titulo": "FIAVL 10 Años de Historias",
+   "artistas": [
+    "Roberto González Rogo"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Centro de Interpretación de la Central",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "08:00",
+     "cierra": "18:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-011",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 25"
+   },
+   "revisado": true,
+   "titulo": "FIAVL 10 Años de Historias",
+   "artistas": [
+    "Roberto González Rogo"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Sala Itinerante - UTPL",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20"
+     ],
+     "abre": "08:00",
+     "cierra": "18:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-012",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 11"
+   },
+   "revisado": true,
+   "titulo": "Frontera en Movimiento",
+   "artistas": [
+    "Asociación de Artistas Visuales Neo Lambayeque"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Evento permanente.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "09:00",
+     "sede": "Galería Pinceladas"
+    }
+   ],
+   "franjas": [
+    {
+     "sede": "Galería Pinceladas",
+     "fechas": [
+      "2026-11-14",
+      "2026-11-21"
+     ],
+     "abre": "09:00",
+     "cierra": "13:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-013",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 2, 55"
+   },
+   "revisado": true,
+   "titulo": "Book Truck",
+   "artistas": [
+    "Saeta Profunda"
+   ],
+   "categoria": "Activación Cultural Comunitaria",
+   "descripcion": "Evento permanente.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "10:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": [
+    {
+     "sede": "Plazoleta 1ro de Mayo",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "10:00",
+     "cierra": "22:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-014",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 15"
+   },
+   "revisado": true,
+   "titulo": "Alma en las Manos",
+   "artistas": [
+    "Bayardo Cuenca"
+   ],
+   "categoria": "Feria de Artesanía de Autor",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Museo de La Música",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "10:00",
+     "cierra": "20:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-015",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 16"
+   },
+   "revisado": true,
+   "titulo": "Loja Produce",
+   "artistas": [
+    "Ministerio de Desarrollo Económico y Productivo"
+   ],
+   "categoria": "Feria de Emprendedores",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Hall de la Gobernación de Loja",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "10:00",
+     "cierra": "17:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-016",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 18"
+   },
+   "revisado": true,
+   "titulo": "100% café de Especialidad",
+   "artistas": [
+    "Somos Loja"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Parque Central",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "10:00",
+     "cierra": "19:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-017",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 19"
+   },
+   "revisado": true,
+   "titulo": "Manos Vivas",
+   "artistas": [
+    "Gestión Económica Municipio de Loja"
+   ],
+   "categoria": "Feria de Artesanias",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Rocafuerte entre Bolívar y Sucre",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "10:00",
+     "cierra": "22:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-018",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 104, 53"
+   },
+   "revisado": true,
+   "titulo": "Paisaje Vivo: El Ecuador a Espátula",
+   "artistas": [
+    "Sergames"
+   ],
+   "categoria": "Performance Visual",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-019",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 54"
+   },
+   "revisado": true,
+   "titulo": "El Mágico Recuerdo que Seremos",
+   "artistas": [
+    "Laboratorio Teatral D2 y Chimilingos"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "10:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-020",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 57, 90"
+   },
+   "revisado": true,
+   "titulo": "Existo Luego Actúo",
+   "artistas": [
+    "Decabeza Artes"
+   ],
+   "categoria": "Danza Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "10:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-13",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-021",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 62, 74"
+   },
+   "revisado": true,
+   "titulo": "La Llave del Futuro",
+   "artistas": [
+    "Compañía de Teatro Quimera"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "11:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-13",
+     "hora": "17:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-022",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 63, 66"
+   },
+   "revisado": true,
+   "titulo": "Grupo de Baile Moderno UTPL",
+   "artistas": [],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "11:00",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-13",
+     "hora": "12:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-023",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 199, 283, 332, 64"
+   },
+   "revisado": true,
+   "titulo": "La Gallinita Sembradora",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "11:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "11:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "11:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "17:00",
+     "sede": "Bolívar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-024",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 299, 67"
+   },
+   "revisado": true,
+   "titulo": "Recital de Poesía",
+   "artistas": [
+    "Gladys Antonieta Rodas"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "14:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "19:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-025",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 26"
+   },
+   "revisado": true,
+   "titulo": "Juegos Tradicionales de Madera",
+   "artistas": [],
+   "categoria": "Recreativo",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Bernardo Valdivieso",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-16",
+      "2026-11-17",
+      "2026-11-18",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "15:00",
+     "cierra": "22:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-026",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 113, 161, 201, 68"
+   },
+   "revisado": true,
+   "titulo": "La Historia de la Moneda",
+   "artistas": [
+    "Museo de la Moneda de Cuenca"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "15:00",
+     "sede": "Bernardo Valdivieso",
+     "horaFin": "21:00"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Bernardo Valdivieso",
+     "horaFin": "21:00"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Bernardo Valdivieso",
+     "horaFin": "21:00"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "15:00",
+     "sede": "Bernardo Valdivieso",
+     "horaFin": "21:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-027",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 69"
+   },
+   "revisado": true,
+   "titulo": "Entre Sueños Surrealismo Ecuatoriano",
+   "artistas": [
+    "Unidad Educativa Particular Sendero"
+   ],
+   "categoria": "Instalación",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "15:00",
+     "sede": "24 de Mayo",
+     "horaFin": "19:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-028",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 329, 382, 73"
+   },
+   "revisado": true,
+   "titulo": "Color y Tambores",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Batucada",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "15:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "13:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "13:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-029",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 75"
+   },
+   "revisado": true,
+   "titulo": "Latinoamérica en el corazón, Ecuador en la sangre, Loja en el Alma",
+   "artistas": [
+    "Samay Taky / Universidad Nacional de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "16:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-030",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 77"
+   },
+   "revisado": true,
+   "titulo": "La Fuerza de Génesis",
+   "artistas": [
+    "Génesis Granda Pineda"
+   ],
+   "categoria": "Exposición Artística",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "16:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Entrada Libre"
+  },
+  {
+   "clave": "prog2026-031",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 79"
+   },
+   "revisado": true,
+   "titulo": "La Mujer que Despiojaba al Monseñor",
+   "artistas": [
+    "Carlos Carrión / Saeta Profunda"
+   ],
+   "categoria": "Conversatorio",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "16:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-032",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 80"
+   },
+   "revisado": true,
+   "titulo": "Michael Jackson: The Legend",
+   "artistas": [
+    "Simple Dance Proyect"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "17:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-033",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 213, 256, 390, 82"
+   },
+   "revisado": true,
+   "titulo": "Jorge Cazadragones",
+   "artistas": [
+    "Títeres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "17:00",
+     "sede": "Bolivar y Azuay"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "17:00",
+     "sede": "Bolivar y Azuay"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "18:00",
+     "sede": "Bolivar y Azuay"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "15:00",
+     "sede": "Bolivar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-034",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 83"
+   },
+   "revisado": true,
+   "titulo": "Negro",
+   "artistas": [
+    "La Congregación Teatro"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Colombia · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "18:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-035",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 84"
+   },
+   "revisado": true,
+   "titulo": "Bondi Beach",
+   "artistas": [
+    "Deus Ex Machina"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Alemania - Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-036",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 138, 85"
+   },
+   "revisado": true,
+   "titulo": "Mano a Mano Literario",
+   "artistas": [],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "18:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "19:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-037",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 86"
+   },
+   "revisado": true,
+   "titulo": "Maldita Tribu Fest",
+   "artistas": [
+    "Maldita Tribu"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "18:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-038",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 23"
+   },
+   "revisado": true,
+   "titulo": "Juegos del Calamar Lojano",
+   "artistas": [
+    "Dami Spa"
+   ],
+   "categoria": "Recreativo",
+   "descripcion": "Evento permanente.",
+   "funciones": [],
+   "franjas": [
+    {
+     "sede": "Rocafuerte y Pasaje Sinchone",
+     "fechas": [
+      "2026-11-13",
+      "2026-11-14",
+      "2026-11-15",
+      "2026-11-19",
+      "2026-11-20",
+      "2026-11-21",
+      "2026-11-22"
+     ],
+     "abre": "19:00",
+     "cierra": "23:00"
+    }
+   ]
+  },
+  {
+   "clave": "prog2026-039",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 87"
+   },
+   "revisado": true,
+   "titulo": "El Vuelo de la Fantasía: Habitar el Aire",
+   "artistas": [
+    "Mundos Opuestos"
+   ],
+   "categoria": "Circo Contemporáneo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "19:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-040",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 88"
+   },
+   "revisado": true,
+   "titulo": "Rave Experience",
+   "artistas": [
+    "CLB Events"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "19:00",
+     "sede": "24 de Mayo y José Antonio Eguiguren"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-041",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 91"
+   },
+   "revisado": true,
+   "titulo": "Recital de Arias en las Seis Cuerdas",
+   "artistas": [
+    "Sei Corde"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "19:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-042",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 93"
+   },
+   "revisado": true,
+   "titulo": "Concierto Piano Juan Castro",
+   "artistas": [
+    "Bettina Aust junto a Orquesta Sinfónica de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Procedencia: Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-043",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 94"
+   },
+   "revisado": true,
+   "titulo": "Sinfonía de Mujeres",
+   "artistas": [
+    "Artemiss"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "20:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-044",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 96"
+   },
+   "revisado": true,
+   "titulo": "Círculo de Memorias Recicladas",
+   "artistas": [
+    "Antonieta Maldonado"
+   ],
+   "categoria": "Performance Inaugural",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "20:00",
+     "sede": "Rocafuerte y Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-045",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 143, 97"
+   },
+   "revisado": true,
+   "titulo": "La Huerta Jazz Fest",
+   "artistas": [
+    "La Huerta"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "20:00",
+     "sede": "Mercadillo"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "20:00",
+     "sede": "Mercadillo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-046",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 98"
+   },
+   "revisado": true,
+   "titulo": "Sueños Andinos",
+   "artistas": [
+    "Ballet Folklórico Nacional Qhapaq Ñan"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "20:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-047",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 99"
+   },
+   "revisado": true,
+   "titulo": "Show del Recuerdo",
+   "artistas": [
+    "5to Malo"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-048",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 100"
+   },
+   "revisado": true,
+   "titulo": "Cuando el Corazón Canta",
+   "artistas": [
+    "Dos que Tres Music Band"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "21:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-049",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 101"
+   },
+   "revisado": true,
+   "titulo": "Viernes de otra Cosa",
+   "artistas": [
+    "A.C.D. Sessions"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "22:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-050",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 102"
+   },
+   "revisado": true,
+   "titulo": "Juan Gabriel Sinfónico",
+   "artistas": [
+    "OSML"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-13",
+     "hora": "22:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-051",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 103, 152"
+   },
+   "revisado": true,
+   "titulo": "Talento Que Nos Une",
+   "artistas": [
+    "Comité de Padres del Conservatorio"
+   ],
+   "categoria": "Concurso de Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "09:00",
+     "sede": "Conservatorio de Música",
+     "horaFin": "20:00"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "10:00",
+     "sede": "Conservatorio de Música"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-052",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 106, 153"
+   },
+   "revisado": true,
+   "titulo": "Motos Clásicas y Carros a Escala",
+   "artistas": [
+    "Club Motos Clásicas Loja \"Aroma a Café"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "11:00",
+     "sede": "Calle Bernardo Valdivieso",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "11:00",
+     "sede": "Calle Bernardo Valdivieso",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-053",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 110"
+   },
+   "revisado": true,
+   "titulo": "Orquídeas del Sur",
+   "artistas": [
+    "Arte Haus"
+   ],
+   "categoria": "Body Paint",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "11:30",
+     "sede": "Arte Haus",
+     "horaFin": "18:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-054",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 112"
+   },
+   "revisado": true,
+   "titulo": "Cuentos Express",
+   "artistas": [
+    "Saeta Profunda"
+   ],
+   "categoria": "Escritura Creativa",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "14:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-055",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 114, 163, 442, 483"
+   },
+   "revisado": true,
+   "titulo": "Cine Bajo las Estrellas",
+   "artistas": [
+    "Campamento Ventura - Puntos Suspensivos"
+   ],
+   "categoria": "Audiovisual",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "24 de Mayo entre Miguel Riofrío y Azuay",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "24 de Mayo entre Miguel Riofrío y Azuay",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "15:00",
+     "sede": "24 de Mayo entre Miguel Riofrío y Azuay",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "15:00",
+     "sede": "24 de Mayo entre Miguel Riofrío y Azuay",
+     "horaFin": "19:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-056",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 115"
+   },
+   "revisado": true,
+   "titulo": "Creandown Vive el Arte",
+   "artistas": [
+    "Asodown"
+   ],
+   "categoria": "Pintura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-057",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 116"
+   },
+   "revisado": true,
+   "titulo": "Drum Fest",
+   "artistas": [
+    "Área de Percusión Conservatorio de Música Salvador Bustamante Celi"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-058",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 117"
+   },
+   "revisado": true,
+   "titulo": "Show de Ensambles Musicales",
+   "artistas": [
+    "Armonía Escuela de Música"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-059",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 119"
+   },
+   "revisado": true,
+   "titulo": "Anatomía del Texto",
+   "artistas": [
+    "Palabra Visual"
+   ],
+   "categoria": "Performance - Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-060",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 120"
+   },
+   "revisado": true,
+   "titulo": "Campeonato de Ajedrez Blitz",
+   "artistas": [
+    "La Huerta"
+   ],
+   "categoria": "Recreativo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Mercadillo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-061",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 121, 167, 446, 487"
+   },
+   "revisado": true,
+   "titulo": "Tardes de Detectives",
+   "artistas": [
+    "Puntos Suspensivos & Campamento Aventura"
+   ],
+   "categoria": "Teatro Inmersivo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Casa Bolívar"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Casa Bolívar"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "15:00",
+     "sede": "Casa Bolívar"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "15:00",
+     "sede": "Casa Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-062",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 122, 164"
+   },
+   "revisado": true,
+   "titulo": "El Futuro Tiene Raíces",
+   "artistas": [
+    "Asodanza"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "15:00",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-063",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 125"
+   },
+   "revisado": true,
+   "titulo": "Circuito Musical",
+   "artistas": [
+    "Brandon Medina"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "16:00",
+     "sede": "24 de Mayo y Mercadillo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-064",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 127, 207"
+   },
+   "revisado": true,
+   "titulo": "De Trapos y Cartón",
+   "artistas": [
+    "Asociación Cultural Concolorcorvo"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Perú · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "16:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "15:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-065",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 129, 136"
+   },
+   "revisado": true,
+   "titulo": "Kingman, el Pintor de las Manos",
+   "artistas": [
+    "Compañía de Teatro Quimera"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "17:00",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-14",
+     "hora": "19:00",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-066",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 131"
+   },
+   "revisado": true,
+   "titulo": "Títeres Sakados del Tacho",
+   "artistas": [
+    "Grupo de Teatro Sakados del Tacho"
+   ],
+   "categoria": "Teatro de Muñecos y Objetos",
+   "descripcion": "Procedencia: Argentina · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "17:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-067",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 132"
+   },
+   "revisado": true,
+   "titulo": "Tres Hologramas",
+   "artistas": [
+    "Compañía Nacional de Danza / Homenaje 50 Años"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "18:00",
+     "sede": "Teatro Bolivar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-068",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 134"
+   },
+   "revisado": true,
+   "titulo": "La oficina",
+   "artistas": [
+    "Banquina Circo"
+   ],
+   "categoria": "Circo Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "18:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-069",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 135, 178"
+   },
+   "revisado": true,
+   "titulo": "Conversatorio literario",
+   "artistas": [],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "18:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "18:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-070",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 137, 172"
+   },
+   "revisado": true,
+   "titulo": "Clásicos del Rock y Heavy",
+   "artistas": [
+    "The Wave"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "19:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "17:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-071",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 139"
+   },
+   "revisado": true,
+   "titulo": "El Lugar del Otro",
+   "artistas": [
+    "La Congregación Teatro"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Colombia · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-072",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 140"
+   },
+   "revisado": true,
+   "titulo": "Noveno Festival Folclórico Internacional \"Reina de El Cisne\"",
+   "artistas": [
+    "Fesfin"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "20:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-073",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 144"
+   },
+   "revisado": true,
+   "titulo": "Presentación de EP",
+   "artistas": [
+    "Chunchiman"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "20:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-074",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 145"
+   },
+   "revisado": true,
+   "titulo": "Roxanne Convergencia",
+   "artistas": [
+    "Roxanne"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "21:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-075",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 146"
+   },
+   "revisado": true,
+   "titulo": "Tributo Red Hot Chilli Peppers",
+   "artistas": [
+    "Banda Tributo RHCP"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-076",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 148"
+   },
+   "revisado": true,
+   "titulo": "Los Intrépidos",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "22:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-077",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 149"
+   },
+   "revisado": true,
+   "titulo": "Show Musical",
+   "artistas": [
+    "Folclore Tradicional Ecuatoriano / Esteban Rodas"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-14",
+     "hora": "22:00",
+     "sede": "El Cainar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-078",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 150"
+   },
+   "revisado": true,
+   "titulo": "Élite Dance Fest: Bailomaratón",
+   "artistas": [
+    "Élite Gym"
+   ],
+   "categoria": "Recreativo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "09:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-079",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 151, 189, 229"
+   },
+   "revisado": true,
+   "titulo": "Esculturas de Hierro Reciclado",
+   "artistas": [
+    "Isaías Patiño Macanchi"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-080",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 154, 175"
+   },
+   "revisado": true,
+   "titulo": "Cometa",
+   "artistas": [
+    "Roser López Espinosa y Vorpommern Tanz An"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Procedencia: España - Alemania · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "11:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    },
+    {
+     "fecha": "2026-11-15",
+     "hora": "18:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-081",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 159"
+   },
+   "revisado": true,
+   "titulo": "El Mundo de Dondo",
+   "artistas": [
+    "Compañía Julia Sigliano"
+   ],
+   "categoria": "Teatro Unipersonal - Títeres",
+   "descripcion": "Procedencia: Argentina · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "14:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-082",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 160"
+   },
+   "revisado": true,
+   "titulo": "Loxa Metal Fest",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "14:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-083",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 162"
+   },
+   "revisado": true,
+   "titulo": "De Trapos y Cartón",
+   "artistas": [
+    "Asociación Cultural Concolorcorvo"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Perú · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-084",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 165"
+   },
+   "revisado": true,
+   "titulo": "Escuelas de Iniciación Deportivas de FedeLoja",
+   "artistas": [
+    "Federación Deportiva Provincial de Loja"
+   ],
+   "categoria": "Demostración - Recreativo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "24 de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-085",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 166, 327, 488"
+   },
+   "revisado": true,
+   "titulo": "El Caballero de la Mano de Fuego",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "11:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "15:00",
+     "sede": "Bolívar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-086",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 168"
+   },
+   "revisado": true,
+   "titulo": "Fiesta de las Emociones",
+   "artistas": [
+    "ORGAEPSI"
+   ],
+   "categoria": "Interdisciplinario",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-087",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 169"
+   },
+   "revisado": true,
+   "titulo": "Febrero de Calest",
+   "artistas": [
+    "Saeta Profunda"
+   ],
+   "categoria": "Lanzamiento de obra",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "15:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-088",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 170"
+   },
+   "revisado": true,
+   "titulo": "El horrible",
+   "artistas": [
+    "Títeres Santimbanquis"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Argentina · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "16:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-089",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 174"
+   },
+   "revisado": true,
+   "titulo": "Títeres Sakados del Tacho",
+   "artistas": [
+    "Grupo de Teatro Sakados del Tacho"
+   ],
+   "categoria": "Teatro de Muñecos y Objetos",
+   "descripcion": "Procedencia: Argentina · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "17:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-090",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 176"
+   },
+   "revisado": true,
+   "titulo": "Las Manuelas",
+   "artistas": [
+    "La Séptima Productora Cultural"
+   ],
+   "categoria": "Teatro Musical",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "18:00",
+     "sede": "Teatro Bolivar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-091",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 177"
+   },
+   "revisado": true,
+   "titulo": "Circo en el Parque",
+   "artistas": [
+    "III Convención Internacional de Circo"
+   ],
+   "categoria": "Interdisciplinario",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "18:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-092",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 179, 206, 243, 454"
+   },
+   "revisado": true,
+   "titulo": "Sanji y el Panadero",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "18:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "15:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:00",
+     "sede": "Bolívar y Azuay"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "17:00",
+     "sede": "Bolívar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-093",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 180, 407, 448"
+   },
+   "revisado": true,
+   "titulo": "Classics Clowns",
+   "artistas": [
+    "Casa Circo El Respiro"
+   ],
+   "categoria": "Clown",
+   "descripcion": "Procedencia: Costa Rica · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "19:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "18:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "16:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-094",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 182"
+   },
+   "revisado": true,
+   "titulo": "Terapia, Comedia en tres sesiones",
+   "artistas": [
+    "Teatro Tecla"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-095",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 183"
+   },
+   "revisado": true,
+   "titulo": "Escalera Oscura",
+   "artistas": [
+    "Compañía Nacional de Danza"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Procedencia: Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-096",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 184"
+   },
+   "revisado": true,
+   "titulo": "Ritmos, Pasión y Baile",
+   "artistas": [
+    "Tribal Dancers"
+   ],
+   "categoria": "Baile",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "20:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-097",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 186"
+   },
+   "revisado": true,
+   "titulo": "Staccatos Show",
+   "artistas": [
+    "Tributo Música del Recuerdo"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-15",
+     "hora": "20:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-098",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 190, 215"
+   },
+   "revisado": true,
+   "titulo": "El Monstruo que no Soy",
+   "artistas": [
+    "Cucko Box"
+   ],
+   "categoria": "Teatro Musical",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:00",
+     "sede": "Teatro Bolívar"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-099",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 191"
+   },
+   "revisado": true,
+   "titulo": "El Mundo de Dondo",
+   "artistas": [
+    "Compañia Julia Sigliano"
+   ],
+   "categoria": "Teatro Unipersonal - Títeres",
+   "descripcion": "Procedencia: Argentina · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-100",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 192"
+   },
+   "revisado": true,
+   "titulo": "Mini Editores",
+   "artistas": [
+    "Saeta Profunda"
+   ],
+   "categoria": "Taller Creativo Práctico",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-101",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 193, 220"
+   },
+   "revisado": true,
+   "titulo": "Los 4: Una aventura musical",
+   "artistas": [
+    "Kart Producciones"
+   ],
+   "categoria": "Microteatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-102",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 194"
+   },
+   "revisado": true,
+   "titulo": "El horrible",
+   "artistas": [
+    "Títeres Santimbanquis"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Argentina · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "10:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-103",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 195"
+   },
+   "revisado": true,
+   "titulo": "Vive Mujer . Tránsito Amaguaña",
+   "artistas": [
+    "Grupo CID y Cooperación Alemana GIZ"
+   ],
+   "categoria": "Teatro - Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "11:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-104",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 198, 200"
+   },
+   "revisado": true,
+   "titulo": "Camerata Arkos",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "11:00",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "12:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-105",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 202, 240"
+   },
+   "revisado": true,
+   "titulo": "Seminario de Derecho \"Manuel Carrión Pinzano\"",
+   "artistas": [],
+   "categoria": "Educativo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "15:00",
+     "sede": "Auditorio Manuel Carrión Pinzano",
+     "horaFin": "18:00"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:00",
+     "sede": "Auditorio Manuel Carrión Pinzano",
+     "horaFin": "18:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-106",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 203, 241, 285"
+   },
+   "revisado": true,
+   "titulo": "Cuerpos que Leen",
+   "artistas": [
+    "Laboratorio de escritura e intervención performática"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "15:00",
+     "sede": "Síndicato Obreros Municipales de Loja",
+     "horaFin": "16:00"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:00",
+     "sede": "Síndicato Obreros Municipales de Loja",
+     "horaFin": "16:00"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "15:00",
+     "sede": "Síndicato Obreros Municipales de Loja",
+     "horaFin": "16:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-107",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 208, 212"
+   },
+   "revisado": true,
+   "titulo": "Grupo de Danza Contemporánea UTPL",
+   "artistas": [],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "16:00",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-16",
+     "hora": "17:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-108",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 209"
+   },
+   "revisado": true,
+   "titulo": "Loja Tango, la Memoria del Movimiento",
+   "artistas": [
+    "Lojatango"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "16:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-109",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 210"
+   },
+   "revisado": true,
+   "titulo": "Bailando al Son del Charrito",
+   "artistas": [
+    "El Charrito Lojano"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "16:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-110",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 211"
+   },
+   "revisado": true,
+   "titulo": "Fábrica de Poesía",
+   "artistas": [
+    "Byron Carrión"
+   ],
+   "categoria": "Conversatorio de Creación Literaria",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "16:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-111",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 214"
+   },
+   "revisado": true,
+   "titulo": "Sacha Muskuy",
+   "artistas": [
+    "Asodanza Pastaza"
+   ],
+   "categoria": "Danza Contemporánea",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "17:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-112",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 216"
+   },
+   "revisado": true,
+   "titulo": "Coro Polifónico Municipal",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "18:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-113",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 218, 255"
+   },
+   "revisado": true,
+   "titulo": "Striaria",
+   "artistas": [
+    "Valentina Quargentan"
+   ],
+   "categoria": "Suspensión",
+   "descripcion": "Procedencia: Italia · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "19:00",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "18:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-114",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 219"
+   },
+   "revisado": true,
+   "titulo": "Versos de Sobremesa",
+   "artistas": [
+    "Micrófono Abierto"
+   ],
+   "categoria": "Literatura - Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "19:30",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Gratuito"
+  },
+  {
+   "clave": "prog2026-115",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 221, 358"
+   },
+   "revisado": true,
+   "titulo": "Un Canto a Loja",
+   "artistas": [
+    "Rondalla Municipal"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "19:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "21:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-116",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 222"
+   },
+   "revisado": true,
+   "titulo": "La Serva Padrona de G. B. Pergolesi",
+   "artistas": [
+    "Orquesta Sinfónica de Guayaquil y Ópera Mime"
+   ],
+   "categoria": "Ópera",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-117",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 223"
+   },
+   "revisado": true,
+   "titulo": "Festival de Danzas Folclóricas",
+   "artistas": [
+    "Centro Cultural Barricaña / Grupo de Danza Corazón Danzante / Ballet Folclórico Internacional / Encantos del Sur / Inti Killa Warmys"
+   ],
+   "categoria": "Danza Folclórica",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "20:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-118",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 225"
+   },
+   "revisado": true,
+   "titulo": "Orquesta Tropical Son Especial",
+   "artistas": [
+    "Municipio de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-16",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-119",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 230"
+   },
+   "revisado": true,
+   "titulo": "Ballet Folclórico Divino Niño Celica",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Loja / Colectivo Celica"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "10:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-120",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 231, 261"
+   },
+   "revisado": true,
+   "titulo": "El horrible",
+   "artistas": [
+    "Títeres Santimbanquis"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Argentina · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "10:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-121",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 232"
+   },
+   "revisado": true,
+   "titulo": "De Trapos y Cartón",
+   "artistas": [
+    "Asociación Cultural Concolorcorvo"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Procedencia: Perú · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "10:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-122",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 234, 258"
+   },
+   "revisado": true,
+   "titulo": "París qui dort",
+   "artistas": [
+    "La Compaigne Tangram"
+   ],
+   "categoria": "Película Concierto",
+   "descripcion": "Procedencia: Francia · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "11:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "19:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-123",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 237, 238"
+   },
+   "revisado": true,
+   "titulo": "Coro UTPL",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "11:00",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "12:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-124",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 244, 289, 334"
+   },
+   "revisado": true,
+   "titulo": "SINFÍN",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:30",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "15:30",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "15:30",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-125",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 245, 251"
+   },
+   "revisado": true,
+   "titulo": "Corazón de Escancel",
+   "artistas": [
+    "Centro Diurno de Desarrollo Integral para Personas con Discapacidad / Municipio de Loja / Mamá Sombrilla"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:30",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-17",
+     "hora": "17:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-126",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 246"
+   },
+   "revisado": true,
+   "titulo": "La Rondalla Cañari",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Cañar"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "15:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-127",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 248, 292"
+   },
+   "revisado": true,
+   "titulo": "Poesía en Paralelo Cero",
+   "artistas": [],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "16:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "16:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-128",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 249"
+   },
+   "revisado": true,
+   "titulo": "Letras con Armona, Palabras, Libros y Café",
+   "artistas": [
+    "Jaime Paredes"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "16:00",
+     "sede": "Bernardo Valdivieso y Rocafuerte"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-129",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 253, 296"
+   },
+   "revisado": true,
+   "titulo": "El Hazmereir",
+   "artistas": [
+    "Ovejas Negras Humor y Sociedad"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Perú · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-130",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 254"
+   },
+   "revisado": true,
+   "titulo": "Tebas Land",
+   "artistas": [
+    "Teatro La Hoguera"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "18:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-131",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 257"
+   },
+   "revisado": true,
+   "titulo": "Café y Licores",
+   "artistas": [
+    "Finca La Reserva"
+   ],
+   "categoria": "Taller",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "18:30",
+     "sede": "El Cainar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-132",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 259, 392"
+   },
+   "revisado": true,
+   "titulo": "Cuidado!! Un Payaso Malo Puede Arruinar tu Vida",
+   "artistas": [
+    "El Payaso Chacovachi"
+   ],
+   "categoria": "Circo",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "19:00",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "15:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-133",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 263"
+   },
+   "revisado": true,
+   "titulo": "La Noche de los Giles, la reinvindicación",
+   "artistas": [
+    "Colectivo de Artistas Escénicos Cuencanos"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-134",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 265"
+   },
+   "revisado": true,
+   "titulo": "Ganadores Festival Nacional de la Canción",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "20:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-135",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 266, 297"
+   },
+   "revisado": true,
+   "titulo": "Classics Clowns",
+   "artistas": [
+    "Casa Circo El Respiro"
+   ],
+   "categoria": "Clown",
+   "descripcion": "Procedencia: Costa Rica · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "20:30",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "19:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-136",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 267"
+   },
+   "revisado": true,
+   "titulo": "Dejavu",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "20:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-137",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 270"
+   },
+   "revisado": true,
+   "titulo": "Reino Perdido",
+   "artistas": [
+    "Abstracto / Rock Ambiental"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "21:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-138",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 271"
+   },
+   "revisado": true,
+   "titulo": "Don Medardo Sinfónico",
+   "artistas": [
+    "OSML"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-17",
+     "hora": "22:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-139",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 275, 316"
+   },
+   "revisado": true,
+   "titulo": "Exposición de Esculturas Patrimonio y Retrato de Arcilla En Vivo",
+   "artistas": [
+    "Ñaño Casa Museo"
+   ],
+   "categoria": "Esculturas de Arcilla",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-140",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 278"
+   },
+   "revisado": true,
+   "titulo": "Semillitas de Nuestra Tierra: Voces que Cantan a Loja",
+   "artistas": [
+    "Centro Municipal de Asistencia Social / San Juan Bosco"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "10:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-141",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 279"
+   },
+   "revisado": true,
+   "titulo": "El Lugar de las Cosas Rotas",
+   "artistas": [
+    "Fundación Centro de Danza Experimental"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "11:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-142",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 281, 284"
+   },
+   "revisado": true,
+   "titulo": "Rondalla Saucedales",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "11:00",
+     "sede": "Plaza de la Cultura"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "12:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-143",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 282"
+   },
+   "revisado": true,
+   "titulo": "Campaña de Lectura Félix Paladines",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Loja / Municipio de Loja pales"
+   ],
+   "categoria": "Muestras Artísticas con Escuelas Municipales",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "11:00",
+     "sede": "Sala Eduardo Kigman"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-144",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 287, 376"
+   },
+   "revisado": true,
+   "titulo": "El Caballero de la Mano de Fuego",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "15:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "11:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-145",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 295"
+   },
+   "revisado": true,
+   "titulo": "Latidos de Escena",
+   "artistas": [
+    "Marco Bustos"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "17:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-146",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 298"
+   },
+   "revisado": true,
+   "titulo": "Jorge Cazadragones",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "19:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-147",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 300, 305"
+   },
+   "revisado": true,
+   "titulo": "Engañado a sus pies",
+   "artistas": [
+    "Cuna Escénica - Cumbre Escénica"
+   ],
+   "categoria": "Microteatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-18",
+     "hora": "20:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-148",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 301, 352"
+   },
+   "revisado": true,
+   "titulo": "Grotte",
+   "artistas": [
+    "Sirio Rubio"
+   ],
+   "categoria": "Circo",
+   "descripcion": "Procedencia: España · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "20:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "20:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-149",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 302"
+   },
+   "revisado": true,
+   "titulo": "Grupo Folclórico Municipal Yupaychay",
+   "artistas": [
+    "Municipio de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "20:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-150",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 304"
+   },
+   "revisado": true,
+   "titulo": "Error Multiverso",
+   "artistas": [
+    "Vive Escena"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "20:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Gratuito"
+  },
+  {
+   "clave": "prog2026-151",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 306"
+   },
+   "revisado": true,
+   "titulo": "Retablo Ecuatoriano",
+   "artistas": [
+    "Danza Folclórica Llankaycuna"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "20:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-152",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 307, 418, 497"
+   },
+   "revisado": true,
+   "titulo": "Semillas de Fuego",
+   "artistas": [
+    "Mascha Louana"
+   ],
+   "categoria": "Fuego",
+   "descripcion": "Procedencia: Alemania · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "20:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "17:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-153",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 309"
+   },
+   "revisado": true,
+   "titulo": "Latinoamérica Viva: El Eco Ancestral del Futuro",
+   "artistas": [
+    "Grupo Sangre Criolla"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "21:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-154",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 311"
+   },
+   "revisado": true,
+   "titulo": "Pueblo Nuevo",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-18",
+     "hora": "22:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-155",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 317, 361"
+   },
+   "revisado": true,
+   "titulo": "Expo Bonsai 2026",
+   "artistas": [
+    "Asociación de Bonsai Loja"
+   ],
+   "categoria": "Exposición",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:00",
+     "sede": "Hall de la Prefectura de Loja",
+     "horaFin": "17:00"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "08:00",
+     "sede": "Hall de la Prefectura de Loja",
+     "horaFin": "17:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-156",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 318, 368, 425"
+   },
+   "revisado": true,
+   "titulo": "Feria Brote Sur Cuarta Edición",
+   "artistas": [],
+   "categoria": "Feria de Arte",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:00",
+     "sede": "Casa Colonial Brycoff",
+     "horaFin": "20:00"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:00",
+     "sede": "Casa Colonial Brycoff",
+     "horaFin": "20:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "10:00",
+     "sede": "Casa Colonial Brycoff",
+     "horaFin": "20:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-157",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 319, 351"
+   },
+   "revisado": true,
+   "titulo": "La Artista",
+   "artistas": [
+    "Los Nadies Circo"
+   ],
+   "categoria": "Circo",
+   "descripcion": "Procedencia: Chile · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-158",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 320"
+   },
+   "revisado": true,
+   "titulo": "Asfalto",
+   "artistas": [
+    "La Cinta Corta"
+   ],
+   "categoria": "Danza - Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-159",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 323"
+   },
+   "revisado": true,
+   "titulo": "La Embajada de la Alegría",
+   "artistas": [
+    "Títeres Rompecabezas"
+   ],
+   "categoria": "Teatro de Títeres",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-160",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 324, 388"
+   },
+   "revisado": true,
+   "titulo": "El Gato Simple",
+   "artistas": [
+    "Uh! Manitos Compañía de Arte"
+   ],
+   "categoria": "Títere Parlante",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "10:30",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "15:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-161",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 330"
+   },
+   "revisado": true,
+   "titulo": "Haz lo Tuyo: Rock Latino Inclusivo",
+   "artistas": [
+    "Festival de Artes Inclusivas"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "14:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-162",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 331, 338, 383"
+   },
+   "revisado": true,
+   "titulo": "Huellas Silvestres",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Artes Visuales",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "14:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "16:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "14:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-163",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 333"
+   },
+   "revisado": true,
+   "titulo": "Aventuras en Galápagos: Cuentos Infantiles para Cuidar el Planeta y Nuestras Emociones",
+   "artistas": [
+    "Victoria Mediavilla"
+   ],
+   "categoria": "Conversatorio",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "15:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-164",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 336, 387"
+   },
+   "revisado": true,
+   "titulo": "Huellas Silvestres",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Artes Visuales",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "15:00",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "15:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-165",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 337"
+   },
+   "revisado": true,
+   "titulo": "Orquesta Tropical Son Especial",
+   "artistas": [
+    "Municipio de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "16:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-166",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 340"
+   },
+   "revisado": true,
+   "titulo": "Leo Aquisicito",
+   "artistas": [
+    "María Guadalupe Madrid / Lectura Colectiva"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "16:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-167",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 341, 402"
+   },
+   "revisado": true,
+   "titulo": "Huellas Silvestres",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Artes Visuales",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "17:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "17:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-168",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 342"
+   },
+   "revisado": true,
+   "titulo": "Formación Escénica y Difusión de la Cultura Milenaria de Santa Elena",
+   "artistas": [
+    "Camino a Loja"
+   ],
+   "categoria": "Multidisciplinario",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "17:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-169",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 343"
+   },
+   "revisado": true,
+   "titulo": "Taki Onkoy",
+   "artistas": [
+    "Muyacan Danza"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "18:00",
+     "sede": "Teatro Bolivar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-170",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 344"
+   },
+   "revisado": true,
+   "titulo": "Conversatorio de Literatura Lojana",
+   "artistas": [
+    "Andrea Rojas Vásquez"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "18:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-171",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 345, 401"
+   },
+   "revisado": true,
+   "titulo": "Striaria",
+   "artistas": [
+    "Valentina Quargentan"
+   ],
+   "categoria": "Suspensión",
+   "descripcion": "Procedencia: Italia · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "18:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "17:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-172",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 346, 419, 465"
+   },
+   "revisado": true,
+   "titulo": "Cuidado!! Un Payaso Malo Puede Arruinar tu Vida",
+   "artistas": [
+    "El Payaso Chacovachi"
+   ],
+   "categoria": "Circo",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "19:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "20:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-173",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 347"
+   },
+   "revisado": true,
+   "titulo": "Vaireté Circo a la Gorra",
+   "artistas": [
+    "Cierre de Espectáculos"
+   ],
+   "categoria": "Circo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "19:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-174",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 348"
+   },
+   "revisado": true,
+   "titulo": "Concierto de Pájaros en los Zaguanes",
+   "artistas": [
+    "Freddy Ayala / Presentación del Libro"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "19:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-175",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 349, 354"
+   },
+   "revisado": true,
+   "titulo": "Mamá tiene Tinder",
+   "artistas": [
+    "Tercera Llamada"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-19",
+     "hora": "20:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-176",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 350"
+   },
+   "revisado": true,
+   "titulo": "Color y Tambores",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Batucada",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "19:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-177",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 355"
+   },
+   "revisado": true,
+   "titulo": "The Bruno Mars Show",
+   "artistas": [
+    "Antonio Guerrero"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "20:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-178",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 356"
+   },
+   "revisado": true,
+   "titulo": "Aya Pacha Palta",
+   "artistas": [
+    "Ballet FolKlórico Ñuka Llakta / Universidad Nacional de Loja"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "21:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-179",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 357"
+   },
+   "revisado": true,
+   "titulo": "Semillas de Fuego",
+   "artistas": [
+    "Mascha Louana"
+   ],
+   "categoria": "Fuego",
+   "descripcion": "Procedencia: Alemania · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "21:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-180",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 359"
+   },
+   "revisado": true,
+   "titulo": "Noche Lojana",
+   "artistas": [
+    "Ají de Pepa"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "22:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-181",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 360"
+   },
+   "revisado": true,
+   "titulo": "Esto es eso",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-19",
+     "hora": "22:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-182",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 363, 423, 472"
+   },
+   "revisado": true,
+   "titulo": "Yaku Ñan: El Camino del Agua",
+   "artistas": [
+    "Municipio de Loja"
+   ],
+   "categoria": "Instalación",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "09:00",
+     "sede": "24 de Mayo",
+     "horaFin": "20:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "09:00",
+     "sede": "24 de Mayo",
+     "horaFin": "20:00"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "09:00",
+     "sede": "24 de Mayo",
+     "horaFin": "20:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-183",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 365, 424, 473"
+   },
+   "revisado": true,
+   "titulo": "Pueblos y Rincones Mágicos del Ecuador",
+   "artistas": [],
+   "categoria": "Exposición Turística",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:00",
+     "sede": "Plaza Central",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "10:00",
+     "sede": "Plaza Central",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "10:00",
+     "sede": "Plaza Central",
+     "horaFin": "19:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-184",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 366"
+   },
+   "revisado": true,
+   "titulo": "Versos Habitables",
+   "artistas": [
+    "Colectivo Ciudad Desnuda"
+   ],
+   "categoria": "Artes Plásticas",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-185",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 367, 426"
+   },
+   "revisado": true,
+   "titulo": "Obras Escultóricas y Demostración En Vivo",
+   "artistas": [
+    "Bayardo Cuenca"
+   ],
+   "categoria": "Escultura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "10:00",
+     "sede": "Paseo Cultural de La Rocafuerte",
+     "horaFin": "22:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-186",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 369, 410, 415"
+   },
+   "revisado": true,
+   "titulo": "La mejor obra del Año",
+   "artistas": [
+    "Cumbre Escénica"
+   ],
+   "categoria": "Teatro Comedia",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:30",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "19:00",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-20",
+     "hora": "20:00",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-187",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 370"
+   },
+   "revisado": true,
+   "titulo": "Agrupación de Zamora Chinchipe",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Zamora Chinchipe"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "10:30",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-188",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 372"
+   },
+   "revisado": true,
+   "titulo": "Ballet Folklórico Internacional Ciudad de Loja",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Loja"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "11:00",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-189",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 373"
+   },
+   "revisado": true,
+   "titulo": "Destacamento Tarqui: Cabo Minacho Padre y Héroe",
+   "artistas": [
+    "GA7 Cabo Minacho / Municipio de Loja / Mamá Sombrilla"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "11:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-190",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 379, 434, 480"
+   },
+   "revisado": true,
+   "titulo": "Cooltivate",
+   "artistas": [],
+   "categoria": "Feria de Emprendimientos",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "12:00",
+     "sede": "24 de Mayo y Miguel Riofrío",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "12:00",
+     "sede": "24 de Mayo y Miguel Riofrío",
+     "horaFin": "19:00"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "12:00",
+     "sede": "24 de Mayo y Miguel Riofrío",
+     "horaFin": "19:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-191",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 380"
+   },
+   "revisado": true,
+   "titulo": "Ballet Folclórico Pachamama",
+   "artistas": [
+    "Casa de la Cultura Ecuatoriana - Núcleo Loja"
+   ],
+   "categoria": "Danza",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "12:00",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-192",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 384"
+   },
+   "revisado": true,
+   "titulo": "Concurso Internacional de Tizas",
+   "artistas": [
+    "FIAVL 2026"
+   ],
+   "categoria": "Recreativo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "14:30",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-193",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 393"
+   },
+   "revisado": true,
+   "titulo": "Agrupación Cumbia Villera",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "15:45",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-194",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 394"
+   },
+   "revisado": true,
+   "titulo": "Huellas Silvestres",
+   "artistas": [
+    "Universidad Nacional de Loja"
+   ],
+   "categoria": "Artes Visuales",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "16:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-195",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 395"
+   },
+   "revisado": true,
+   "titulo": "Loja Grita Arte",
+   "artistas": [
+    "Presentación de Revista"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "16:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-196",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 399"
+   },
+   "revisado": true,
+   "titulo": "Agrupación \"Abuela Virgen\"",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "17:00",
+     "sede": "Bernardo Valdivieso"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-197",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 404"
+   },
+   "revisado": true,
+   "titulo": "Las Melodías de Dragón Wings de la Bolívar",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "17:00",
+     "sede": "Bolívar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-198",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 405"
+   },
+   "revisado": true,
+   "titulo": "Cuerpos que Leen",
+   "artistas": [
+    "Laboratorio de escritura e intervención performática Clausura Taller"
+   ],
+   "categoria": "Performance",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "17:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-199",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 406"
+   },
+   "revisado": true,
+   "titulo": "El Brote",
+   "artistas": [
+    "Compañía Criolla"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Argentina · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-200",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 408"
+   },
+   "revisado": true,
+   "titulo": "Alma",
+   "artistas": [
+    "Uma Beat"
+   ],
+   "categoria": "Interdisciplinario",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "18:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-201",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 409"
+   },
+   "revisado": true,
+   "titulo": "El Fruto del Amor",
+   "artistas": [
+    "Títeres Rompecabezas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "19:00",
+     "sede": "Teatro Segundo Cueva Celi - Cce"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-202",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 411"
+   },
+   "revisado": true,
+   "titulo": "Conversatorio Literario: Escribir mal ante la IA",
+   "artistas": [
+    "Freddy Aayala"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "19:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-203",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 412"
+   },
+   "revisado": true,
+   "titulo": "Reggaetón Experience",
+   "artistas": [
+    "CLB Events"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "19:00",
+     "sede": "24 de Mayo y José Antonio Eguiguren"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-204",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 413"
+   },
+   "revisado": true,
+   "titulo": "Concierto Electrónico Sinfónico",
+   "artistas": [
+    "Municipio de Loja"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "19:00",
+     "sede": "Plaza de la Cultura"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-205",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 414"
+   },
+   "revisado": true,
+   "titulo": "Técnicos",
+   "artistas": [
+    "Colectivo Independiente / Técnicos de Cuenca"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-206",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 416, 444"
+   },
+   "revisado": true,
+   "titulo": "Tuttotorna",
+   "artistas": [
+    "Guillari del Diavolo"
+   ],
+   "categoria": "Giocoleria - Visual Comedy",
+   "descripcion": "Procedencia: Italia · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "20:00",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "15:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-207",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 417"
+   },
+   "revisado": true,
+   "titulo": "Hasta que Nuestra Boda nos Separe",
+   "artistas": [
+    "Puntos Suspensivos"
+   ],
+   "categoria": "Comedia Inmersiva",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "20:00",
+     "sede": "Hotel Sonesta"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-208",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 420"
+   },
+   "revisado": true,
+   "titulo": "Aladino y la Lámpara Maravillosa",
+   "artistas": [
+    "Conservatorio Superior José María Rodríguez Cuenca"
+   ],
+   "categoria": "Danza - Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "21:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-209",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 421"
+   },
+   "revisado": true,
+   "titulo": "Viernes Sin Modales",
+   "artistas": [
+    "La Negra"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "22:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-210",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 422"
+   },
+   "revisado": true,
+   "titulo": "Show Burlesque",
+   "artistas": [],
+   "categoria": "Arte Sensual No Vulgar",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-20",
+     "hora": "22:00",
+     "sede": "El Cainar"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-211",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 427, 455"
+   },
+   "revisado": true,
+   "titulo": "Monás",
+   "artistas": [
+    "Teatringestazione"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Procedencia: Italia · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "11:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "18:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-212",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 429, 435"
+   },
+   "revisado": true,
+   "titulo": "Comunidades Faunas",
+   "artistas": [
+    "Samuel Retortillo / Orquesta Sinfónica de Loja"
+   ],
+   "categoria": "Danza - Música",
+   "descripcion": "Procedencia: España - Ecuador · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "11:00",
+     "sede": "Parque Jipiro"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "12:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-213",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 439"
+   },
+   "revisado": true,
+   "titulo": "Efímeros: Paisaje en degustación",
+   "artistas": [
+    "Arte Haus"
+   ],
+   "categoria": "Artes Plásticas",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "13:00",
+     "sede": "Arte Haus",
+     "horaFin": "18:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-214",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 438"
+   },
+   "revisado": true,
+   "titulo": "La Embajada de la Alegría",
+   "artistas": [
+    "Títeres Rompecabezas"
+   ],
+   "categoria": "Teatro de Títeres",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "14:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-215",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 440"
+   },
+   "revisado": true,
+   "titulo": "FIAV Al Parque",
+   "artistas": [],
+   "categoria": "Música en Vivo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "14:00",
+     "sede": "Parque Jipiro"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-216",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 441"
+   },
+   "revisado": true,
+   "titulo": "La Gallinita Sembradora",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "14:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-217",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 445"
+   },
+   "revisado": true,
+   "titulo": "Cuando se Abre una Caja",
+   "artistas": [
+    "Stephanie Guaño / Taller Performance"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "15:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-218",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 447"
+   },
+   "revisado": true,
+   "titulo": "Festival de la 24",
+   "artistas": [
+    "Beto’s Productor / One off Entertaiment"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "15:00",
+     "sede": "24 de Mayo y José Antonio Eguiguren"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-219",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 449"
+   },
+   "revisado": true,
+   "titulo": "Avatar",
+   "artistas": [
+    "Reysodance"
+   ],
+   "categoria": "Danza Multidisciplinaria",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "16:00",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-220",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 451, 463"
+   },
+   "revisado": true,
+   "titulo": "Extravagante",
+   "artistas": [
+    "Eclipse Escénico"
+   ],
+   "categoria": "Teatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "17:00",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-21",
+     "hora": "19:30",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-221",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 456"
+   },
+   "revisado": true,
+   "titulo": "La Escoba",
+   "artistas": [
+    "Juana Estrella"
+   ],
+   "categoria": "Monólogo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "18:00",
+     "sede": "Teatro Bolívar"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-222",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 457"
+   },
+   "revisado": true,
+   "titulo": "Letras con Aroma",
+   "artistas": [
+    "Conversatorio"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "18:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-223",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 458, 493"
+   },
+   "revisado": true,
+   "titulo": "Dos pájaros de un Tiro",
+   "artistas": [
+    "Carlos Michelena \"El Miche\""
+   ],
+   "categoria": "Comedia",
+   "descripcion": "Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "18:30",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "16:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-224",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 459"
+   },
+   "revisado": true,
+   "titulo": "Balcón de la Lojanidad - Segunda Edición",
+   "artistas": [
+    "Colectivo Balcón de la Lojanidad"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "19:00",
+     "sede": "Bolívar y Miguel Riofrío",
+     "horaFin": "21:00"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-225",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 460"
+   },
+   "revisado": true,
+   "titulo": "Balcón de la Lojanidad - Segunda Edición",
+   "artistas": [
+    "Colectivo Balcón de la Lojanidad"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "19:00",
+     "sede": "Bolívar y Azuay"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-226",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 461, 500"
+   },
+   "revisado": true,
+   "titulo": "Tuttotorna",
+   "artistas": [
+    "Guillari del Diavolo"
+   ],
+   "categoria": "Giocoleria - Visual Comedy",
+   "descripcion": "Procedencia: Italia · Programación diaria · Evento destacado.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "19:00",
+     "sede": "Plaza Santo Domingo"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "18:30",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-227",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 462"
+   },
+   "revisado": true,
+   "titulo": "Soliloquios en la vereda",
+   "artistas": [
+    "Colectivo Tinta de Arupo / Presentación de Libro"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "19:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-228",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 464"
+   },
+   "revisado": true,
+   "titulo": "Noche de Cumbia con Quinta Esencia",
+   "artistas": [
+    "Orquesta Quinta Escencia"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "20:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-229",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 466, 481"
+   },
+   "revisado": true,
+   "titulo": "IV Festival Internacional Danzas, Colores y Tradiciones del Mundo",
+   "artistas": [
+    "Ballet Folclórico Internacional Ciudad de Loja"
+   ],
+   "categoria": "Danza Folclórica",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "20:30",
+     "sede": "Plaza Central"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "14:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-230",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 467"
+   },
+   "revisado": true,
+   "titulo": "Himnos que Desafían el Tiempo",
+   "artistas": [
+    "Alma de Rock, Corazón de Metal Soulcore"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "21:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-231",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 468"
+   },
+   "revisado": true,
+   "titulo": "Tres Tristes Chazos",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "21:00",
+     "sede": "El Cainar"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-232",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 469"
+   },
+   "revisado": true,
+   "titulo": "Del Zamora al Caribe",
+   "artistas": [
+    "Q´combo"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "21:30",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-233",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 470"
+   },
+   "revisado": true,
+   "titulo": "Marcelo & TH Mars",
+   "artistas": [
+    "Clausura Festival"
+   ],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "22:00",
+     "sede": "Gato Suco"
+    }
+   ],
+   "franjas": [],
+   "etiqueta": "Evento Pagado"
+  },
+  {
+   "clave": "prog2026-234",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 471"
+   },
+   "revisado": true,
+   "titulo": "El Combo de las Estrellas",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-21",
+     "hora": "23:00",
+     "sede": "Plaza San Sebastián"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-235",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 476, 503"
+   },
+   "revisado": true,
+   "titulo": "Nada era un Misterio: El Enigmático caso de la Continental Company",
+   "artistas": [
+    "La Mona Ilustre"
+   ],
+   "categoria": "Obra de Clausura",
+   "descripcion": "Procedencia: Chile · Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "11:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "20:00",
+     "sede": "Teatro Nacional Benjamín Carrión Mora"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-236",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 482"
+   },
+   "revisado": true,
+   "titulo": "Memorias que Permanecen: La Historia de Loja Contada por Quienes la Vivieron",
+   "artistas": [
+    "Fundación para el Desarrollo / Empresarial y Social - FEDES"
+   ],
+   "categoria": "Actividad Cultural",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "14:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-237",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 486"
+   },
+   "revisado": true,
+   "titulo": "Banda Municipal de Cotacachi",
+   "artistas": [],
+   "categoria": "Música",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "15:00",
+     "sede": "Plaza Santo Domingo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-238",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 490, 498"
+   },
+   "revisado": true,
+   "titulo": "Estará Bien",
+   "artistas": [
+    "Lotura"
+   ],
+   "categoria": "Microteatro",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "16:00",
+     "sede": "Teatrino de la Casona Cultural"
+    },
+    {
+     "fecha": "2026-11-22",
+     "hora": "18:00",
+     "sede": "Teatrino de la Casona Cultural"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-239",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 491"
+   },
+   "revisado": true,
+   "titulo": "Cadena de Voces",
+   "artistas": [
+    "Club de Lectura Leo Aquicito"
+   ],
+   "categoria": "Escritura Creativa",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "16:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-240",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 494"
+   },
+   "revisado": true,
+   "titulo": "Los Niños y el Sabio Viento",
+   "artistas": [
+    "Fusión Arte"
+   ],
+   "categoria": "Transdisciplinaria",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "17:00",
+     "sede": "Centro Cultural Alfredo Mora Reyes"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-241",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 496"
+   },
+   "revisado": true,
+   "titulo": "El Profe y el Marciano",
+   "artistas": [
+    "Teo Paladines"
+   ],
+   "categoria": "Monólogo",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "17:30",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-242",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 499"
+   },
+   "revisado": true,
+   "titulo": "Sanji y el Panadero",
+   "artistas": [
+    "TÍteres Candilejas"
+   ],
+   "categoria": "Títeres",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "18:30",
+     "sede": "Plaza Central"
+    }
+   ],
+   "franjas": []
+  },
+  {
+   "clave": "prog2026-243",
+   "origen": {
+    "pagina": 1,
+    "nota": "CSV de la programación 2026 · ID evento 502"
+   },
+   "revisado": true,
+   "titulo": "Loja Escribe: de la Pagina a la Voz",
+   "artistas": [
+    "Dani Orellana"
+   ],
+   "categoria": "Literatura",
+   "descripcion": "Programación diaria.",
+   "funciones": [
+    {
+     "fecha": "2026-11-22",
+     "hora": "19:00",
+     "sede": "Plazoleta 1ro de Mayo"
+    }
+   ],
+   "franjas": []
+  }
+ ]
+}
