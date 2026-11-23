@@ -141,6 +141,9 @@ services:
         condition: service_healthy
       participacion:
         condition: service_healthy
+      # La entrada espera a que termine la carga: así la Agenda abre ya con la programación (y `--wait` no lo toma por fallo).
+      programacion-cargar:
+        condition: service_completed_successfully
     restart: unless-stopped
 
 volumes:
