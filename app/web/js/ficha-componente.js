@@ -14,6 +14,7 @@ import {
   claseAcceso,
   iconoParaCategoria,
 } from './format.js';
+import { buscarImagenEvento } from './imagenes-eventos.js';
 
 function renderSede(venue) {
   if (!venue) {
@@ -227,9 +228,24 @@ export function renderFicha(actividad, { esVistaPrevia = false, venta = new Map(
       )
     : null;
 
+  const rutaFoto = buscarImagenEvento(actividad.title, actividad.category?.name) || buscarImagenEvento(actividad.id);
+  const portadaFoto = rutaFoto
+    ? h(
+        'div',
+        { class: 'ficha-portada-foto' },
+        h('img', {
+          src: rutaFoto,
+          alt: actividad.title || 'Foto de la actividad',
+          class: 'ficha-foto-portada',
+          loading: 'lazy',
+        }),
+      )
+    : null;
+
   const bloqueDescripcion = h(
     'section',
     { class: 'ficha-seccion', 'aria-labelledby': 'titulo-descripcion' },
+    portadaFoto,
     h('h2', { id: 'titulo-descripcion' }, 'Acerca de esta actividad'),
     descripcionTexto
       ? h('p', { class: 'ficha-descripcion' }, descripcionTexto)

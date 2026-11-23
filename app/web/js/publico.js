@@ -15,6 +15,7 @@ import {
   iconoParaCategoria,
 } from './format.js';
 import { renderFicha } from './ficha-componente.js';
+import { buscarImagenEvento } from './imagenes-eventos.js';
 
 /** Tono del bloque de fecha según la categoría: siempre el mismo para la misma categoría (solo decoración). */
 function tonoCategoria(nombre) {
@@ -56,6 +57,29 @@ function portadaIlustrada(familia) {
   );
 }
 
+/** Portada de la tarjeta: si tiene fotografía oficial o representativa, la muestra con velo sutil; si no, portada ilustrada. */
+function portadaTarjeta(item, familia) {
+  const rutaFoto = buscarImagenEvento(item.title, item.category?.name, familia) || buscarImagenEvento(item.id);
+  if (rutaFoto) {
+    const img = h('img', {
+      src: rutaFoto,
+      alt: '',
+      class: 'portada-foto',
+      loading: 'lazy',
+    });
+    img.onerror = () => {
+      img.remove();
+    };
+    return h(
+      'div',
+      { class: `tarjeta-portada portada-con-foto portada-${familia}`, 'aria-hidden': 'true' },
+      img,
+      h('span', { class: 'portada-velo' }),
+    );
+  }
+  return portadaIlustrada(familia);
+}
+
 function tarjetaAgenda(item, diaElegido = '') {
   const categoria = item.category?.name ?? 'Categoría por confirmar';
   const sedesNombres = [...new Set((item.venues ?? []).map((v) => v.name))];
@@ -68,7 +92,7 @@ function tarjetaAgenda(item, diaElegido = '') {
     h(
       'a',
       { href: `/actividad/${encodeURIComponent(item.id)}`, 'data-enlace': true, class: 'tarjeta-agenda-enlace' },
-      portadaIlustrada(familia),
+      portadaTarjeta(item, familia),
       bloqueFecha(item, categoria, diaElegido),
       h('span', { class: 'tarjeta-agenda-flecha', 'aria-hidden': 'true' }, '↗'),
       h(
