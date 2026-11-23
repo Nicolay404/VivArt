@@ -1,7 +1,7 @@
 // Mi recorrido y alternativas (spec 004: RF-16 a RF-18, RC-02, RC-03, RC-06, RC-07).
 // El recorrido vive exclusivamente en este navegador (P-05, FR-004) y no se asocia a ninguna cuenta.
 import { h, icono, aviso, confirmarAccion, abrirDialogo } from './dom.js';
-import { formatoFecha, formatoDuracion, etiquetaAviso } from './format.js';
+import { formatoFecha, formatoFechaCorta, partesFecha, formatoDuracion, etiquetaAviso } from './format.js';
 import { apiProgramacion, apiParticipacion } from './api.js';
 
 export const CLAVE_RECORRIDO = 'vivart_recorrido_v1';
@@ -582,6 +582,236 @@ export function abrirModalAlternativas(itemAfectado, itemsAgenda, referencia, al
 }
 
 /**
+ * Escultura de «Poste Indicador de Escenarios y Reloj-Brújula Solar» para el encabezado
+ * de Mi recorrido: un hito callejero cultural con tres flechas direccionales en esmalte
+ * que apuntan a distintos escenarios de Loja, coronado por una rosa de los vientos giratoria.
+ * Composición exclusiva de Mi recorrido (distinta del mosaico de Agenda y de la libreta de Pasaporte).
+ */
+function esculturaPosteEscenarios() {
+  return h(
+    'div',
+    { class: 'hero-poste-escultura', 'aria-hidden': 'true' },
+    // Halo y rueda de reloj-brújula astronómica detrás del poste
+    h('div', { class: 'poste-halo-solar' }),
+    h(
+      'div',
+      { class: 'poste-rueda-horaria' },
+      h('span', { class: 'rueda-marca m-norte' }, 'XVIII · H'),
+      h('span', { class: 'rueda-marca m-este' }, 'XX · H'),
+      h('span', { class: 'rueda-marca m-sur' }, 'XXII · H'),
+      h('span', { class: 'rueda-marca m-oeste' }, 'XVI · H'),
+    ),
+    h('div', { class: 'poste-orbita-interior' }),
+    // Mástil central del poste indicador de escenarios
+    h(
+      'div',
+      { class: 'poste-estructura' },
+      h(
+        'div',
+        { class: 'poste-remate-brujula' },
+        icono('recorrido', 'icono-sm'),
+      ),
+      h('div', { class: 'poste-mastil' }),
+      // Tres letreros direccionales en forma de flecha de calle
+      h(
+        'div',
+        { class: 'poste-flecha flecha-hacia-izq flecha-1' },
+        h('span', { class: 'flecha-codigo' }, '01'),
+        h(
+          'div',
+          { class: 'flecha-textos' },
+          h('strong', {}, 'Teatro B. Carrión'),
+          h('span', {}, '19:00 · Escenario mayor'),
+        ),
+      ),
+      h(
+        'div',
+        { class: 'poste-flecha flecha-hacia-der flecha-2' },
+        h(
+          'div',
+          { class: 'flecha-textos' },
+          h('strong', {}, 'Plaza San Sebastián'),
+          h('span', {}, '20:30 · Aire libre · Sin cruces'),
+        ),
+        h('span', { class: 'flecha-codigo' }, '02'),
+      ),
+      h(
+        'div',
+        { class: 'poste-flecha flecha-hacia-izq flecha-3' },
+        h('span', { class: 'flecha-codigo' }, '03'),
+        h(
+          'div',
+          { class: 'flecha-textos' },
+          h('strong', {}, 'Casona Cultural'),
+          h('span', {}, '22:00 · Alternativas en sede'),
+        ),
+      ),
+      h(
+        'div',
+        { class: 'poste-hito-base' },
+        h('span', {}, 'KM 0 · LOJA CULTURAL'),
+      ),
+    ),
+  );
+}
+
+/**
+ * Ondas luminosas de fondo que cruzan todo el ancho del encabezado de Mi recorrido.
+ */
+function ondasHorizonteHero() {
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const s = document.createElementNS(SVG_NS, 'svg');
+  s.setAttribute('viewBox', '0 0 1440 320');
+  s.setAttribute('preserveAspectRatio', 'none');
+  s.setAttribute('class', 'hero-recorrido-ondas-svg');
+  s.setAttribute('aria-hidden', 'true');
+
+  const trazos = [
+    ['path', { d: 'M -40 260 C 280 180, 520 310, 860 200 C 1120 115, 1290 210, 1480 140', class: 'onda-horizonte-1' }],
+    ['path', { d: 'M -40 290 C 340 220, 640 320, 980 225 C 1190 165, 1340 240, 1480 195', class: 'onda-horizonte-2' }],
+    ['path', { d: 'M -20 235 C 310 145, 590 285, 920 170 C 1160 85, 1310 175, 1460 110', class: 'onda-sendero-dorado' }],
+  ];
+  for (const [tag, attrs] of trazos) {
+    const el = document.createElementNS(SVG_NS, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    s.append(el);
+  }
+  return s;
+}
+
+/**
+ * Cabecera exclusiva para Mi recorrido (/recorrido): estética de «Horizonte y Poste Indicador
+ * de Escenarios» con barra inferior de telemetría de ruta a todo lo ancho.
+ */
+function heroRecorrido({ totalParadas, totalDias, totalCruces, referencia }) {
+  const textoReloj = referencia?.nowIso
+    ? `${formatoFecha(referencia.todayIso ?? referencia.nowIso.slice(0, 10))} · ${referencia.nowIso.slice(11, 16)}`
+    : 'Hora oficial · Loja (UTC-5)';
+  const sufijoCruces = totalCruces === 1 ? 'cruce de horario' : 'cruces de horario';
+  const etiquetaCruces = totalCruces > 0 ? `${totalCruces} ${sufijoCruces}` : 'Ruta despejada';
+
+  return h(
+    'section',
+    { class: 'hero-festival hero-recorrido-unico', 'aria-label': 'Encabezado de Mi recorrido' },
+    ondasHorizonteHero(),
+    h(
+      'div',
+      { class: 'hero-recorrido-cuerpo' },
+      h(
+        'div',
+        { class: 'hero-recorrido-columna-texto' },
+        h(
+          'div',
+          { class: 'hero-coordenadas-badge' },
+          h('span', { class: 'coordenada-pulso', 'aria-hidden': 'true' }),
+          h('span', { class: 'coordenada-codigo' }, '03°59′S · 79°12′O'),
+          h('span', { class: 'coordenada-separador' }, '·'),
+          h('span', {}, 'Bitácora escénica de Loja'),
+        ),
+        h(
+          'h1',
+          { class: 'hero-titulo hero-recorrido-titulo' },
+          'Mi ',
+          h('span', { class: 'resalte-atardecer' }, 'recorrido'),
+        ),
+        h(
+          'p',
+          { class: 'hero-recorrido-bajada' },
+          'Elige tu propio rumbo entre teatros, plazas y casonas: enlaza tus paradas día por día, vigila el compás del reloj y descubre alternativas sin perderte ninguna función.',
+        ),
+      ),
+      esculturaPosteEscenarios(),
+    ),
+    // Barra panorámica inferior de telemetría de ruta (sustituye a las píldoras tipo Pasaporte)
+    h(
+      'div',
+      { class: 'hero-telemetria-franja' },
+      h(
+        'div',
+        { class: 'hero-telemetria-interior' },
+        h(
+          'div',
+          { class: 'telemetria-estacion' },
+          h('span', { class: 'telemetria-icono' }, icono('recorrido', 'icono-sm')),
+          h(
+            'div',
+            { class: 'telemetria-datos' },
+            h('strong', { class: 'telemetria-valor' }, `${String(totalParadas).padStart(2, '0')} ${totalParadas === 1 ? 'parada' : 'paradas'}`),
+            h('span', { class: 'telemetria-etiqueta' }, 'Trazadas en tu bitácora'),
+          ),
+        ),
+        h('span', { class: 'telemetria-conector', 'aria-hidden': 'true' }),
+        h(
+          'div',
+          { class: 'telemetria-estacion' },
+          h('span', { class: 'telemetria-icono' }, icono('calendario', 'icono-sm')),
+          h(
+            'div',
+            { class: 'telemetria-datos' },
+            h('strong', { class: 'telemetria-valor' }, `${String(totalDias).padStart(2, '0')} ${totalDias === 1 ? 'jornada' : 'jornadas'}`),
+            h('span', { class: 'telemetria-etiqueta' }, 'Días con actividades'),
+          ),
+        ),
+        h('span', { class: 'telemetria-conector', 'aria-hidden': 'true' }),
+        h(
+          'div',
+          { class: `telemetria-estacion ${totalCruces > 0 ? 'telemetria-alerta' : 'telemetria-ok'}` },
+          h('span', { class: 'telemetria-icono' }, icono(totalCruces > 0 ? 'aviso' : 'check', 'icono-sm')),
+          h(
+            'div',
+            { class: 'telemetria-datos' },
+            h('strong', { class: 'telemetria-valor' }, etiquetaCruces),
+            h(
+              'span',
+              { class: 'telemetria-etiqueta' },
+              totalCruces > 0 ? 'Revisa las paradas solapadas' : 'Sin solapamientos horarios',
+            ),
+          ),
+        ),
+        h('span', { class: 'telemetria-conector', 'aria-hidden': 'true' }),
+        h(
+          'div',
+          { class: 'telemetria-estacion telemetria-reloj' },
+          h('span', { class: 'telemetria-icono' }, icono('reloj', 'icono-sm')),
+          h(
+            'div',
+            { class: 'telemetria-datos' },
+            h('strong', { class: 'telemetria-valor' }, textoReloj),
+            h('span', { class: 'telemetria-etiqueta' }, 'Reloj oficial del festival'),
+          ),
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Construye una curva SVG en S que conecta visualmente dos paradas consecutivas del sendero.
+ */
+function conectorCurvoParada(haciaDerecha, enCruce) {
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const s = document.createElementNS(SVG_NS, 'svg');
+  s.setAttribute('viewBox', '0 0 360 56');
+  s.setAttribute('class', `recorrido-curva-svg ${enCruce ? 'curva-cruce' : ''}`);
+  s.setAttribute('aria-hidden', 'true');
+
+  const d = haciaDerecha
+    ? 'M 70 2 C 70 30, 290 26, 290 54'
+    : 'M 290 2 C 290 30, 70 26, 70 54';
+
+  const halo = document.createElementNS(SVG_NS, 'path');
+  halo.setAttribute('d', d);
+  halo.setAttribute('class', 'curva-halo');
+
+  const trazo = document.createElementNS(SVG_NS, 'path');
+  trazo.setAttribute('d', d);
+  trazo.setAttribute('class', 'curva-trazo');
+
+  s.append(halo, trazo);
+  return s;
+}
+
+/**
  * Pantalla principal de Mi recorrido (/recorrido).
  * Cumple FR-001 a FR-021 y criterios de aceptación SC-001 a SC-011.
  */
@@ -617,76 +847,6 @@ export async function pantallaRecorrido(ctx = {}) {
     const cruces = detectarCruces(sincronizados);
     const idsConCruce = new Set(cruces.flatMap((c) => [c.itemA, c.itemB]));
 
-    // Cabecera superior
-    const bannerCupo = h(
-      'div',
-      { class: 'recorrido-banner-cupo', role: 'note' },
-      icono('aviso', 'icono-xs'),
-      h('span', {}, 'Guardar no reserva cupo: tus funciones se quedan en este navegador y no se sincronizan con ninguna cuenta ni dispositivo (FR-003, FR-004).'),
-    );
-
-    const cabecera = h(
-      'header',
-      { class: 'recorrido-cabecera' },
-      h(
-        'div',
-        { class: 'recorrido-cabecera-top' },
-        h(
-          'a',
-          { href: '/agenda', 'data-enlace': true, class: 'enlace-volver' },
-          icono('flecha-izquierda', 'icono-xs'),
-          'Volver a la Agenda',
-        ),
-        barraReloj(referencia),
-      ),
-      h(
-        'div',
-        { class: 'recorrido-cabecera-titulo-fila' },
-        h('h1', { class: 'recorrido-titulo' }, 'Mi recorrido'),
-        actual.length > 0
-          ? h(
-              'button',
-              {
-                type: 'button',
-                class: 'secundario boton-sm boton-vaciar',
-                'aria-label': 'Vaciar todas las funciones de Mi recorrido',
-                onclick: async () => {
-                  const conf = await confirmarAccion({
-                    titulo: 'Vaciar Mi recorrido',
-                    mensaje: '¿Deseas quitar todas las funciones de tu recorrido local?',
-                    botonConfirmar: 'Sí, vaciar',
-                    peligro: true,
-                  });
-                  if (conf) {
-                    vaciarRecorrido();
-                    repintar();
-                  }
-                },
-              },
-              icono('basura', 'icono-xs'),
-              'Vaciar recorrido',
-            )
-          : null,
-      ),
-      h('p', { class: 'recorrido-subtitulo' }, 'Organiza tu itinerario para el festival, revisa cruces de horario y encuentra alternativas ante cancelaciones o cupos agotados.'),
-      bannerCupo,
-    );
-
-    if (sincronizados.length === 0) {
-      zonaContenido.replaceChildren(
-        h(
-          'section',
-          { class: 'estado-vacio recorrido-vacio' },
-          icono('calendario', 'icono-lg'),
-          h('h2', {}, 'No tienes funciones guardadas'),
-          h('p', {}, 'Explora las actividades y funciones de la Agenda y guárdalas para armar tu recorrido.'),
-          h('a', { href: '/agenda', 'data-enlace': true, class: 'boton' }, 'Explorar la Agenda'),
-        ),
-      );
-      contenedor.replaceChildren(cabecera, zonaContenido);
-      return;
-    }
-
     // Agrupar por fecha
     const porFecha = new Map();
     for (const item of sincronizados) {
@@ -695,139 +855,366 @@ export async function pantallaRecorrido(ctx = {}) {
       porFecha.get(f).push(item);
     }
 
+    const hero = heroRecorrido({
+      totalParadas: sincronizados.length,
+      totalDias: porFecha.size,
+      totalCruces: cruces.length,
+      referencia,
+    });
+
+    // Barra superior de navegación, reloj oficial y nota de privacidad local
+    const bannerCupo = h(
+      'div',
+      { class: 'recorrido-banner-cupo', role: 'note' },
+      h('span', { class: 'recorrido-banner-icono' }, icono('recorrido', 'icono-sm')),
+      h(
+        'div',
+        { class: 'recorrido-banner-texto' },
+        h('strong', {}, 'Bitácora de ruta en tu dispositivo: '),
+        h(
+          'span',
+          {},
+          'Guardar no reserva cupo. Tus paradas se conservan en este navegador y no se sincronizan con ninguna cuenta ni dispositivo (FR-003, FR-004).',
+        ),
+      ),
+    );
+
+    const barraControl = h(
+      'header',
+      { class: 'recorrido-cabecera' },
+      h(
+        'div',
+        { class: 'recorrido-cabecera-top' },
+        h(
+          'div',
+          { class: 'seccion-encabezado' },
+          h('p', { class: 'eyebrow' }, 'Itinerario por escenarios · Guardado en este navegador'),
+          h(
+            'h2',
+            { class: 'titulo-seccion' },
+            icono('recorrido', 'icono-titulo'),
+            'Tu ',
+            h('span', { class: 'resalte' }, 'ruta trazada'),
+          ),
+        ),
+        h(
+          'div',
+          { class: 'recorrido-cabecera-derecha' },
+          barraReloj(referencia),
+          h(
+            'a',
+            { href: '/agenda', 'data-enlace': true, class: 'boton secundario boton-sm' },
+            icono('calendario', 'icono-xs'),
+            'Explorar Agenda',
+          ),
+          actual.length > 0
+            ? h(
+                'button',
+                {
+                  type: 'button',
+                  class: 'secundario boton-sm boton-vaciar',
+                  'aria-label': 'Vaciar todas las funciones de Mi recorrido',
+                  onclick: async () => {
+                    const conf = await confirmarAccion({
+                      titulo: 'Vaciar Mi recorrido',
+                      mensaje: '¿Deseas quitar todas las funciones de tu recorrido local?',
+                      botonConfirmar: 'Sí, vaciar',
+                      peligro: true,
+                    });
+                    if (conf) {
+                      vaciarRecorrido();
+                      repintar();
+                    }
+                  },
+                },
+                icono('basura', 'icono-xs'),
+                'Vaciar recorrido',
+              )
+            : null,
+        ),
+      ),
+      bannerCupo,
+    );
+
+    if (sincronizados.length === 0) {
+      zonaContenido.replaceChildren(
+        h(
+          'section',
+          { class: 'estado-vacio recorrido-vacio recorrido-vacio-mapa' },
+          h(
+            'div',
+            { class: 'recorrido-vacio-ilustracion', 'aria-hidden': 'true' },
+            h('span', { class: 'vacio-estacion' }, '01'),
+            h('span', { class: 'vacio-tramo' }),
+            h('span', { class: 'vacio-estacion vacio-estacion-central' }, icono('recorrido', 'icono-md')),
+            h('span', { class: 'vacio-tramo' }),
+            h('span', { class: 'vacio-estacion' }, '02'),
+          ),
+          h('h2', {}, 'No tienes funciones guardadas en tu ruta'),
+          h(
+            'p',
+            {},
+            'Explora las actividades y funciones de la Agenda y guárdalas para trazar tu ruta personal de paradas por Loja.',
+          ),
+          h('a', { href: '/agenda', 'data-enlace': true, class: 'boton' }, 'Explorar la Agenda'),
+        ),
+      );
+      const hojaVacia = h('div', { class: 'hoja-contenido recorrido-hoja' }, barraControl, zonaContenido);
+      contenedor.replaceChildren(hero, hojaVacia);
+      return;
+    }
+
+    const acentosFestival = ['acento-violeta', 'acento-ambar', 'acento-magenta', 'acento-coral', 'acento-esmeralda'];
     const seccionesDias = [];
+    let contadorGlobalParada = 0;
+    let indiceJornada = 0;
+
     for (const [fecha, itemsDelDia] of porFecha.entries()) {
+      indiceJornada += 1;
+      const partes = partesFecha(fecha);
+
       const seccion = h(
         'section',
         { class: 'recorrido-dia-seccion', 'aria-label': `Funciones para ${formatoFecha(fecha)}` },
         h(
           'div',
           { class: 'recorrido-dia-encabezado' },
-          h('span', { class: 'recorrido-dia-icono' }, icono('calendario', 'icono-sm')),
-          h('h2', { class: 'recorrido-dia-titulo' }, formatoFecha(fecha)),
-          h('span', { class: 'chip-sutil' }, `${itemsDelDia.length} ${itemsDelDia.length === 1 ? 'evento' : 'eventos'}`),
+          partes
+            ? h(
+                'div',
+                { class: 'recorrido-dia-medallon', 'aria-hidden': 'true' },
+                h('span', { class: 'medallon-semana' }, partes.semana),
+                h('strong', { class: 'medallon-numero' }, String(partes.dia)),
+                h('span', { class: 'medallon-mes' }, partes.mes),
+              )
+            : h('span', { class: 'recorrido-dia-icono' }, icono('calendario', 'icono-sm')),
+          h(
+            'div',
+            { class: 'recorrido-dia-titular' },
+            h('span', { class: 'recorrido-jornada-kicker' }, `Jornada ${String(indiceJornada).padStart(2, '0')} · Sendero del día`),
+            h('h2', { class: 'recorrido-dia-titulo' }, formatoFecha(fecha)),
+          ),
+          h(
+            'span',
+            { class: 'recorrido-dia-chip' },
+            icono('recorrido', 'icono-xs'),
+            `${itemsDelDia.length} ${itemsDelDia.length === 1 ? 'estación' : 'estaciones'}`,
+          ),
         ),
         h(
-          'ul',
-          { class: 'recorrido-lista' },
-          itemsDelDia.map((item) => {
-            const tieneCruce = idsConCruce.has(item.id);
-            const crucesDelItem = cruces.filter((c) => c.itemA === item.id || c.itemB === item.id);
-            const esCancelada = item.status === 'cancelled' || item.notice?.kind === 'cancelled';
-            const esArchivada = item.status === 'archived' || item.isArchived;
-            const esReprogramada = item.notice?.kind === 'rescheduled' && !esCancelada;
-            const esAgotada = item.saleState === 'sold_out';
-            const estadoTemporal = determinarEstadoTemporal(item, referencia);
-            const esInicioPasado = estadoTemporal === 'start_passed';
-            const esTerminada = estadoTemporal === 'finished';
-
-            // Comprobar si requiere alternativas (FR-012, FR-018)
-            const necesitaAlternativas = esCancelada || esArchivada || esAgotada || esInicioPasado || esTerminada;
-
-            const detalleCruces = crucesDelItem
-              .map((c) => {
-                const otroId = c.itemA === item.id ? c.itemB : c.itemA;
-                const otro = sincronizados.find((x) => x.id === otroId);
-                const tituloOtro = otro?.title ? `«${otro.title}»` : 'otra función';
-                return `Se solapa con ${tituloOtro} (${c.overlapMinutes} min de cruce).`;
-              })
-              .join(' ');
-
-            return h(
-              'li',
-              { class: `recorrido-tarjeta ${tieneCruce ? 'tarjeta-con-cruce' : ''} ${esCancelada ? 'tarjeta-cancelada' : ''}` },
-              tieneCruce
-                ? h(
-                    'div',
-                    { class: 'alerta-cruce-horario', role: 'alert' },
-                    icono('aviso', 'icono-xs'),
-                    h('strong', {}, 'Advertencia de cruce: '),
-                    ` ${detalleCruces} Guardar nunca se bloquea (RC-02).`,
+          'div',
+          { class: 'recorrido-tablero-sendero' },
+          h('div', { class: 'sendero-columna-espina', 'aria-hidden': 'true' }),
+          h(
+            'ul',
+            { class: 'recorrido-lista recorrido-sendero-dia' },
+            itemsDelDia.map((item, idxDia) => {
+              contadorGlobalParada += 1;
+              const codigoParada = String(contadorGlobalParada).padStart(2, '0');
+              const acentoClase = acentosFestival[(contadorGlobalParada - 1) % acentosFestival.length];
+              const esIzquierda = idxDia % 2 === 0;
+              const ladoClase = esIzquierda ? 'parada-lado-izq' : 'parada-lado-der';
+              const siguienteDelDia = itemsDelDia[idxDia + 1] ?? null;
+              const tieneCruce = idsConCruce.has(item.id);
+              const crucesDelItem = cruces.filter((c) => c.itemA === item.id || c.itemB === item.id);
+              const cruceConSiguiente = siguienteDelDia
+                ? cruces.find(
+                    (c) =>
+                      (c.itemA === item.id && c.itemB === siguienteDelDia.id) ||
+                      (c.itemB === item.id && c.itemA === siguienteDelDia.id),
                   )
-                : null,
-              h(
-                'div',
-                { class: 'recorrido-tarjeta-cuerpo' },
+                : null;
+              const esCancelada = item.status === 'cancelled' || item.notice?.kind === 'cancelled';
+              const esArchivada = item.status === 'archived' || item.isArchived;
+              const esReprogramada = item.notice?.kind === 'rescheduled' && !esCancelada;
+              const esAgotada = item.saleState === 'sold_out';
+              const estadoTemporal = determinarEstadoTemporal(item, referencia);
+              const esInicioPasado = estadoTemporal === 'start_passed';
+              const esTerminada = estadoTemporal === 'finished';
+
+              // Comprobar si requiere alternativas (FR-012, FR-018)
+              const necesitaAlternativas = esCancelada || esArchivada || esAgotada || esInicioPasado || esTerminada;
+
+              const detalleCruces = crucesDelItem
+                .map((c) => {
+                  const otroId = c.itemA === item.id ? c.itemB : c.itemA;
+                  const otro = sincronizados.find((x) => x.id === otroId);
+                  const tituloOtro = otro?.title ? `«${otro.title}»` : 'otra función';
+                  return `Se solapa con ${tituloOtro} (${c.overlapMinutes} min de cruce).`;
+                })
+                .join(' ');
+
+              return h(
+                'li',
+                {
+                  id: `parada-estacion-${codigoParada}`,
+                  class: `recorrido-tarjeta ${ladoClase} ${acentoClase} ${tieneCruce ? 'tarjeta-con-cruce' : ''} ${esCancelada ? 'tarjeta-cancelada' : ''}`,
+                },
+                // Nodo central sobre el sendero serpenteante (brújula de estación)
                 h(
                   'div',
-                  { class: 'recorrido-tarjeta-top' },
+                  { class: 'recorrido-hito-central', 'aria-hidden': 'true' },
+                  h('span', { class: 'hito-central-etiqueta' }, `PARADA ${codigoParada}`),
                   h(
-                    'span',
-                    { class: 'recorrido-hora-badge' },
-                    icono('reloj', 'icono-xs'),
-                    `${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}`,
-                    item.durationMinutes ? ` (${formatoDuracion(item.durationMinutes)})` : '',
+                    'div',
+                    { class: 'recorrido-estacion-pin' },
+                    h('span', { class: 'estacion-pin-num' }, codigoParada),
                   ),
-                  esCancelada ? h('span', { class: 'insignia-estado estado-cancelada' }, 'Cancelada') : null,
-                  esReprogramada ? h('span', { class: 'insignia-estado estado-reprogramada' }, 'Reprogramada') : null,
-                  esArchivada ? h('span', { class: 'chip-aviso' }, 'Ya no está en la programación activa') : null,
-                  esAgotada ? h('span', { class: 'insignia-estado venta-agotada' }, 'Agotada') : null,
-                  esInicioPasado && !esCancelada && !esArchivada ? h('span', { class: 'insignia-estado estado-pasada' }, 'Hora de inicio pasada') : null,
-                  esTerminada && !esCancelada && !esArchivada ? h('span', { class: 'insignia-estado estado-terminada' }, 'Terminada') : null,
+                  h('span', { class: 'recorrido-estacion-hora' }, item.startTime),
                 ),
-                h(
-                  'h3',
-                  { class: 'recorrido-tarjeta-titulo' },
-                  h('a', { href: `/actividad/${encodeURIComponent(item.activityId)}`, 'data-enlace': true }, item.title),
-                ),
-                item.artists?.length ? h('p', { class: 'recorrido-tarjeta-artistas' }, item.artists.join(' · ')) : null,
-                item.venue
-                  ? h(
-                      'p',
-                      { class: 'meta-item' },
-                      icono(item.venue.kind === 'route' ? 'recorrido' : 'sede', 'icono-xs'),
-                      item.venue.name,
-                    )
-                  : null,
-                item.notice
-                  ? h(
-                      'div',
-                      { class: `horario-aviso-caja aviso-${item.notice.kind}` },
-                      icono('aviso', 'icono-xs'),
-                      h('div', {}, h('strong', {}, `${etiquetaAviso(item.notice.kind)}: `), item.notice.text),
-                    )
-                  : null,
+                // Boleto postal artístico de la parada
                 h(
                   'div',
-                  { class: 'recorrido-tarjeta-acciones' },
-                  necesitaAlternativas
+                  { class: 'recorrido-tarjeta-contenedor' },
+                  tieneCruce
                     ? h(
-                        'button',
-                        {
-                          type: 'button',
-                          class: 'boton-sm boton-alternativas',
-                          'aria-label': `Ver alternativas en la misma sede para «${item.title}»`,
-                          onclick: () => abrirModalAlternativas(item, catalogoAgenda ?? [], referencia, repintar),
-                        },
-                        icono('calendario', 'icono-xs'),
-                        'Ver alternativas en esta sede',
+                        'div',
+                        { class: 'alerta-cruce-horario', role: 'alert' },
+                        icono('aviso', 'icono-xs'),
+                        h('strong', {}, 'Advertencia de cruce en tu ruta: '),
+                        ` ${detalleCruces} Guardar nunca se bloquea (RC-02).`,
                       )
                     : null,
                   h(
-                    'button',
-                    {
-                      type: 'button',
-                      class: 'secundario boton-sm boton-quitar-item',
-                      'aria-label': `Quitar «${item.title}» de Mi recorrido`,
-                      onclick: () => {
-                        quitarDeRecorrido(item.id);
-                        repintar();
-                      },
-                    },
-                    icono('basura', 'icono-xs'),
-                    'Quitar',
+                    'div',
+                    { class: 'recorrido-boleto-interior' },
+                    // Talón izquierdo de la parada (reloj y sello de estación)
+                    h(
+                      'div',
+                      { class: 'recorrido-boleto-talon', 'aria-hidden': 'true' },
+                      h('span', { class: 'talon-sello-parada' }, `ESTACIÓN · ${codigoParada}`),
+                      h('strong', { class: 'talon-hora-grande' }, item.startTime),
+                      item.endTime ? h('span', { class: 'talon-hora-fin' }, `a ${item.endTime}`) : null,
+                      item.durationMinutes
+                        ? h('span', { class: 'talon-duracion-chip' }, formatoDuracion(item.durationMinutes))
+                        : null,
+                    ),
+                    // Cuerpo derecho del boleto postal
+                    h(
+                      'div',
+                      { class: 'recorrido-tarjeta-cuerpo' },
+                      h(
+                        'div',
+                        { class: 'recorrido-tarjeta-top' },
+                        h('span', { class: 'recorrido-parada-badge-movil' }, `Parada ${codigoParada}`),
+                        h(
+                          'span',
+                          { class: 'recorrido-hora-badge' },
+                          icono('reloj', 'icono-xs'),
+                          `${item.startTime}${item.endTime ? ` – ${item.endTime}` : ''}`,
+                          item.durationMinutes ? ` (${formatoDuracion(item.durationMinutes)})` : '',
+                        ),
+                        item.venue
+                          ? h(
+                              'span',
+                              { class: 'recorrido-sede-pill' },
+                              icono(item.venue.kind === 'route' ? 'recorrido' : 'sede', 'icono-xs'),
+                              item.venue.name,
+                            )
+                          : null,
+                        esCancelada ? h('span', { class: 'insignia-estado estado-cancelada' }, 'Cancelada') : null,
+                        esReprogramada ? h('span', { class: 'insignia-estado estado-reprogramada' }, 'Reprogramada') : null,
+                        esArchivada ? h('span', { class: 'chip-aviso' }, 'Ya no está en la programación activa') : null,
+                        esAgotada ? h('span', { class: 'insignia-estado venta-agotada' }, 'Agotada') : null,
+                        esInicioPasado && !esCancelada && !esArchivada
+                          ? h('span', { class: 'insignia-estado estado-pasada' }, 'Hora de inicio pasada')
+                          : null,
+                        esTerminada && !esCancelada && !esArchivada
+                          ? h('span', { class: 'insignia-estado estado-terminada' }, 'Terminada')
+                          : null,
+                      ),
+                      h(
+                        'h3',
+                        { class: 'recorrido-tarjeta-titulo' },
+                        h('a', { href: `/actividad/${encodeURIComponent(item.activityId)}`, 'data-enlace': true }, item.title),
+                      ),
+                      item.artists?.length
+                        ? h('p', { class: 'recorrido-tarjeta-artistas' }, item.artists.join(' · '))
+                        : null,
+                      item.notice
+                        ? h(
+                            'div',
+                            { class: `horario-aviso-caja aviso-${item.notice.kind}` },
+                            icono('aviso', 'icono-xs'),
+                            h('div', {}, h('strong', {}, `${etiquetaAviso(item.notice.kind)}: `), item.notice.text),
+                          )
+                        : null,
+                      h(
+                        'div',
+                        { class: 'recorrido-tarjeta-acciones' },
+                        h(
+                          'a',
+                          {
+                            href: `/actividad/${encodeURIComponent(item.activityId)}`,
+                            'data-enlace': true,
+                            class: 'enlace-ficha-parada',
+                          },
+                          'Ver ficha de la actividad →',
+                        ),
+                        necesitaAlternativas
+                          ? h(
+                              'button',
+                              {
+                                type: 'button',
+                                class: 'boton-sm boton-alternativas',
+                                'aria-label': `Ver alternativas en la misma sede para «${item.title}»`,
+                                onclick: () => abrirModalAlternativas(item, catalogoAgenda ?? [], referencia, repintar),
+                              },
+                              icono('calendario', 'icono-xs'),
+                              'Ver alternativas en esta sede',
+                            )
+                          : null,
+                        h(
+                          'button',
+                          {
+                            type: 'button',
+                            class: 'secundario boton-sm boton-quitar-item',
+                            'aria-label': `Quitar «${item.title}» de Mi recorrido`,
+                            onclick: () => {
+                              quitarDeRecorrido(item.id);
+                              repintar();
+                            },
+                          },
+                          icono('basura', 'icono-xs'),
+                          'Quitar',
+                        ),
+                      ),
+                    ),
                   ),
                 ),
-              ),
-            );
-          }),
+                // Curva en S y cartel conector del tramo hacia la siguiente parada del mismo día
+                siguienteDelDia
+                  ? h(
+                      'div',
+                      { class: 'recorrido-conector-paso', 'aria-hidden': 'true' },
+                      conectorCurvoParada(esIzquierda, Boolean(cruceConSiguiente)),
+                      h(
+                        'div',
+                        {
+                          class: `recorrido-tramo-cartel ${cruceConSiguiente ? 'tramo-en-cruce' : 'tramo-despejado'}`,
+                        },
+                        icono(cruceConSiguiente ? 'aviso' : 'recorrido', 'icono-xs'),
+                        h(
+                          'span',
+                          {},
+                          cruceConSiguiente
+                            ? `Cruce de ${cruceConSiguiente.overlapMinutes} min con «${siguienteDelDia.title}»`
+                            : `Rumbo a Parada ${String(contadorGlobalParada + 1).padStart(2, '0')} · ${siguienteDelDia.venue?.name ?? 'Siguiente escenario'} (${siguienteDelDia.startTime})`,
+                        ),
+                      ),
+                    )
+                  : null,
+              );
+            }),
+          ),
         ),
       );
       seccionesDias.push(seccion);
     }
 
     zonaContenido.replaceChildren(...seccionesDias);
-    contenedor.replaceChildren(cabecera, zonaContenido);
+    const hoja = h('div', { class: 'hoja-contenido recorrido-hoja' }, barraControl, zonaContenido);
+    contenedor.replaceChildren(hero, hoja);
   }
 
   repintar();
