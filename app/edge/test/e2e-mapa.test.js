@@ -108,7 +108,7 @@ test('SC-010: si el servicio de programación no responde, la web y la Agenda se
   const puertoCaida = await escuchar(caida);
   try {
     const nav = navegador(() => `http://127.0.0.1:${puertoCaida}`);
-    for (const ruta of ['/agenda', '/mapa', '/app.js', '/js/mapa.js', '/img/mapa-provisional.svg']) {
+    for (const ruta of ['/agenda', '/mapa', '/app.js', '/js/mapa.js', '/js/mapa-3d.js', '/vendor/three/three.module.min.js', '/img/mapa-loja-centro.svg']) {
       assert.equal((await nav(ruta)).status, 200, ruta);
     }
     assert.equal((await nav('/api/programacion/map')).status, 502);
@@ -119,4 +119,8 @@ test('SC-010: si el servicio de programación no responde, la web y la Agenda se
   const app = readFileSync(new URL('../../web/app.js', import.meta.url), 'utf8');
   assert.ok(!/^import .*mapa\.js/m.test(app), 'app.js no debe importar mapa.js de forma estática');
   assert.match(app, /import\('\.\/js\/mapa\.js'\)/);
+  // Three.js (unos 700 KB) solo se descarga para la maqueta 3D: mapa.js lo pide con import() y nunca de forma estática.
+  const mapa = readFileSync(new URL('../../web/js/mapa.js', import.meta.url), 'utf8');
+  assert.ok(!/^import .*(three|mapa-3d)/m.test(mapa), 'mapa.js no debe importar la maqueta 3D de forma estática');
+  assert.match(mapa, /import\('\.\/mapa-3d\.js'\)/);
 });

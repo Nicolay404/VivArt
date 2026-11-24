@@ -8,7 +8,8 @@
 import { readFileSync } from 'node:fs';
 import { loadConfig } from '../src/config.js';
 import { createServices } from '../src/services.js';
-import { cargarProgramacionDemo } from '../src/domain/carga-demo.js';
+import { cargarProgramacionDemo, colocarMarcadoresDemo, asegurarSedes } from '../src/domain/carga-demo.js';
+import { ILUSTRACION } from '../src/domain/mapa.js';
 
 const leer = (nombre) => JSON.parse(readFileSync(new URL(`../ejemplos/${nombre}`, import.meta.url), 'utf8'));
 
@@ -33,6 +34,11 @@ try {
       ? `La programación FIAVL 2026 ya estaba cargada (${lote.registros.length} actividades): no se vuelve a cargar.`
       : `Listo: ${r.publicadas} actividades de la programación FIAVL 2026 publicadas.`,
   );
+  // Los 9 lugares del Circuito Cultural (Plaza San Francisco no venía en el CSV) y sus marcadores sobre el mapa.
+  // No pisa los marcadores movidos desde el panel.
+  await asegurarSedes(servicios, sesion, ILUSTRACION.circuit ?? []);
+  const colocados = await colocarMarcadoresDemo(servicios, sesion, leer('marcadores-centro-2026.json'));
+  if (colocados) console.log(`Marcadores colocados en el mapa del centro de Loja: ${colocados}.`);
 } catch (error) {
   console.error(`No se pudo cargar la programación: ${error.message}`);
   process.exitCode = 1;

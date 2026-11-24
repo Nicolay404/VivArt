@@ -1,0 +1,38 @@
+{
+ "Plaza San Francisco": {
+  "x": 0.30339,
+  "y": 0.35206
+ },
+ "Parque Central": {
+  "x": 0.37747,
+  "y": 0.40988
+ },
+ "Plaza Santo Domingo": {
+  "x": 0.44134,
+  "y": 0.47478
+ },
+ "Plaza San Sebastián": {
+  "x": 0.56908,
+  "y": 0.5857
+ },
+ "Plazoleta 1ro de Mayo": {
+  "x": 0.55247,
+  "y": 0.51608
+ },
+ "Plaza de la Cultura": {
+  "x": 0.48094,
+  "y": 0.42994
+ },
+ "Teatro Bolívar": {
+  "x": 0.46242,
+  "y": 0.44941
+ },
+ "Teatro Segundo Cueva Celi": {
+  "x": 0.42218,
+  "y": 0.43112
+ },
+ "Centro Cultural Alfredo Mora Reyes": {
+  "x": 0.60548,
+  "y": 0.62995
+ }
+}

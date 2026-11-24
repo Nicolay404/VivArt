@@ -36,7 +36,9 @@ codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/interna
 echo "ok: la API interna de programación exige credencial de servicio"
 
 curl -fsS "$BASE/api/programacion/map" | grep -q '"illustration"'
-curl -fsS "$BASE/img/mapa-provisional.svg" | grep -q '<svg'
+# Se descarga entera antes de buscar: con «grep -q» en tubería, curl falla (error 23) si el archivo es grande.
+ilustracion="$(curl -fsS "$BASE/img/mapa-loja-centro.svg")"
+grep -q '<svg' <<<"$ilustracion"
 echo "ok: el mapa de sedes responde sin sesión y la ilustración se sirve (spec 003)"
 
 codigo="$(curl -s -o /dev/null -w '%{http_code}' "$BASE/api/programacion/panel/venues/x/history")"
