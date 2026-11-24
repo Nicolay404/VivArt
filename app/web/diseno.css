@@ -5627,6 +5627,11 @@
     width: 4.75rem;
     height: 4.75rem;
   }
+
+  /* El botón flotante no debe tapar los enlaces del pie: se deja espacio debajo de ellos */
+  .pie-interior {
+    padding-bottom: 6.5rem;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
