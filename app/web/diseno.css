@@ -5672,3 +5672,409 @@
   margin: 0 auto 0.5rem;
   border-radius: 1rem;
 }
+
+/* =====================================================================================================
+   Rediseño del Carrito de Compras (Boletería Cultural):
+   Entradas estilo boleto festivo, miniaturas oficiales, desglose de compra claro y llamada a pago destacada.
+   ===================================================================================================== */
+
+.carrito {
+  max-width: 68rem;
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+}
+
+.carrito-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.carrito-cabecera-titulos h1 {
+  margin: 0.2rem 0 0;
+  font-family: var(--fuente-titulos);
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 800;
+  color: var(--marca-oscuro);
+  letter-spacing: -0.02em;
+}
+
+.carrito-subtitulo-ayuda {
+  margin: 0 0 1.25rem;
+  font-size: 0.92rem;
+  color: var(--suave);
+}
+
+.carrito-cupo-indicador {
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio, 0.75rem);
+  padding: 0.75rem 1rem;
+  min-width: 14.5rem;
+  box-shadow: 0 2px 8px -2px rgb(0 0 0 / 5%);
+}
+
+.carrito-cupo-texto {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 0.86rem;
+  margin-bottom: 0.45rem;
+  color: var(--texto);
+}
+
+.carrito-cupo-texto strong {
+  font-family: var(--fuente-titulos);
+  color: var(--marca-violeta);
+  font-weight: 800;
+}
+
+.carrito-barra-fondo {
+  height: 8px;
+  background: var(--superficie-suave);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.carrito-barra-progreso {
+  height: 100%;
+  background: linear-gradient(90deg, var(--marca-violeta), var(--marca-ambar));
+  border-radius: 999px;
+  transition: width 0.35s ease;
+}
+
+.carrito-cruces-aviso {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.9rem 1.15rem;
+  border-radius: var(--radio, 0.75rem);
+  margin-bottom: 1.25rem;
+}
+
+.carrito-cruces-aviso .cruces-texto {
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
+/* Ítems del carrito tipo boleto */
+
+.lista-carrito {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.carrito-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem 1.25rem;
+  padding: 1.15rem 1.25rem;
+  background: var(--superficie);
+  border: 1.5px solid var(--borde);
+  border-radius: var(--radio, 0.85rem);
+  box-shadow: 0 4px 16px -4px rgb(0 0 0 / 6%);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.carrito-item:hover:not(.carrito-item-inactivo) {
+  border-color: color-mix(in srgb, var(--marca-violeta) 50%, var(--borde));
+  box-shadow: 0 8px 24px -6px rgb(106 36 153 / 14%);
+  transform: translateY(-1px);
+}
+
+.carrito-item-principal {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1 1 18rem;
+  min-width: 0;
+}
+
+.carrito-item-foto-wrap {
+  position: relative;
+  width: 4.75rem;
+  height: 4.75rem;
+  border-radius: var(--radio-sm, 0.55rem);
+  overflow: hidden;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--marca-violeta), var(--marca-ambar));
+}
+
+.carrito-item-foto {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carrito-item-foto-velo {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgb(0 0 0 / 35%));
+  pointer-events: none;
+}
+
+.carrito-item-foto-fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.carrito-item-boleto-fecha {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.35rem 0.65rem;
+  background: var(--marca-oscuro);
+  color: #ffffff;
+  border-radius: var(--radio-sm, 0.55rem);
+  min-width: 3.4rem;
+  flex-shrink: 0;
+  line-height: 1;
+  text-align: center;
+}
+
+.carrito-item-boleto-fecha .boleto-semana {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--marca-ambar);
+}
+
+.carrito-item-boleto-fecha .boleto-dia {
+  font-family: var(--fuente-titulos);
+  font-size: 1.45rem;
+  font-weight: 800;
+  margin: 0.15rem 0;
+}
+
+.carrito-item-boleto-fecha .boleto-mes {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 85%);
+}
+
+.carrito-item-datos {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.carrito-item-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--marca-oscuro);
+}
+
+.carrito-item-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-size: 0.85rem;
+  color: var(--suave);
+}
+
+.carrito-item-precios-linea {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-top: 0.15rem;
+}
+
+.carrito-item-precios-linea .precio-subtotal {
+  font-family: var(--fuente-titulos);
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--marca-violeta);
+}
+
+.carrito-item-precios-linea .precio-unitario {
+  font-size: 0.84rem;
+  color: var(--suave);
+}
+
+.carrito-item-controles {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.boton-quitar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--error, #dc2626);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radio-sm, 0.5rem);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.boton-quitar-item:hover {
+  background: var(--error-fondo, #fef2f2);
+  border-color: var(--error-borde, #fecaca);
+}
+
+/* Tarjeta de resumen de compra */
+
+.carrito-resumen {
+  background: var(--superficie);
+  border: 1.5px solid var(--borde);
+  border-radius: var(--radio, 0.85rem);
+  padding: 1.5rem;
+  box-shadow: 0 8px 30px -10px rgb(0 0 0 / 10%);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.carrito-resumen-titulo {
+  margin: 0;
+  font-family: var(--fuente-titulos);
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--marca-oscuro);
+}
+
+.carrito-desglose {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  font-size: 0.92rem;
+  color: var(--suave);
+}
+
+.carrito-desglose .desglose-fila {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.carrito-desglose .texto-gratis {
+  color: var(--ok, #16a34a);
+  font-weight: 700;
+}
+
+.carrito-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.9rem 0;
+  border-top: 1.5px dashed var(--borde);
+  border-bottom: 1.5px dashed var(--borde);
+  margin: 0.25rem 0;
+}
+
+.carrito-total span {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--texto);
+}
+
+.carrito-total-valor {
+  font-family: var(--fuente-titulos);
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--marca-oscuro);
+  letter-spacing: -0.02em;
+}
+
+.carrito-alerta-prueba {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  padding: 0.75rem 0.9rem;
+  background: var(--alerta-fondo);
+  border: 1px solid var(--alerta-borde);
+  border-radius: var(--radio-sm, 0.5rem);
+  font-size: 0.82rem;
+  color: var(--alerta);
+  line-height: 1.35;
+}
+
+.boton-pagar-destacado {
+  background: linear-gradient(135deg, var(--marca-violeta) 0%, #8b2ec6 50%, var(--marca-ambar) 100%);
+  color: #ffffff;
+  border: none;
+  font-weight: 800;
+  font-size: 1.05rem;
+  padding: 0.9rem 1.25rem;
+  border-radius: var(--radio-pill, 999px);
+  box-shadow: 0 8px 20px -6px rgb(106 36 153 / 45%);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.boton-pagar-destacado:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -6px rgb(106 36 153 / 55%);
+}
+
+.boton-vaciar {
+  border-radius: var(--radio-pill, 999px);
+}
+
+/* Estado vacío mejorado */
+
+.carrito-vacio-caja {
+  text-align: center;
+  padding: 3.5rem 1.5rem;
+  max-width: 32rem;
+  margin: 2.5rem auto;
+  background: var(--superficie);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio, 0.85rem);
+  box-shadow: 0 8px 24px -10px rgb(0 0 0 / 8%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.carrito-vacio-titulo {
+  font-family: var(--fuente-titulos);
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--marca-oscuro);
+}
+
+.carrito-vacio-desc {
+  font-size: 0.95rem;
+  color: var(--suave);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.carrito-vacio-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
