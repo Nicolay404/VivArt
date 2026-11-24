@@ -531,7 +531,7 @@ export async function pantallaMapa() {
 
   // ---------- Maqueta 3D (Three.js) con la ilustración isométrica como respaldo ----------
 
-  const quiere3D = !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches && hayWebGL();
+  const quiere3D = hayWebGL();
   let vistaMapa = quiere3D ? crearVista3D() : vista2D;
 
   function crearVista3D() {
