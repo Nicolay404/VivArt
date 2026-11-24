@@ -73,3 +73,15 @@ Estas son decisiones de trabajo que se pueden cambiar sin alterar la arquitectur
 2. [Servicios](02-servicios.md)
 3. [Despliegue](03-despliegue.md)
 4. [Comportamiento](04-comportamiento.md)
+
+## Modelo 4+1 en UML
+
+Las mismas vistas, dibujadas con la notación UML del modelo 4+1. Las imágenes están en [`diagramas/`](diagramas/):
+
+| Vista | Diagrama | Imagen |
+|---|---|---|
+| Escenarios (+1) | Casos de uso: actores internos y usuarios a la izquierda, sistemas externos a la derecha | [1-escenarios-casos-de-uso.png](diagramas/1-escenarios-casos-de-uso.png) |
+| Lógica | Clases por servicio; entre servicios solo hay referencias por identificador (HTTP), nunca tablas compartidas | [2-logica-clases.png](diagramas/2-logica-clases.png) |
+| Procesos | Secuencia de la compra de entradas con pago de prueba (spec 005) | [3-procesos-secuencia.png](diagramas/3-procesos-secuencia.png) |
+| Desarrollo | Componentes e interfaces entre los tres servicios, la entrada común y la web | [4-desarrollo-componentes.png](diagramas/4-desarrollo-componentes.png) |
+| Física | Despliegue: dispositivo, servidor de aplicaciones, PostgreSQL y servicio de correo. El hospedaje con NettPlus es una propuesta pendiente de confirmar (P-12) | [5-fisica-despliegue.png](diagramas/5-fisica-despliegue.png) |
