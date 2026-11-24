@@ -2,7 +2,8 @@
 // El carrito vive en este navegador (FR-006) y el servidor siempre vuelve a cotizar: aquí no se confía en precios.
 import { h, icono, aviso, confirmarAccion } from './dom.js';
 import { apiParticipacion, apiIdentidad } from './api.js';
-import { formatoFecha } from './format.js';
+import { formatoFecha, partesFecha } from './format.js';
+import { buscarImagenEvento } from './imagenes-eventos.js';
 
 const CLAVE = 'vivart.carrito.v1';
 const LIMITE = 6;
@@ -60,13 +61,18 @@ export async function pantallaCarrito({ persona, navegar }) {
   const items = leerCarrito();
   if (items.length === 0) {
     caja.replaceChildren(
-      h('h1', {}, 'Tu carrito'),
       h(
         'div',
-        { class: 'estado-vacio' },
+        { class: 'estado-vacio carrito-vacio-caja' },
         h('span', { class: 'estado-vacio-icono', 'aria-hidden': 'true' }, icono('carrito', 'icono-lg')),
-        h('p', {}, 'Tu carrito está vacío.'),
-        h('a', { href: '/', 'data-enlace': true, class: 'boton' }, 'Explorar la Agenda'),
+        h('h2', { class: 'carrito-vacio-titulo' }, 'Tu carrito está vacío'),
+        h('p', { class: 'carrito-vacio-desc' }, 'Aún no has agregado entradas para el festival. Explora las obras de teatro, danza, conciertos y exposiciones disponibles.'),
+        h(
+          'div',
+          { class: 'carrito-vacio-botones' },
+          h('a', { href: '/', 'data-enlace': true, class: 'boton' }, icono('calendario', 'icono-sm'), 'Explorar la Agenda'),
+          h('a', { href: '/mapa', 'data-enlace': true, class: 'boton secundario' }, icono('mapa', 'icono-sm'), 'Ver Mapa de Sedes'),
+        ),
       ),
     );
     return caja;
@@ -92,40 +98,114 @@ export async function pantallaCarrito({ persona, navegar }) {
     navegar('/carrito', false, false);
   };
 
-  const filas = cot.items.map((i) =>
-    h(
+  const eliminar = (functionId) => {
+    const actuales = leerCarrito().filter((i) => i.functionId !== functionId);
+    guardarCarrito(actuales);
+    navegar('/carrito', false, false);
+  };
+
+  const filas = cot.items.map((i) => {
+    const fotoRuta = buscarImagenEvento(i.title);
+    const pFecha = i.date ? partesFecha(i.date) : null;
+    const subtotal = i.sellable && i.unitPriceCents != null ? usd(i.unitPriceCents * i.requested) : null;
+
+    const miniatura = h(
+      'div',
+      { class: 'carrito-item-foto-wrap', 'aria-hidden': 'true' },
+      fotoRuta
+        ? h('img', { src: fotoRuta, alt: '', class: 'carrito-item-foto', loading: 'lazy' })
+        : h('div', { class: 'carrito-item-foto-fallback' }, icono('entrada', 'icono-md')),
+      h('span', { class: 'carrito-item-foto-velo' }),
+    );
+
+    const bloqueFecha = pFecha
+      ? h(
+          'div',
+          { class: 'carrito-item-boleto-fecha', 'aria-hidden': 'true' },
+          h('span', { class: 'boleto-semana' }, pFecha.semana),
+          h('span', { class: 'boleto-dia' }, String(pFecha.dia)),
+          h('span', { class: 'boleto-mes' }, pFecha.mes),
+        )
+      : null;
+
+    return h(
       'li',
       { class: `carrito-item ${i.sellable ? '' : 'carrito-item-inactivo'}` },
       h(
         'div',
-        { class: 'carrito-item-datos' },
-        h('strong', {}, i.title ?? 'Función no disponible'),
-        i.date ? h('span', { class: 'ayuda' }, `${formatoFecha(i.date)} · ${i.startTime} (hora de Loja)${i.venueName ? ` · ${i.venueName}` : ''}`) : null,
-        h('span', {}, `${usd(i.unitPriceCents)} c/u`),
-        i.reason ? h('span', { class: 'aviso-linea' }, MOTIVOS[i.reason] ?? 'No disponible.') : null,
-        i.sellable && i.quantity < i.requested ? h('span', { class: 'aviso-linea' }, `Solo hay ${i.quantity} disponibles para ti.`) : null,
+        { class: 'carrito-item-principal' },
+        miniatura,
+        bloqueFecha,
+        h(
+          'div',
+          { class: 'carrito-item-datos' },
+          h('strong', { class: 'carrito-item-titulo' }, i.title ?? 'Función no disponible'),
+          i.date
+            ? h(
+                'div',
+                { class: 'carrito-item-meta' },
+                h('span', { class: 'meta-item' }, icono('calendario', 'icono-xs'), `${formatoFecha(i.date)} · ${i.startTime} (hora de Loja)`),
+                i.venueName ? h('span', { class: 'meta-item' }, icono('sede', 'icono-xs'), i.venueName) : null,
+              )
+            : null,
+          h(
+            'div',
+            { class: 'carrito-item-precios-linea' },
+            h('span', { class: 'precio-unitario' }, `${usd(i.unitPriceCents)} c/u`),
+            subtotal ? h('strong', { class: 'precio-subtotal' }, `Subtotal: ${subtotal}`) : null,
+          ),
+          i.reason ? h('span', { class: 'aviso-linea' }, MOTIVOS[i.reason] ?? 'No disponible.') : null,
+          i.sellable && i.quantity < i.requested ? h('span', { class: 'aviso-linea' }, `Solo hay ${i.quantity} disponibles para ti.`) : null,
+        ),
       ),
       h(
         'div',
-        { class: 'carrito-cantidad', role: 'group', 'aria-label': `Cantidad de ${i.title ?? 'la función'}` },
-        h('button', { type: 'button', class: 'secundario boton-sm', 'aria-label': 'Quitar una', onclick: () => cambiar(i.functionId, -1) }, '−'),
-        h('span', { class: 'carrito-numero', 'aria-live': 'polite' }, String(i.requested)),
+        { class: 'carrito-item-controles' },
+        h(
+          'div',
+          { class: 'carrito-cantidad', role: 'group', 'aria-label': `Cantidad de ${i.title ?? 'la función'}` },
+          h('button', { type: 'button', class: 'secundario boton-sm boton-cantidad', 'aria-label': 'Quitar una', onclick: () => cambiar(i.functionId, -1) }, '−'),
+          h('span', { class: 'carrito-numero', 'aria-live': 'polite' }, String(i.requested)),
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'secundario boton-sm boton-cantidad',
+              'aria-label': 'Agregar una',
+              disabled: cot.totalUnits >= LIMITE || !i.sellable,
+              onclick: () => cambiar(i.functionId, 1),
+            },
+            '+',
+          ),
+        ),
         h(
           'button',
-          { type: 'button', class: 'secundario boton-sm', 'aria-label': 'Agregar una', disabled: cot.totalUnits >= LIMITE || !i.sellable, onclick: () => cambiar(i.functionId, 1) },
-          '+',
+          {
+            type: 'button',
+            class: 'boton-quitar-item',
+            'aria-label': `Eliminar ${i.title ?? 'esta entrada'} del carrito`,
+            title: 'Quitar del pedido',
+            onclick: () => eliminar(i.functionId),
+          },
+          icono('basura', 'icono-xs'),
+          h('span', { class: 'quitar-texto' }, 'Quitar'),
         ),
       ),
-    ),
-  );
+    );
+  });
 
   const cruces = cot.overlaps.length
     ? h(
         'div',
-        { class: 'aviso alerta-caja' },
-        h('strong', {}, 'Horarios que se cruzan: '),
-        cot.overlaps.map(([a, b]) => `${titulos.get(a)} y ${titulos.get(b)}`).join('; '),
-        '. Puedes comprarlas igual.',
+        { class: 'aviso alerta-caja carrito-cruces-aviso' },
+        icono('aviso', 'icono-sm'),
+        h(
+          'div',
+          { class: 'cruces-texto' },
+          h('strong', {}, 'Horarios superpuestos: '),
+          cot.overlaps.map(([a, b]) => `${titulos.get(a)} y ${titulos.get(b)}`).join('; '),
+          '. Puedes comprarlas igual, pero ten en cuenta que coinciden en el horario.',
+        ),
       )
     : null;
 
@@ -159,10 +239,29 @@ export async function pantallaCarrito({ persona, navegar }) {
       h(
         'div',
         { class: 'carrito-cabecera' },
-        h('h1', {}, 'Tu carrito'),
-        h('span', { class: 'chip-sutil' }, `${cot.totalUnits} / ${LIMITE} entradas`),
+        h(
+          'div',
+          { class: 'carrito-cabecera-titulos' },
+          h('p', { class: 'eyebrow' }, 'Boletería cultural · FIAVL 2026'),
+          h('h1', {}, 'Tu carrito de compras'),
+        ),
+        h(
+          'div',
+          { class: 'carrito-cupo-indicador' },
+          h(
+            'div',
+            { class: 'carrito-cupo-texto' },
+            h('span', {}, 'Entradas en pedido'),
+            h('strong', {}, `${cot.totalUnits} de ${LIMITE} máx.`),
+          ),
+          h(
+            'div',
+            { class: 'carrito-barra-fondo', 'aria-hidden': 'true' },
+            h('div', { class: 'carrito-barra-progreso', style: `width: ${(cot.totalUnits / LIMITE) * 100}%` }),
+          ),
+        ),
       ),
-      h('p', { class: 'ayuda' }, `Máximo ${LIMITE} entradas por pedido. Los precios se confirman al pagar.`),
+      h('p', { class: 'ayuda carrito-subtitulo-ayuda' }, `Puedes agregar hasta un máximo de ${LIMITE} entradas por pedido. Los precios se verifican en tiempo real al cotizar.`),
       cruces,
       h(
         'div',
@@ -171,19 +270,54 @@ export async function pantallaCarrito({ persona, navegar }) {
         h(
           'aside',
           { class: 'tarjeta pila carrito-resumen', 'aria-label': 'Resumen del pedido' },
-          h('h2', {}, 'Resumen'),
+          h('h2', { class: 'carrito-resumen-titulo' }, 'Resumen de compra'),
+          h(
+            'ul',
+            { class: 'carrito-desglose' },
+            h('li', { class: 'desglose-fila' }, h('span', {}, `Entradas (${cot.totalUnits})`), h('span', {}, usd(cot.totalCents))),
+            h('li', { class: 'desglose-fila' }, h('span', {}, 'Cargo por servicio'), h('span', { class: 'texto-gratis' }, 'Gratis ($0,00)')),
+          ),
           h(
             'div',
             { class: 'carrito-total' },
-            h('span', {}, 'Total'),
+            h('span', {}, 'Total a pagar'),
             h('strong', { class: 'carrito-total-valor' }, usd(cot.totalCents)),
           ),
-          h('p', { class: 'ayuda carrito-nota-prueba' }, 'Pago de prueba: no se cobra dinero ni se piden datos de tarjeta.'),
+          h(
+            'div',
+            { class: 'carrito-alerta-prueba' },
+            icono('aviso', 'icono-sm'),
+            h('span', {}, 'Pago de prueba oficial: no se cobra dinero ni se solicitan datos de tarjeta bancaria.'),
+          ),
           h(
             'div',
             { class: 'carrito-acciones' },
-            h('button', { type: 'button', class: 'boton-ancho', onclick: pagar, disabled: cot.totalUnits === 0 }, icono('check', 'icono-sm'), 'Ir a pagar'),
-            h('button', { type: 'button', class: 'secundario boton-ancho', onclick: () => { guardarCarrito([]); navegar('/carrito', false, false); } }, 'Vaciar carrito'),
+            h(
+              'button',
+              { type: 'button', class: 'boton boton-ancho boton-pagar-destacado', onclick: pagar, disabled: cot.totalUnits === 0 },
+              icono('check', 'icono-sm'),
+              'Proceder al pago',
+            ),
+            h(
+              'button',
+              {
+                type: 'button',
+                class: 'secundario boton-ancho boton-vaciar',
+                onclick: async () => {
+                  const seguro = await confirmarAccion({
+                    titulo: '¿Vaciar tu carrito?',
+                    mensaje: 'Se quitarán todas las funciones agregadas de tu pedido.',
+                    botonConfirmar: 'Sí, vaciar',
+                  });
+                  if (seguro) {
+                    guardarCarrito([]);
+                    navegar('/carrito', false, false);
+                  }
+                },
+              },
+              icono('basura', 'icono-xs'),
+              'Vaciar carrito',
+            ),
           ),
         ),
       ),
