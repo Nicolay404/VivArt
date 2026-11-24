@@ -110,11 +110,11 @@ test('SC-008, RNF-07: con programación caída la web y la Agenda se sirven; Alf
   } finally {
     caida.close();
   }
-  // La Agenda no espera a Alforjita: solo se importa con import() al pulsar el botón.
+  // La Agenda no espera a Alforjita: solo se importa con import() al pulsar el botón flotante (app.js).
   const publico = readFileSync(new URL('../../web/js/publico.js', import.meta.url), 'utf8');
   const app = readFileSync(new URL('../../web/app.js', import.meta.url), 'utf8');
   assert.ok(!/^import .*alforjita\.js/m.test(publico + app), 'nadie importa alforjita.js de forma estática');
-  assert.match(publico, /import\('\.\/alforjita\.js'\)/);
+  assert.match(app, /import\('\.\/js\/alforjita\.js'\)/);
   // RNF-05: el panel no guarda la conversación en el navegador.
   const modulo = readFileSync(new URL('../../web/js/alforjita.js', import.meta.url), 'utf8');
   assert.ok(!/localStorage|sessionStorage|indexedDB|document\.cookie/.test(modulo));

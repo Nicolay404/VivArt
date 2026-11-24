@@ -2630,12 +2630,6 @@
   to { opacity: 1; transform: none; }
 }
 
-@keyframes vivart-pulso {
-  0% { box-shadow: 0 0 0 0 rgb(245 158 45 / 55%); }
-  70% { box-shadow: 0 0 0 10px rgb(245 158 45 / 0%); }
-  100% { box-shadow: 0 0 0 0 rgb(245 158 45 / 0%); }
-}
-
 @media (prefers-reduced-motion: no-preference) {
   /* Cada pantalla entra con un fundido suave al navegar */
 
@@ -2877,10 +2871,6 @@
 
   .alforjita-burbuja {
     animation: vivart-burbuja 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
-  }
-
-  .boton-alforjita {
-    animation: vivart-pulso 2.4s ease-out 2s 2;
   }
 
   /* Diálogos del panel y avisos */
@@ -5306,3 +5296,138 @@
   background: repeating-linear-gradient(90deg, var(--marca-primario) 0 6px, transparent 6px 12px);
 }
 
+/* =====================================================================================================
+   Alforjita, la asistente del festival: botón flotante en la esquina inferior y su imagen en el chat
+   (ilustraciones oficiales del festival, usadas con permiso)
+   ===================================================================================================== */
+
+.alforjita-flotante {
+  position: fixed;
+  right: 1rem;
+  bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px));
+  z-index: 36;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.alforjita-flotante-foto {
+  display: block;
+  width: 4.25rem;
+  height: 4.25rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: #0d47a1;
+  box-shadow:
+    0 0 0 4px color-mix(in srgb, var(--marca-ambar) 55%, transparent),
+    0 14px 28px -10px rgb(29 6 54 / 70%);
+}
+
+.alforjita-flotante-foto img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% 38%;
+  transform: scale(1.9);
+  transform-origin: 45% 42%;
+}
+
+.alforjita-flotante-globo {
+  padding: 0.45rem 0.85rem;
+  border-radius: 1rem 1rem 0.3rem 1rem;
+  background: #ffffff;
+  color: var(--marca-oscuro);
+  font-family: var(--fuente-titulos);
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
+  box-shadow: 0 10px 24px -10px rgb(29 6 54 / 55%);
+}
+
+.alforjita-flotante:hover .alforjita-flotante-foto,
+.alforjita-flotante:focus-visible .alforjita-flotante-foto {
+  box-shadow:
+    0 0 0 5px var(--marca-ambar),
+    0 16px 30px -10px rgb(29 6 54 / 75%);
+}
+
+.alforjita-flotante:focus-visible {
+  outline: none;
+}
+
+.alforjita-flotante:focus-visible .alforjita-flotante-globo {
+  outline: 3px solid var(--foco);
+  outline-offset: 2px;
+}
+
+/* En pantallas pequeñas solo la cara, para no tapar el contenido */
+@media (max-width: 30rem) {
+  .alforjita-flotante-globo {
+    display: none;
+  }
+}
+
+/* Sin barra inferior (computadora), el botón baja a la esquina */
+@media (min-width: 56rem) {
+  .alforjita-flotante {
+    right: 1.5rem;
+    bottom: 1.5rem;
+  }
+
+  .alforjita-flotante-foto {
+    width: 4.75rem;
+    height: 4.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .alforjita-flotante-foto {
+    animation: vivart-alforjita-salto 5s ease-in-out 1.2s infinite;
+  }
+
+  .alforjita-flotante-globo {
+    animation: vivart-alforjita-globo 0.5s cubic-bezier(0.2, 0.7, 0.2, 1) 0.8s backwards;
+  }
+
+  @keyframes vivart-alforjita-salto {
+    0%, 86%, 100% { transform: translateY(0); }
+    90% { transform: translateY(-0.6rem) rotate(-6deg); }
+    94% { transform: translateY(0) rotate(4deg); }
+  }
+
+  @keyframes vivart-alforjita-globo {
+    from { opacity: 0; transform: translateX(0.6rem) scale(0.9); }
+  }
+}
+
+/* Cabecera del chat con la cara de Alforjita y su bienvenida bailando */
+.alforjita-cabecera .alforjita-avatar {
+  overflow: hidden;
+  border: 2px solid var(--marca-ambar);
+  background: #0d47a1;
+}
+
+.alforjita-cabecera .alforjita-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 45% 38%;
+  transform: scale(1.9);
+  transform-origin: 45% 42%;
+}
+
+.alforjita-bienvenida {
+  display: block;
+  width: 7.5rem;
+  height: auto;
+  margin: 0 auto 0.5rem;
+  border-radius: 1rem;
+}

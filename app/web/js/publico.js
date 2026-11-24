@@ -1,7 +1,7 @@
 // Pantallas públicas de VIVART (sin sesión; celular primero):
 // Agenda (/ y /agenda), «¿Qué hay ahora?» (dentro de Agenda), Ficha pública (/actividad/:id),
 // y el estado honesto «Próximamente» para Pasaporte (/pasaporte). El Mapa (/mapa) vive en mapa.js (spec 003).
-import { h, icono, esqueletoTarjetas, aviso } from './dom.js';
+import { h, icono, esqueletoTarjetas } from './dom.js';
 import { apiProgramacion, apiParticipacion } from './api.js';
 import { agregarAlCarrito } from './carrito.js';
 import {
@@ -777,22 +777,6 @@ export async function pantallaAgenda() {
           },
           icono('calendario', 'icono-sm'),
           'Mi recorrido',
-        ),
-        // Alforjita (spec 008): se importa al pulsar, así la Agenda no la espera; si falla, la Agenda sigue igual.
-        h(
-          'button',
-          {
-            type: 'button',
-            id: 'boton-alforjita',
-            class: 'boton boton-alforjita',
-            'aria-haspopup': 'dialog',
-            onclick: () =>
-              import('./alforjita.js')
-                .then((m) => m.abrirAlforjita())
-                .catch(() => aviso('No pude abrir Alforjita. Puedes seguir buscando en la Agenda.', 'error')),
-          },
-          icono('alforja', 'icono-sm'),
-          'Pregúntale a Alforjita',
         ),
       ),
       zonaReloj,

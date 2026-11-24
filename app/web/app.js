@@ -300,6 +300,14 @@ document.addEventListener('click', (evento) => {
   navegar(enlace.getAttribute('href'));
 });
 
+// Botón flotante de Alforjita (spec 008), en todas las pantallas: el asistente se descarga solo al abrirlo (RNF-07);
+// si falla, la app sigue igual.
+document.getElementById('alforjita-flotante')?.addEventListener('click', () => {
+  import('./js/alforjita.js')
+    .then((m) => m.abrirAlforjita())
+    .catch(() => aviso('No pude abrir Alforjita. Puedes seguir buscando en la Agenda.', 'error'));
+});
+
 // El contador del carrito se actualiza al agregar o quitar entradas.
 document.addEventListener('vivart:carrito', () => pintarNavegacion());
 
