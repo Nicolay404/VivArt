@@ -3,6 +3,7 @@
 // La primera vez deja activa la edición del lote y desactiva las demás (no se borran: se reactivan desde el panel).
 // Las sedes solo reciben la dirección que trae la fuente; destino, accesibilidad y marcador quedan por confirmar (RNF-08).
 import { normalizar } from './text.js';
+import { ILUSTRACION, marcadorVigente } from './mapa.js';
 
 /** Quita los nombres repetidos (los que solo cambian en mayúsculas o tildes son el mismo) y los que ya existen. */
 function nuevosPorNombre(cuerpos, existentes) {
@@ -58,4 +59,27 @@ export async function cargarProgramacionDemo(servicios, sesion, { lote, direccio
     publicadas = r.results.filter((x) => x.published).length;
   }
   return { yaCargada: false, publicadas, conErrores, edicionesDesactivadas };
+}
+
+/** Crea las sedes (lugares) que falten, solo con su nombre: dirección, destino y accesibilidad quedan por confirmar. */
+export async function asegurarSedes(servicios, sesion, nombres) {
+  await crearFaltantes(servicios, sesion.userId, 'venues', nombres.map((name) => ({ name, kind: 'place' })));
+}
+
+/**
+ * Coloca en la ilustración vigente los marcadores de la demo: `posiciones` = { nombre de sede: { x, y } } (fracciones).
+ * Solo toca las sedes que aún no tienen un marcador vigente, así nunca pisa uno movido desde el panel.
+ * Si la ilustración vigente es provisional no hace nada: las posiciones son del mapa real de Loja. Devuelve cuántos colocó.
+ */
+export async function colocarMarcadoresDemo(servicios, sesion, posiciones, ilustracion = ILUSTRACION) {
+  if (ilustracion.provisional) return 0;
+  const porNombre = new Map(Object.entries(posiciones).map(([nombre, p]) => [normalizar(nombre), p]));
+  const sedes = (await servicios.catalogs.list('venues')).filter((v) => porNombre.has(normalizar(v.name)) && !marcadorVigente(v.marker, ilustracion));
+  await Promise.all(
+    sedes.map((v) => {
+      const { x, y } = porNombre.get(normalizar(v.name));
+      return servicios.catalogs.update(sesion.userId, 'venues', v.id, { marker: { illustrationId: ilustracion.id, x, y } });
+    }),
+  );
+  return sedes.length;
 }

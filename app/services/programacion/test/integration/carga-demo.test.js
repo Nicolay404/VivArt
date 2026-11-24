@@ -2,7 +2,9 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { crearApp, pedir } from '../helpers.js';
-import { cargarProgramacionDemo } from '../../src/domain/carga-demo.js';
+import { cargarProgramacionDemo, colocarMarcadoresDemo, asegurarSedes } from '../../src/domain/carga-demo.js';
+import { ILUSTRACION } from '../../src/domain/mapa.js';
+import { normalizar } from '../../src/domain/text.js';
 
 // Carga de la programación oficial FIAVL 2026 en la demo (bin/cargar-programacion.js): usa el archivo real del repositorio.
 const leer = (nombre) => JSON.parse(readFileSync(new URL(`../../ejemplos/${nombre}`, import.meta.url), 'utf8'));
@@ -51,4 +53,32 @@ test('la primera vez desactiva las demás ediciones sin borrarlas y no repite ca
   assert.equal(ediciones.find((e) => e.name === LOTE.edicion).active, true);
   const categorias = (await pedir(ctx, 'admin', 'GET', '/categories')).json.items;
   assert.equal(categorias.filter((c) => c.name.toLowerCase() === categoria.toLowerCase()).length, 1);
+});
+
+test('los marcadores del centro de Loja se colocan una vez y no pisan los movidos desde el panel', async () => {
+  const ctx = await crearApp();
+  await cargarProgramacionDemo(ctx.services, ADMIN, { lote: LOTE, direcciones: DIRECCIONES, year: 2026 });
+  const POSICIONES = leer('marcadores-centro-2026.json');
+  const sedes = async () => (await pedir(ctx, 'admin', 'GET', '/venues')).json.items;
+  const teatro = (await sedes()).find((s) => s.name === 'Teatro Bolívar');
+  // Movido a mano antes de la carga: se respeta.
+  await pedir(ctx, 'admin', 'PUT', `/panel/venues/${teatro.id}`, { marker: { illustrationId: ILUSTRACION.id, x: 0.1, y: 0.1 } });
+
+  // Plaza San Francisco no viene en el CSV: se crea solo con su nombre, y una segunda vez no se duplica.
+  await asegurarSedes(ctx.services, ADMIN, ILUSTRACION.circuit);
+  await asegurarSedes(ctx.services, ADMIN, ILUSTRACION.circuit);
+  assert.equal((await sedes()).filter((s) => s.name === 'Plaza San Francisco').length, 1);
+  assert.deepEqual(Object.keys(POSICIONES), [...ILUSTRACION.circuit]);
+
+  const colocados = await colocarMarcadoresDemo(ctx.services, ADMIN, POSICIONES);
+  // Los nombres se comparan sin mayúsculas ni tildes, como en la carga.
+  const claves = new Set(Object.keys(POSICIONES).map(normalizar));
+  const conNombre = (await sedes()).filter((s) => claves.has(normalizar(s.name)));
+  assert.equal(colocados, conNombre.length - 1);
+  const plaza = conNombre.find((s) => s.name === 'Plaza San Sebastián');
+  assert.deepEqual(plaza.marker, { illustrationId: ILUSTRACION.id, ...POSICIONES['Plaza San Sebastián'] });
+  assert.deepEqual(conNombre.find((s) => s.name === 'Teatro Bolívar').marker, { illustrationId: ILUSTRACION.id, x: 0.1, y: 0.1 });
+  // Una segunda vez no coloca nada, y sobre una ilustración provisional tampoco.
+  assert.equal(await colocarMarcadoresDemo(ctx.services, ADMIN, POSICIONES), 0);
+  assert.equal(await colocarMarcadoresDemo(ctx.services, ADMIN, POSICIONES, { ...ILUSTRACION, id: 'otra', provisional: true }), 0);
 });
