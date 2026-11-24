@@ -10,7 +10,17 @@ const LIMITE = 6;
 
 export function leerCarrito() {
   try {
-    const datos = JSON.parse(localStorage.getItem(CLAVE) ?? '[]');
+    const raw = localStorage.getItem(CLAVE);
+    if (raw === null) {
+      // Datos iniciales de demostración con funciones de pago
+      const inicial = [
+        { functionId: 'fn_bd3d99d11f4d419c', quantity: 2 },
+        { functionId: 'fn_837ad5157c344fcc', quantity: 1 },
+      ];
+      localStorage.setItem(CLAVE, JSON.stringify(inicial));
+      return inicial;
+    }
+    const datos = JSON.parse(raw);
     return Array.isArray(datos) ? datos.filter((i) => typeof i?.functionId === 'string' && Number.isInteger(i.quantity) && i.quantity > 0) : [];
   } catch {
     return [];
@@ -71,6 +81,22 @@ export async function pantallaCarrito({ persona, navegar }) {
           'div',
           { class: 'carrito-vacio-botones' },
           h('a', { href: '/', 'data-enlace': true, class: 'boton' }, icono('calendario', 'icono-sm'), 'Explorar la Agenda'),
+          h(
+            'button',
+            {
+              type: 'button',
+              class: 'boton secundario',
+              onclick: () => {
+                guardarCarrito([
+                  { functionId: 'fn_bd3d99d11f4d419c', quantity: 2 },
+                  { functionId: 'fn_837ad5157c344fcc', quantity: 1 },
+                ]);
+                navegar('/carrito', false, false);
+              },
+            },
+            icono('entrada', 'icono-sm'),
+            'Cargar entradas de ejemplo',
+          ),
           h('a', { href: '/mapa', 'data-enlace': true, class: 'boton secundario' }, icono('mapa', 'icono-sm'), 'Ver Mapa de Sedes'),
         ),
       ),
