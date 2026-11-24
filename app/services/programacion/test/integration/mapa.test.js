@@ -50,7 +50,7 @@ test('SC-001, SC-002, SC-012: el mapa es público y lista TODAS las sedes regist
   const datos = await pedir(ctx, null, 'GET', '/map');
   assert.equal(datos.status, 200);
   assert.deepEqual(datos.json.illustration, { ...ILUSTRACION });
-  assert.equal(datos.json.illustration.provisional, true);
+  assert.equal(datos.json.illustration.provisional, false);
   // Días con funciones programadas y visibles: sin la cancelada ni el borrador.
   assert.deepEqual(datos.json.days, ['2026-11-20', '2026-11-21', '2026-11-22']);
 

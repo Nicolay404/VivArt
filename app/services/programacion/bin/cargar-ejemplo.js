@@ -47,10 +47,13 @@ try {
     nombres('sede').map((name) => (/recorrido/i.test(name) ? { name, kind: 'route', routeDescription: 'Tramo de calle ficticio' } : { name, kind: 'place' })),
   );
 
-  // Marcadores de ejemplo solo para las sedes ficticias que aún no tienen uno en la ilustración vigente.
-  // No se les da destino ni accesibilidad: quedan «por confirmar» (no se inventan esos datos, RNF-08).
+  // Marcadores de ejemplo solo para las sedes ficticias que aún no tienen uno, y SOLO sobre una ilustración provisional:
+  // sobre el mapa real de Loja una sede ficticia quedaría en una calle de verdad. No se les da destino ni accesibilidad
+  // (no se inventan esos datos, RNF-08).
   const sedesEjemplo = new Set(nombres('sede').map(normalizar));
-  const sinMarcador = (await servicios.catalogs.list('venues')).filter((v) => sedesEjemplo.has(normalizar(v.name)) && !marcadorVigente(v.marker));
+  const sinMarcador = ILUSTRACION.provisional
+    ? (await servicios.catalogs.list('venues')).filter((v) => sedesEjemplo.has(normalizar(v.name)) && !marcadorVigente(v.marker))
+    : [];
   await Promise.all(
     sinMarcador.map((v, i) => {
       const [x, y] = POSICIONES_EJEMPLO[i % POSICIONES_EJEMPLO.length];

@@ -5306,3 +5306,243 @@
   background: repeating-linear-gradient(90deg, var(--marca-primario) 0 6px, transparent 6px 12px);
 }
 
+
+/* ---------- Mapa de Loja: crédito del trazado bajo la ilustración ---------- */
+.mapa-credito { margin: 0.5rem 0.25rem 0; color: var(--suave); font-size: 0.8rem; }
+
+/* =====================================================================================================
+   Mapa del Festival: cabecera con el lenguaje del Pasaporte y maqueta 3D del centro de Loja
+   ===================================================================================================== */
+
+/* Vitrina: la maqueta inclinada sobre los anillos dorados, con faros numerados */
+.hero-mapa-arte {
+  height: 17.5rem;
+}
+
+.hero-mapa-tarjeta {
+  position: relative;
+  width: 16rem;
+  aspect-ratio: 16 / 10;
+  border-radius: 1.2rem;
+  overflow: hidden;
+  border: 2px solid rgb(255 255 255 / 35%);
+  background: #f3ecfa;
+  box-shadow:
+    0 30px 50px -18px rgb(10 3 20 / 85%),
+    0 0 0 10px rgb(255 255 255 / 4%);
+  transform: perspective(760px) rotateX(34deg) rotateZ(-10deg);
+}
+
+.hero-mapa-tarjeta img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.55);
+  transform-origin: 48% 52%;
+}
+
+.hero-mapa-faro {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd480, var(--marca-ambar));
+  color: var(--marca-oscuro);
+  font-family: var(--fuente-titulos);
+  font-size: 0.78rem;
+  font-weight: 900;
+  box-shadow: 0 0 0 4px rgb(245 158 45 / 30%), 0 0 18px rgb(245 158 45 / 90%);
+}
+
+.hero-mapa-faro.f1 { top: 22%; left: 24%; }
+.hero-mapa-faro.f2 { top: 58%; left: 62%; }
+.hero-mapa-faro.f3 { top: 40%; left: 44%; }
+
+/* Recuadro de la maqueta 3D: cielo de atardecer detrás del lienzo transparente */
+.mapa-marco-3d {
+  height: clamp(24rem, 70vh, 42rem);
+  cursor: grab;
+  border: 0;
+  background:
+    radial-gradient(70% 55% at 50% 100%, rgb(245 158 45 / 38%), transparent 70%),
+    radial-gradient(60% 50% at 85% 10%, color-mix(in srgb, var(--marca-magenta) 35%, transparent), transparent 70%),
+    linear-gradient(180deg, #1d0636 0%, #3a1066 55%, #6b2f7a 100%);
+  box-shadow: 0 24px 50px -24px rgb(29 6 54 / 70%);
+}
+
+.mapa-3d-lienzo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mapa-3d-marcadores {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.mapa-3d-cargando {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  color: #f3e6ff;
+  font-weight: 700;
+}
+
+/* Marcadores 3D: botones con número que siguen a cada lugar cuando se gira la maqueta */
+.marcador-3d {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  min-height: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 3px solid #ffffff;
+  background: linear-gradient(135deg, var(--marca-primario), var(--marca-magenta));
+  color: #ffffff;
+  box-shadow: 0 0 0 5px rgb(245 158 45 / 35%), 0 10px 22px -6px rgb(10 3 20 / 70%);
+  transform: translate(calc(var(--x, 0px) - 50%), calc(var(--y, 0px) - 50%));
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.marcador-3d-numero {
+  font-family: var(--fuente-titulos);
+  font-size: 1.15rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.marcador-3d:hover,
+.marcador-3d:focus-visible,
+.marcador-3d.activo {
+  z-index: 2;
+  background: linear-gradient(135deg, #ffd480, var(--marca-ambar));
+  color: var(--marca-oscuro);
+}
+
+.marcador-3d .marcador-nombre {
+  position: absolute;
+  top: auto;
+  bottom: calc(100% + 0.45rem);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.marcador-3d:hover .marcador-nombre,
+.marcador-3d:focus-visible .marcador-nombre,
+.marcador-3d.activo .marcador-nombre {
+  opacity: 1;
+}
+
+/* Número en el marcador de la ilustración de respaldo (el marcador va girado 45°) */
+.marcador-numero {
+  transform: rotate(45deg);
+  font-family: var(--fuente-titulos);
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.mapa-3d-leyenda {
+  position: absolute;
+  left: 0.85rem;
+  bottom: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radio-pill);
+  background: color-mix(in srgb, var(--marca-oscuro) 78%, transparent);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  backdrop-filter: blur(6px);
+}
+
+.leyenda-desfile {
+  width: 2rem;
+  height: 0.55rem;
+  border-radius: 1rem;
+  background: linear-gradient(90deg, var(--marca-ambar), var(--marca-magenta));
+}
+
+/* Lista numerada del Circuito Cultural bajo el mapa */
+.circuito-lugares {
+  margin-top: 1.25rem;
+}
+
+.circuito-titulo {
+  margin: 0 0 0.75rem;
+  font-family: var(--fuente-titulos);
+  font-size: 1.3rem;
+}
+
+.circuito-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.circuito-lugar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.55rem 0.9rem 0.55rem 0.55rem;
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+  background: var(--superficie);
+  color: var(--texto);
+  text-align: left;
+  font-weight: 700;
+}
+
+.circuito-lugar:hover,
+.circuito-lugar.activo {
+  border-color: var(--acento);
+  background: var(--acento-suave);
+}
+
+.circuito-numero {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--marca-primario), var(--marca-magenta));
+  color: #ffffff;
+  font-family: var(--fuente-titulos);
+  font-weight: 900;
+}
+
+.circuito-lugar.activo .circuito-numero {
+  background: linear-gradient(135deg, #ffd480, var(--marca-ambar));
+  color: var(--marca-oscuro);
+}
+
+/* Sin lugar elegido, el mapa usa todo el ancho; al elegir uno, la ficha aparece a la derecha */
+@media (min-width: 56rem) {
+  .mapa-cuerpo:has(> .panel-sede[hidden]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

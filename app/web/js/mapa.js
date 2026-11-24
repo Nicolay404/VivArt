@@ -1,7 +1,8 @@
-// Mapa isométrico de sedes (spec 003): pestaña pública /mapa, celular primero.
+// Mapa de sedes (spec 003): pestaña pública /mapa, celular primero.
 // Sin cuenta y SIN ubicación: nunca se pide la ubicación del dispositivo ni hay botón «ubicarme» (RNF-05, FR-026).
 // Se importa solo al abrir la pestaña, para que la Agenda y las fichas no esperen al mapa (FR-004).
-// Desplazamiento y zoom propios (la CSP no permite librerías externas). Marcadores neutros como <button>.
+// Con WebGL y sin «reducir movimiento» se muestra la maqueta 3D (mapa-3d.js, Three.js servido desde /vendor porque
+// la CSP no permite CDN); si no, la ilustración isométrica con desplazamiento y zoom propios. Marcadores como <button>.
 import { h, icono } from './dom.js';
 import { apiProgramacion } from './api.js';
 import { formatoFecha, formatoFechaCorta, formatoHorarioFuncion, etiquetaTiempo } from './format.js';
@@ -54,6 +55,88 @@ function listaAccesibilidad(acc, compacta = false) {
   );
 }
 
+/** ¿Puede este navegador dibujar la maqueta 3D? Se comprueba sin descargar Three.js y se libera el contexto de prueba. */
+function hayWebGL() {
+  try {
+    const contexto = document.createElement('canvas').getContext('webgl2') ?? document.createElement('canvas').getContext('webgl');
+    contexto?.getExtension('WEBGL_lose_context')?.loseContext();
+    return Boolean(contexto);
+  } catch {
+    return false;
+  }
+}
+
+/** Nombre comparable: sin tildes, sin mayúsculas y sin espacios sobrantes. */
+const normalizarNombre = (texto) =>
+  String(texto ?? '')
+    .normalize('NFD')
+    .replaceAll(/\p{M}/gu, '')
+    .toLowerCase()
+    .trim();
+
+const pasoMapa = (numero, nombreIcono, texto) =>
+  h('div', { class: 'pasaporte-paso' }, h('span', { class: 'paso-num', 'aria-hidden': 'true' }, numero), icono(nombreIcono, 'icono-xs'), h('span', {}, texto));
+
+/** Vitrina de la cabecera, con el lenguaje del Pasaporte: la maqueta inclinada, anillos dorados y fichas flotantes. */
+function vitrinaHeroMapa() {
+  const ficha = (clase, nombreIcono, titulo, detalle) =>
+    h(
+      'div',
+      { class: `hero-timbre ${clase}` },
+      h('span', { class: 'hero-timbre-icono' }, icono(nombreIcono, 'icono-sm')),
+      h('div', { class: 'hero-timbre-textos' }, h('span', { class: 'hero-timbre-titulo' }, titulo), h('span', { class: 'hero-timbre-lugar' }, detalle)),
+    );
+  return h(
+    'div',
+    { class: 'hero-pasaporte-arte hero-mapa-arte', 'aria-hidden': 'true' },
+    h('div', { class: 'hero-resplandor-solar' }),
+    h('div', { class: 'hero-brujula-anillo' }),
+    h('div', { class: 'hero-brujula-anillo-interno' }),
+    h(
+      'div',
+      { class: 'hero-pasaporte-centro' },
+      h(
+        'div',
+        { class: 'hero-mapa-tarjeta' },
+        h('img', { src: '/img/mapa-loja-centro.svg', alt: '', width: '1600', height: '1000', draggable: 'false' }),
+        h('span', { class: 'hero-mapa-faro f1' }, '1'),
+        h('span', { class: 'hero-mapa-faro f2' }, '4'),
+        h('span', { class: 'hero-mapa-faro f3' }, '7'),
+      ),
+    ),
+    ficha('timbre-1', 'sede', 'Teatro Bolívar', 'Lugar 7'),
+    ficha('timbre-2', 'recorrido', 'Desfile inaugural', 'Calle Bolívar'),
+    ficha('timbre-3', 'brujula', 'Parque Central', 'Lugar 2'),
+  );
+}
+
+function cabeceraMapa(zonaReloj) {
+  return h(
+    'section',
+    { class: 'hero-festival hero-pasaporte hero-pasaporte-portada hero-mapa' },
+    h(
+      'div',
+      { class: 'hero-pasaporte-interior' },
+      h(
+        'div',
+        { class: 'hero-contenido' },
+        h('p', { class: 'hero-eyebrow' }, h('span', { class: 'hero-eyebrow-punto', 'aria-hidden': 'true' }), 'Festival Internacional de Artes Vivas de Loja'),
+        h('h1', { class: 'hero-titulo' }, 'Mapa del ', h('span', { class: 'resalte' }, 'Festival')),
+        h('p', { class: 'hero-subtitulo' }, 'Recorre el Circuito Cultural del centro de Loja. No necesitas cuenta y no pedimos tu ubicación.'),
+        h(
+          'div',
+          { class: 'pasaporte-pasos', 'aria-label': 'Cómo usar el mapa' },
+          pasoMapa('01', 'sede', 'Elige un lugar del circuito'),
+          pasoMapa('02', 'brujula', 'Acerca y explora la maqueta'),
+          pasoMapa('03', 'calendario', 'Mira qué hay en cada lugar'),
+        ),
+        zonaReloj,
+      ),
+      vitrinaHeroMapa(),
+    ),
+  );
+}
+
 export async function pantallaMapa() {
   const params = new URLSearchParams(location.search);
   const estado = {
@@ -67,18 +150,7 @@ export async function pantallaMapa() {
 
   const pagina = h('div', { class: 'mapa-pagina' });
   const zonaReloj = h('div', { class: 'zona-reloj' });
-  const hero = h(
-    'section',
-    { class: 'hero-festival hero-mapa' },
-    h(
-      'div',
-      { class: 'hero-contenido' },
-      h('p', { class: 'hero-eyebrow' }, 'Festival Internacional de Artes Vivas de Loja'),
-      h('h1', { class: 'hero-titulo' }, 'Mapa del Festival'),
-      h('p', { class: 'hero-subtitulo' }, 'Explora las sedes y consulta sus funciones. No necesitas cuenta y no pedimos tu ubicación.'),
-      zonaReloj,
-    ),
-  );
+  const hero = cabeceraMapa(zonaReloj);
 
   // Datos generales: ilustración vigente, días elegibles y reloj común (RC-07).
   const rDatos = await apiProgramacion('GET', '/map');
@@ -100,6 +172,9 @@ export async function pantallaMapa() {
     return pagina;
   }
   const { illustration: ilustracion, days: dias = [], reference } = rDatos.datos;
+  // Lugares numerados del Circuito Cultural (orden del mapa oficial).
+  const numerosCircuito = new Map((ilustracion.circuit ?? []).map((nombre, i) => [normalizarNombre(nombre), i + 1]));
+  const numeroDe = (s) => numerosCircuito.get(normalizarNombre(s.name)) ?? null;
   zonaReloj.replaceChildren(
     h(
       'div',
@@ -246,7 +321,7 @@ export async function pantallaMapa() {
 
   // ---------- Vista ilustrada con desplazamiento y zoom ----------
 
-  const vistaMapa = (() => {
+  const vista2D = (() => {
     const imagen = h('img', { class: 'mapa-imagen', src: ilustracion.src, alt: '', draggable: 'false', width: ilustracion.width, height: ilustracion.height });
     const capaMarcadores = h('div', { class: 'mapa-marcadores' });
     const lienzo = h('div', { class: 'mapa-lienzo' }, imagen, capaMarcadores);
@@ -264,7 +339,9 @@ export async function pantallaMapa() {
 
     // La ilustración cubre el marco (como `object-fit: cover`) y conserva su proporción, así los marcadores,
     // colocados en fracciones de su ancho y alto, siempre caen en su sitio.
-    const vista = { zoom: 1, x: 0, y: 0, centrar: true };
+    // En pantallas anchas se abre algo acercado sobre el centro (el circuito del festival) para que las sedes no se amontonen.
+    const ZOOM_INICIAL = globalThis.matchMedia?.('(min-width: 56rem)').matches ? 1.6 : 1;
+    const vista = { zoom: ZOOM_INICIAL, x: 0, y: 0, centrar: true };
     const base = { w: 0, h: 0 };
     const medir = () => {
       const escala = Math.max(marco.clientWidth / ilustracion.width, marco.clientHeight / ilustracion.height);
@@ -279,7 +356,8 @@ export async function pantallaMapa() {
     };
     const aplicar = () => {
       medir();
-      if (vista.centrar) {
+      // Se centra cuando el marco ya tiene tamaño (antes de estar en la página mide 0).
+      if (vista.centrar && marco.clientWidth > 0) {
         vista.x = (marco.clientWidth - base.w * vista.zoom) / 2;
         vista.y = (marco.clientHeight - base.h * vista.zoom) / 2;
         vista.centrar = false;
@@ -393,6 +471,7 @@ export async function pantallaMapa() {
       marco,
       h('div', { class: 'mapa-botones', role: 'group', 'aria-label': 'Zoom del mapa' }, botonAcercar, botonAlejar, botonCentrar),
       ilustracion.provisional ? h('p', { class: 'mapa-provisional' }, icono('aviso', 'icono-xs'), 'Ilustración provisional: no es el plano de Loja') : null,
+      !ilustracion.provisional && ilustracion.credit ? h('p', { class: 'mapa-credito' }, ilustracion.credit) : null,
     );
 
     return {
@@ -407,13 +486,15 @@ export async function pantallaMapa() {
                 type: 'button',
                 class: `marcador-sede ${s.id === estado.sede ? 'activo' : ''}`,
                 'aria-pressed': String(s.id === estado.sede),
-                'aria-label': s.dayFunctionCount ? `${s.name}, ${textoFuncionesDia(s.dayFunctionCount)}` : s.name,
+                'aria-label': [numeroDe(s) ? `Lugar ${numeroDe(s)}: ${s.name}` : s.name, s.dayFunctionCount ? textoFuncionesDia(s.dayFunctionCount) : null]
+                  .filter(Boolean)
+                  .join(', '),
                 onclick: () => {
                   if (movido) return;
                   void abrirSede(s.id);
                 },
               },
-              icono(s.kind === 'route' ? 'recorrido' : 'sede', 'icono-sm'),
+              numeroDe(s) ? h('span', { class: 'marcador-numero' }, String(numeroDe(s))) : icono(s.kind === 'route' ? 'recorrido' : 'sede', 'icono-sm'),
               h('span', { class: 'marcador-nombre' }, s.name),
             );
             boton.style.left = `${s.marker.x * 100}%`;
@@ -447,6 +528,100 @@ export async function pantallaMapa() {
       },
     };
   })();
+
+  // ---------- Maqueta 3D (Three.js) con la ilustración isométrica como respaldo ----------
+
+  const quiere3D = !globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches && hayWebGL();
+  let vistaMapa = quiere3D ? crearVista3D() : vista2D;
+
+  function crearVista3D() {
+    const capa = h('div', { class: 'mapa-3d-marcadores' });
+    const aviso = h('p', { class: 'mapa-3d-cargando' }, 'Preparando la maqueta 3D…');
+    const marco = h(
+      'div',
+      {
+        class: 'mapa-marco mapa-marco-3d',
+        tabindex: '0',
+        role: 'group',
+        'aria-roledescription': 'mapa 3D',
+        'aria-label': 'Maqueta 3D del centro de Loja. Arrastra para girar, usa la rueda o los botones para acercar y las flechas para desplazarte. Cada lugar numerado es un botón.',
+      },
+      capa,
+      aviso,
+    );
+    let api = null;
+    let ultima = null;
+    const boton = (etiqueta, nombreIcono, accion) =>
+      h('button', { type: 'button', class: 'mapa-boton', 'aria-label': etiqueta, onclick: () => api?.[accion]() }, icono(nombreIcono, 'icono-sm'));
+    const TECLAS = { '+': 'acercar', '=': 'acercar', '-': 'alejar', _: 'alejar', 0: 'centrar' };
+    marco.addEventListener('keydown', (e) => {
+      if (!api || e.target !== marco || !TECLAS[e.key]) return;
+      e.preventDefault();
+      api[TECLAS[e.key]]();
+    });
+    import('./mapa-3d.js')
+      .then(({ crearMapa3D }) => {
+        api = crearMapa3D({ marco, capa, numeroDe, alElegir: (id) => void abrirSede(id) });
+        aviso.remove();
+        if (ultima) api.pintar(ultima, estado.sede);
+      })
+      .catch(() => {
+        // Sin 3D (WebGL bloqueado o error al cargar): se usa la ilustración isométrica.
+        vistaMapa = vista2D;
+        if (estado.vista === 'mapa') pintarVista();
+      });
+    const contenedor = h(
+      'div',
+      { class: 'mapa-contenedor' },
+      marco,
+      h(
+        'div',
+        { class: 'mapa-botones', role: 'group', 'aria-label': 'Zoom del mapa' },
+        boton('Acercar', 'mas', 'acercar'),
+        boton('Alejar', 'menos', 'alejar'),
+        boton('Volver a la vista inicial', 'centrar', 'centrar'),
+      ),
+      h('p', { class: 'mapa-3d-leyenda' }, h('span', { class: 'leyenda-desfile', 'aria-hidden': 'true' }), 'Desfile de inauguración por la calle Bolívar'),
+    );
+    return {
+      elemento: h('div', { class: 'mapa-ilustrado mapa-ilustrado-3d' }, contenedor, ilustracion.credit ? h('p', { class: 'mapa-credito' }, ilustracion.credit) : null),
+      pintar(lista) {
+        ultima = lista;
+        api?.pintar(lista, estado.sede);
+      },
+    };
+  }
+
+  /** Lista numerada de los lugares del Circuito Cultural, bajo el mapa. */
+  function listaCircuito(lista) {
+    const lugares = lista
+      .map((s) => ({ s, n: numeroDe(s) }))
+      .filter((x) => x.n)
+      .sort((a, b) => a.n - b.n);
+    if (!lugares.length) return null;
+    return h(
+      'section',
+      { class: 'circuito-lugares', 'aria-labelledby': 'titulo-circuito' },
+      h('h2', { id: 'titulo-circuito', class: 'circuito-titulo' }, 'Circuito Cultural'),
+      h(
+        'ol',
+        { class: 'circuito-lista' },
+        lugares.map(({ s, n }) =>
+          h(
+            'li',
+            {},
+            h(
+              'button',
+              { type: 'button', class: `circuito-lugar ${s.id === estado.sede ? 'activo' : ''}`, 'aria-pressed': String(s.id === estado.sede), onclick: () => void abrirSede(s.id) },
+              h('span', { class: 'circuito-numero', 'aria-hidden': 'true' }, String(n)),
+              h('span', { class: 'circuito-nombre' }, s.name),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   // ---------- Lista equivalente (FR-015, FR-016) ----------
 
@@ -485,7 +660,7 @@ export async function pantallaMapa() {
     if (estado.vista === 'lista') {
       zonaVista.replaceChildren(sedes.length ? vistaLista(sedes) : estadoSinSedes());
     } else {
-      zonaVista.replaceChildren(vistaMapa.elemento);
+      zonaVista.replaceChildren(...[vistaMapa.elemento, listaCircuito(sedes)].filter(Boolean));
       vistaMapa.pintar(sedes);
     }
   }

@@ -7,16 +7,30 @@ import { validation, notFound } from '../http/errors.js';
 // Las sedes y las funciones son las del propio servicio de programación: no se duplica el catálogo.
 
 /**
- * Ilustración vigente. Es PROVISIONAL hasta que el equipo entregue la de Loja (P-13): al cambiarla,
- * se añade el archivo en app/web/img/ y se cambia este objeto con un `id` nuevo. Los marcadores colocados sobre
- * otra ilustración dejan de mostrarse (la sede sigue en la lista) en lugar de quedar en un sitio equivocado.
+ * Ilustración vigente: maqueta del centro de Loja (P-13) sobre el trazado del mapa «Circuito Cultural» del FIAVL 2026.
+ * La web la muestra en 3D (Three.js) y usa esta ilustración isométrica como respaldo; los marcadores se guardan sobre ella.
+ * `circuit` son los lugares numerados del Circuito Cultural, en el orden del mapa oficial.
+ * Al cambiarla, se añade el archivo en app/web/img/ y se cambia este objeto con un `id` nuevo. Los marcadores
+ * colocados sobre otra ilustración dejan de mostrarse (la sede sigue en la lista) en lugar de quedar en un sitio equivocado.
  */
 export const ILUSTRACION = Object.freeze({
-  id: 'provisional-2026-11',
-  src: '/img/mapa-provisional.svg',
+  id: 'loja-circuito-2026-11',
+  src: '/img/mapa-loja-centro.svg',
   width: 1600,
   height: 1000,
-  provisional: true,
+  provisional: false,
+  credit: 'Trazado basado en el mapa del Circuito Cultural FIAVL 2026.',
+  circuit: Object.freeze([
+    'Plaza San Francisco',
+    'Parque Central',
+    'Plaza Santo Domingo',
+    'Plaza San Sebastián',
+    'Plazoleta 1ro de Mayo',
+    'Plaza de la Cultura',
+    'Teatro Bolívar',
+    'Teatro Segundo Cueva Celi',
+    'Centro Cultural Alfredo Mora Reyes',
+  ]),
 });
 
 export const CARACTERISTICAS = Object.freeze({ step_free: 'stepFree', accessible_toilet: 'accessibleToilet' });
