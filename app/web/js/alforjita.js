@@ -32,6 +32,8 @@ let dialogo = null;
 let lista = null;
 let campoTexto = null;
 let ocupado = false;
+/** Elemento que abrió el panel (botón flotante o el de la Agenda): recibe el foco al cerrar. */
+let origen = null;
 
 /** Llama a la API con un límite de espera; cualquier fallo es «falla del servicio» (FR-014). */
 async function consultar(cuerpo) {
@@ -119,6 +121,8 @@ function respuesta(m) {
   }
   const d = m.datos;
   const partes = [h('p', {}, d.message)];
+  // En la bienvenida, Alforjita aparece bailando (ilustración oficial del festival, usada con permiso).
+  if (d.kind === 'welcome') partes.unshift(h('img', { class: 'alforjita-bienvenida', src: '/img/alforjita/alforjita-baile.jpg', alt: '', width: '404', height: '495' }));
   if (d.items?.length) partes.push(h('ul', { class: 'alforjita-resultados' }, d.items.map(tarjeta)));
   if (d.total > (d.items?.length ?? 0) && d.agendaUrl) {
     partes.push(enlaces([{ label: `Ver las ${d.total} en la Agenda`, href: d.agendaUrl }]));
@@ -208,7 +212,7 @@ function construir() {
     h(
       'div',
       { class: 'alforjita-cabecera' },
-      h('span', { class: 'alforjita-avatar' }, icono('alforja', 'icono')),
+      h('span', { class: 'alforjita-avatar' }, h('img', { src: '/img/alforjita/alforjita-saludo.jpg', alt: '', width: '404', height: '495' })),
       h('div', {}, h('h2', { id: 'alforjita-titulo' }, 'Alforjita'), h('p', { class: 'ayuda' }, 'Programación publicada')),
       nueva,
       cerrar,
@@ -220,12 +224,13 @@ function construir() {
   dialogo.addEventListener('click', (ev) => {
     if (ev.target.closest?.('a[href]')) dialogo.close();
   });
-  dialogo.addEventListener('close', () => document.getElementById('boton-alforjita')?.focus());
+  dialogo.addEventListener('close', () => (origen?.isConnected ? origen : document.getElementById('alforjita-flotante'))?.focus());
   document.body.append(dialogo);
 }
 
-/** Abre el panel. Esc y «Cerrar» lo cierran (nativo de <dialog>) y el foco vuelve al botón de la Agenda. */
+/** Abre el panel. Esc y «Cerrar» lo cierran (nativo de <dialog>) y el foco vuelve al botón que lo abrió. */
 export function abrirAlforjita() {
+  origen = document.activeElement;
   if (!dialogo) construir();
   pintar();
   if (!dialogo.open) dialogo.showModal();

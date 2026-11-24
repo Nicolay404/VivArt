@@ -3112,18 +3112,6 @@ h1, h2, h3,
 
 /* ---------- Alforjita (spec 008): panel lateral en escritorio, pantalla completa en celular ---------- */
 
-.boton-alforjita {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  background: var(--marca-calido);
-  color: var(--superficie);
-  font-weight: 600;
-  border-radius: var(--radio-sm);
-  padding: 0.5rem 0.95rem;
-}
-.boton-alforjita:hover { background: var(--marca-magenta); }
-
 .alforjita-panel {
   position: fixed;
   inset: 0 0 0 auto;
