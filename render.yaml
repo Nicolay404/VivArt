@@ -1,0 +1,139 @@
+# Despliegue de VIVART en Render (Blueprint): New → Blueprint → este repositorio.
+# Crea la base PostgreSQL y los cuatro servicios web del docker-compose (identidad, programación, participación y
+# la entrada común). Guía paso a paso: docs/despliegue-render.md
+#
+# Plan gratis de Render, con dos concesiones frente a la demo con contenedores:
+# - Una sola base PostgreSQL gratis por workspace: cada servicio usa su propio ESQUEMA (DB_SCHEMA) en esa base.
+# - Los servicios gratis no reciben tráfico de la red privada: se llaman por su dirección pública https.
+# Queda en modo demo (sin NODE_ENV=production): simulador de pago y buzón de pruebas, sin cobros ni correos reales.
+#
+# Las claves entre servicios (sync: false) NO están aquí: Render las pide al crear el Blueprint.
+
+databases:
+  - name: vivart-db
+    plan: free
+    region: oregon
+    databaseName: vivart
+    user: vivart
+    postgresMajorVersion: '17'
+
+services:
+  - type: web
+    name: vivart-identidad
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./app/services/identidad/Dockerfile
+    dockerContext: ./app/services/identidad
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: '10000'
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vivart-db
+          property: connectionString
+      - key: DB_SCHEMA
+        value: identidad
+      - key: MAIL_TRANSPORT
+        value: test
+      - key: PUBLIC_BASE_URL
+        value: https://vivart-entrada.onrender.com
+      - key: ALLOWED_ORIGINS
+        value: https://vivart-entrada.onrender.com
+      - key: TRUST_PROXY
+        value: '1'
+      # "programacion:<clave de programación>,participacion:<clave de participación>"
+      - key: SERVICE_KEYS
+        sync: false
+
+  - type: web
+    name: vivart-programacion
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./app/services/programacion/Dockerfile
+    dockerContext: ./app/services/programacion
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: '10000'
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vivart-db
+          property: connectionString
+      - key: DB_SCHEMA
+        value: programacion
+      - key: ALLOWED_ORIGINS
+        value: https://vivart-entrada.onrender.com
+      - key: IDENTIDAD_URL
+        value: https://vivart-identidad.onrender.com
+      - key: PARTICIPACION_URL
+        value: https://vivart-participacion.onrender.com
+      # Un servicio dormido tarda en despertar: se le espera más que en la demo local.
+      - key: SERVICE_TIMEOUT_MS
+        value: '30000'
+      # <clave de programación>
+      - key: IDENTIDAD_SERVICE_KEY
+        sync: false
+      # "participacion:<clave de participación>"
+      - key: SERVICE_KEYS
+        sync: false
+
+  - type: web
+    name: vivart-participacion
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./app/services/participacion/Dockerfile
+    dockerContext: ./app/services/participacion
+    healthCheckPath: /health
+    envVars:
+      - key: PORT
+        value: '10000'
+      - key: DATABASE_URL
+        fromDatabase:
+          name: vivart-db
+          property: connectionString
+      - key: DB_SCHEMA
+        value: participacion
+      - key: ALLOWED_ORIGINS
+        value: https://vivart-entrada.onrender.com
+      - key: PUBLIC_BASE_URL
+        value: https://vivart-entrada.onrender.com
+      - key: IDENTIDAD_URL
+        value: https://vivart-identidad.onrender.com
+      - key: PROGRAMACION_URL
+        value: https://vivart-programacion.onrender.com
+      - key: SERVICE_TIMEOUT_MS
+        value: '30000'
+      # Simulador de pago de prueba: nunca procesa dinero.
+      - key: PAYMENT_SIMULATOR
+        value: 'on'
+      - key: TICKET_KEY
+        generateValue: true
+      # <clave de participación>
+      - key: IDENTIDAD_SERVICE_KEY
+        sync: false
+      # "programacion:<clave de programación>"
+      - key: SERVICE_KEYS
+        sync: false
+
+  # La entrada común: sirve la web y reparte /api/* a cada servicio. Su dirección es la que abre la gente.
+  - type: web
+    name: vivart-entrada
+    runtime: docker
+    plan: free
+    region: oregon
+    dockerfilePath: ./app/edge/Dockerfile
+    dockerContext: ./app
+    healthCheckPath: /
+    envVars:
+      - key: PORT
+        value: '10000'
+      - key: IDENTIDAD_URL
+        value: https://vivart-identidad.onrender.com
+      - key: PROGRAMACION_URL
+        value: https://vivart-programacion.onrender.com
+      - key: PARTICIPACION_URL
+        value: https://vivart-participacion.onrender.com

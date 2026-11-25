@@ -1,6 +1,7 @@
 // Entrada HTTP común de VIVART: sirve la interfaz web y enruta por prefijo hacia los servicios.
 // Es un enrutamiento sencillo, no un gateway dedicado: sin autenticación, sin lógica de negocio y sin dependencias.
 import http from 'node:http';
+import https from 'node:https';
 import { readFile, stat } from 'node:fs/promises';
 import { createReadStream } from 'node:fs';
 import { extname, resolve, sep } from 'node:path';
@@ -86,8 +87,10 @@ export function createEdge({
     delete cabeceras.host;
     cabeceras['x-forwarded-for'] = req.socket.remoteAddress ?? '';
     cabeceras['x-forwarded-host'] = req.headers.host ?? '';
-    const salida = http.request(
-      { hostname: destino.hostname, port: destino.port || 80, path: resto, method: req.method, headers: cabeceras },
+    // En la demo los servicios van por http; en un hospedaje como Render se llaman por su dirección pública https.
+    const seguro = destino.protocol === 'https:';
+    const salida = (seguro ? https : http).request(
+      { hostname: destino.hostname, port: destino.port || (seguro ? 443 : 80), path: resto, method: req.method, headers: cabeceras },
       (respuesta) => {
         res.writeHead(respuesta.statusCode ?? 502, respuesta.headers);
         respuesta.pipe(res);
