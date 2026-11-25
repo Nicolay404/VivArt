@@ -43,18 +43,28 @@ alguno (porque el nombre ya estaba ocupado), hay que corregir esa dirección en 
 ## 3. Cargar la programación y crear el administrador
 
 Se hace una sola vez, desde una computadora con el repositorio y Node 24. En Render, en la base `vivart-db`,
-copiar la **External Database URL** y usarla en estos comandos (desde la raíz del repositorio):
+copiar la **External Database URL** y usarla en estos comandos (desde la raíz del repositorio), **añadiéndole
+`?sslmode=require` al final**: desde fuera de Render la base solo acepta conexiones cifradas y, sin eso, el comando
+falla con `SSL/TLS required`. Los servicios desplegados no lo necesitan porque se conectan por dentro de Render.
 
 ```bash
 # Programación oficial FIAVL 2026 (243 actividades) y los 9 lugares del Circuito Cultural en el mapa
 cd app/services/programacion && npm ci
-DATABASE_URL="<External Database URL>" DB_SCHEMA=programacion node bin/cargar-programacion.js
+DATABASE_URL="<External Database URL>?sslmode=require" DB_SCHEMA=programacion node bin/cargar-programacion.js
 
 # Primera cuenta administradora: imprime un enlace de activación de un solo uso
 cd ../identidad && npm ci
-DATABASE_URL="<External Database URL>" DB_SCHEMA=identidad MAIL_TRANSPORT=console \
+DATABASE_URL="<External Database URL>?sslmode=require" DB_SCHEMA=identidad MAIL_TRANSPORT=console \
   PUBLIC_BASE_URL=https://vivart-entrada.onrender.com \
   node bin/crear-primer-administrador.js --email admin@vivart.test
 ```
 
 Abrir el enlace impreso y elegir la contraseña. Los dos comandos se pueden repetir sin duplicar nada.
+
+## Si algo falla
+
+- **Una página de error 502 de Render, o «No se pudo completar la operación»**: el servicio estaba dormido y se está
+  despertando. Esperar un minuto y reintentar. Antes de una presentación, abrir Agenda, Mapa e Ingresar unos minutos
+  antes para despertar los cuatro servicios.
+- **Los cambios subidos a `main` no aparecen**: si el Blueprint se conectó como repositorio público, Render no despliega
+  solo; en el Blueprint, pulsar **Manual sync**.
