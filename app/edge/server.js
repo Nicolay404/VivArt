@@ -53,9 +53,30 @@ const CABECERAS_SEGURAS = {
 
 const DIRECTORIO_WEB = fileURLToPath(new URL('../web/', import.meta.url));
 
+/**
+ * Cabeceras seguras de esta entrada. Si los servicios están en otro dominio https (hospedaje como Render), el
+ * navegador puede llamar a su /health para despertarlos: solo esos orígenes se añaden a connect-src.
+ */
+export function cabecerasSeguras(origenesExternos = []) {
+  if (origenesExternos.length === 0) return CABECERAS_SEGURAS;
+  const politica = CABECERAS_SEGURAS['content-security-policy'].replace(
+    "default-src 'self';",
+    `default-src 'self'; connect-src 'self' ${origenesExternos.join(' ')};`,
+  );
+  return { ...CABECERAS_SEGURAS, 'content-security-policy': politica };
+}
+
+/**
+ * Render (plan gratis) duerme los servicios sin uso y solo los despierta con tráfico que llega desde fuera, no desde
+ * otro servicio de Render: a la entrada le responde 502/503 con la cabecera x-render-routing sin haber tocado el servicio.
+ */
+export function servicioDormido(respuesta) {
+  return (respuesta.statusCode === 502 || respuesta.statusCode === 503) && 'x-render-routing' in respuesta.headers;
+}
+
 /** Sirve un video completo o la parte pedida con Range (206), o 416 si el rango no se puede servir. */
-function servirPorPartes(req, res, completa, tamano) {
-  const comunes = { 'content-type': TIPOS[extname(completa)], 'accept-ranges': 'bytes', 'cache-control': 'no-cache', ...CABECERAS_SEGURAS };
+function servirPorPartes(req, res, completa, tamano, seguras = CABECERAS_SEGURAS) {
+  const comunes = { 'content-type': TIPOS[extname(completa)], 'accept-ranges': 'bytes', 'cache-control': 'no-cache', ...seguras };
   if (!req.headers.range) {
     res.writeHead(200, { ...comunes, 'content-length': tamano });
     if (req.method === 'HEAD') return res.end();
@@ -63,7 +84,7 @@ function servirPorPartes(req, res, completa, tamano) {
   }
   const rango = rangoPedido(req.headers.range, tamano);
   if (!rango) {
-    res.writeHead(416, { ...CABECERAS_SEGURAS, 'content-range': `bytes */${tamano}` });
+    res.writeHead(416, { ...seguras, 'content-range': `bytes */${tamano}` });
     return res.end();
   }
   res.writeHead(206, { ...comunes, 'content-length': rango.fin - rango.inicio + 1, 'content-range': `bytes ${rango.inicio}-${rango.fin}/${tamano}` });
@@ -80,6 +101,8 @@ export function createEdge({
   ],
 } = {}) {
   const base = resolve(webDir);
+  const origenesExternos = [...new Set(routes.map((r) => new URL(r.target)).filter((u) => u.protocol === 'https:').map((u) => u.origin))];
+  const CABECERAS = cabecerasSeguras(origenesExternos);
 
   function proxy(req, res, ruta, resto) {
     const destino = new URL(ruta.target);
@@ -92,13 +115,21 @@ export function createEdge({
     const salida = (seguro ? https : http).request(
       { hostname: destino.hostname, port: destino.port || (seguro ? 443 : 80), path: resto, method: req.method, headers: cabeceras },
       (respuesta) => {
+        if (seguro && servicioDormido(respuesta)) {
+          // La petición no llegó al servicio: la web lo despierta desde el navegador y la repite.
+          respuesta.resume();
+          res.writeHead(503, { 'content-type': 'application/json', 'retry-after': '5', 'cache-control': 'no-store', ...CABECERAS });
+          return res.end(
+            JSON.stringify({ error: 'service_waking', message: 'Estamos encendiendo el servicio. Un momento…', wake: `${destino.origin}/health` }),
+          );
+        }
         res.writeHead(respuesta.statusCode ?? 502, respuesta.headers);
         respuesta.pipe(res);
       },
     );
     salida.on('error', () => {
       if (!res.headersSent) {
-        res.writeHead(502, { 'content-type': 'application/json', ...CABECERAS_SEGURAS });
+        res.writeHead(502, { 'content-type': 'application/json', ...CABECERAS });
       }
       res.end(JSON.stringify({ error: 'upstream_unavailable', message: 'El servicio no está disponible por ahora.' }));
     });
@@ -107,40 +138,40 @@ export function createEdge({
 
   async function estatico(req, res, pathname) {
     if (req.method !== 'GET' && req.method !== 'HEAD') {
-      res.writeHead(405, { allow: 'GET, HEAD', ...CABECERAS_SEGURAS });
+      res.writeHead(405, { allow: 'GET, HEAD', ...CABECERAS });
       return res.end();
     }
     let ruta;
     try {
       ruta = decodeURIComponent(pathname);
     } catch {
-      res.writeHead(400, CABECERAS_SEGURAS);
+      res.writeHead(400, CABECERAS);
       return res.end();
     }
     if (ruta.includes('\0')) {
-      res.writeHead(400, CABECERAS_SEGURAS);
+      res.writeHead(400, CABECERAS);
       return res.end();
     }
     // Las rutas sin extensión son pantallas de la aplicación: se sirve index.html.
     const archivo = extname(ruta) === '' ? 'index.html' : ruta.replace(/^\/+/, '');
     const completa = resolve(base, archivo);
     if (completa !== base && !completa.startsWith(base + sep)) {
-      res.writeHead(404, CABECERAS_SEGURAS);
+      res.writeHead(404, CABECERAS);
       return res.end();
     }
     try {
       const info = await stat(completa);
       if (!info.isFile()) throw new Error('no es archivo');
-      if (POR_PARTES.has(extname(completa))) return servirPorPartes(req, res, completa, info.size);
+      if (POR_PARTES.has(extname(completa))) return servirPorPartes(req, res, completa, info.size, CABECERAS);
       const contenido = await readFile(completa);
       res.writeHead(200, {
         'content-type': TIPOS[extname(completa)] ?? 'application/octet-stream',
         'cache-control': 'no-cache',
-        ...CABECERAS_SEGURAS,
+        ...CABECERAS,
       });
       return res.end(req.method === 'HEAD' ? undefined : contenido);
     } catch {
-      res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', ...CABECERAS_SEGURAS });
+      res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8', ...CABECERAS });
       return res.end('No encontrado');
     }
   }
@@ -155,7 +186,7 @@ export function createEdge({
     }
     // Una ruta /api/ que ningún servicio reclama no es una pantalla: se responde 404 en JSON.
     if (url.pathname === '/api' || url.pathname.startsWith('/api/')) {
-      res.writeHead(404, { 'content-type': 'application/json', ...CABECERAS_SEGURAS });
+      res.writeHead(404, { 'content-type': 'application/json', ...CABECERAS });
       return res.end(JSON.stringify({ error: 'not_found', message: 'No se encontró lo que buscas.' }));
     }
     return estatico(req, res, url.pathname);
