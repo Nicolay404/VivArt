@@ -1,11 +1,11 @@
 # Servicio de identidad de VIVART. Imagen mínima, sin root y con comprobación de salud.
 # Contexto de construcción: app/services/identidad
-FROM node:24-alpine AS dependencias
+FROM node:26-alpine AS dependencias
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts
 
-FROM node:24-alpine
+FROM node:26-alpine
 WORKDIR /app
 RUN addgroup -S vivart && adduser -S vivart -G vivart
 COPY --from=dependencias /app/node_modules ./node_modules
