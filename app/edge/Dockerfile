@@ -1,6 +1,6 @@
 # Entrada HTTP común de VIVART: sirve la web y enruta por prefijo. Sin dependencias.
 # Contexto de construcción: app/  (necesita web/ y edge/)
-FROM node:24-alpine
+FROM node:26-alpine
 WORKDIR /app
 RUN addgroup -S vivart && adduser -S vivart -G vivart
 COPY edge/server.js ./edge/server.js
